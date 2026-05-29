@@ -7840,7 +7840,7 @@
     ]
   },
   "packageFolders": {
-    "/home/runner/.nuget/packages/": {}
+    "/tmp/codeql-scratch-a098f36610a1e08f/dbs/csharp/working/packages": {}
   },
   "project": {
     "version": "1.0.0",
@@ -7848,7 +7848,7 @@
       "projectUniqueName": "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/TPM_QAS.csproj",
       "projectName": "TPM_QAS",
       "projectPath": "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/TPM_QAS.csproj",
-      "packagesPath": "/home/runner/.nuget/packages/",
+      "packagesPath": "/tmp/codeql-scratch-a098f36610a1e08f/dbs/csharp/working/packages",
       "outputPath": "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
@@ -7937,6 +7937,20 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
+        "downloadDependencies": [
+          {
+            "name": "Microsoft.AspNetCore.App.Ref",
+            "version": "[8.0.27, 8.0.27]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Host.linux-x64",
+            "version": "[8.0.27, 8.0.27]"
+          },
+          {
+            "name": "Microsoft.NETCore.App.Ref",
+            "version": "[8.0.27, 8.0.27]"
+          }
+        ],
         "frameworkReferences": {
           "Microsoft.AspNetCore.App": {
             "privateAssets": "none"
