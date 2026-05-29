@@ -1,25 +1,32 @@
 {
   "format": 1,
   "restore": {
-    "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/TPM_QAS.csproj": {}
+    "C:\\NET8 PROJECT\\TPM_QAS\\TPM_QAS\\TPM_QAS.csproj": {}
   },
   "projects": {
-    "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/TPM_QAS.csproj": {
+    "C:\\NET8 PROJECT\\TPM_QAS\\TPM_QAS\\TPM_QAS.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/TPM_QAS.csproj",
+        "projectUniqueName": "C:\\NET8 PROJECT\\TPM_QAS\\TPM_QAS\\TPM_QAS.csproj",
         "projectName": "TPM_QAS",
-        "projectPath": "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/TPM_QAS.csproj",
-        "packagesPath": "/tmp/codeql-scratch-a098f36610a1e08f/dbs/csharp/working/packages",
-        "outputPath": "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/obj/",
+        "projectPath": "C:\\NET8 PROJECT\\TPM_QAS\\TPM_QAS\\TPM_QAS.csproj",
+        "packagesPath": "C:\\Users\\ong_chun_zhao\\.nuget\\packages\\",
+        "outputPath": "C:\\NET8 PROJECT\\TPM_QAS\\TPM_QAS\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",
+          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
+        ],
         "configFilePaths": [
-          "/home/runner/.nuget/NuGet/NuGet.Config"
+          "C:\\Users\\ong_chun_zhao\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -37,7 +44,8 @@
           "enableAudit": "true",
           "auditLevel": "low",
           "auditMode": "direct"
-        }
+        },
+        "SdkAnalysisLevel": "9.0.300"
       },
       "frameworks": {
         "net8.0": {
@@ -99,20 +107,6 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
-          "downloadDependencies": [
-            {
-              "name": "Microsoft.AspNetCore.App.Ref",
-              "version": "[8.0.27, 8.0.27]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Host.linux-x64",
-              "version": "[8.0.27, 8.0.27]"
-            },
-            {
-              "name": "Microsoft.NETCore.App.Ref",
-              "version": "[8.0.27, 8.0.27]"
-            }
-          ],
           "frameworkReferences": {
             "Microsoft.AspNetCore.App": {
               "privateAssets": "none"
@@ -121,7 +115,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.421/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.308/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

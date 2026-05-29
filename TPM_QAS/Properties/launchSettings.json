@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "TPM_QAS": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:51013;http://localhost:51014"
+    }
+  }
+}
