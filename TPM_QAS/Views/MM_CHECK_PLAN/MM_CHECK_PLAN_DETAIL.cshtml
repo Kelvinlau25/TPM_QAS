@@ -239,7 +239,7 @@
 
         checkboxChecking();
 
-        var listingURL = '/MM_CHECK_PLAN/MM_CHECK_PLAN_LST';
+        var listingURL = appBasePath + 'MM_CHECK_PLAN/MM_CHECK_PLAN_LST';
 
         //REMOVE D
         $('#removeBtn').on('click', function () {
@@ -372,7 +372,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_CHECK_PLAN/InsertUpdateCheckPlan",
+                    url: appBasePath + "MM_CHECK_PLAN/InsertUpdateCheckPlan",
                     type: 'POST',
                     data: {
                         model: model
@@ -413,7 +413,7 @@
             lstid.push(idh)
 
             $.ajax({
-                url: "/MM_CHECK_PLAN/deleteCheckPlan",
+                url: appBasePath + "MM_CHECK_PLAN/deleteCheckPlan",
                 type: 'POST',
                 data: {
                     lstid: lstid

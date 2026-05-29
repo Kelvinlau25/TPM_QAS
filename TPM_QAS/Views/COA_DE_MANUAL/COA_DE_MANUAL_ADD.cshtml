@@ -144,7 +144,7 @@
             $('.select2-search__field').attr('placeholder', 'Search..');
         })
 
-        var listingURL = '/COA_DE_MANUAL/COA_DE_MANUAL_LST';
+        var listingURL = appBasePath + 'COA_DE_MANUAL/COA_DE_MANUAL_LST';
         var idh = '@Model.DE_OCR_H_ID' != 0 ? '@Model.DE_OCR_H_ID' : 0;
 
         //SUBMIT FILE
@@ -203,7 +203,7 @@
                 formData.append("coaindicator", coaindicator);
 
                 $.ajax({
-                    url: "/COA_DE_MANUAL/UploadManualFile",
+                    url: appBasePath + "COA_DE_MANUAL/UploadManualFile",
                     type: "POST",
                     data: formData,
                     processData: false,
@@ -443,7 +443,7 @@
                 //console.log(model)
 
                 $.ajax({
-                    url: "/COA_DE_OCR/InsertUpdateDEOCR",
+                    url: appBasePath + "COA_DE_OCR/InsertUpdateDEOCR",
                     type: 'POST',
                     data: {
                         model: model,

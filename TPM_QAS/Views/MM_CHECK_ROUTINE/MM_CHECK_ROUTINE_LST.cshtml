@@ -375,7 +375,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/MM_CHECK_ROUTINE/MM_CHECK_ROUTINE_LST';
+            var listingURL = appBasePath + 'MM_CHECK_ROUTINE/MM_CHECK_ROUTINE_LST';
 
             //Audit action control
             var audit_url = '@Url.Action("MM_CHECK_ROUTINE_AUDIT", "MM_CHECK_ROUTINE")';
@@ -435,7 +435,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/MM_CHECK_ROUTINE/deleteCheckRoutine",
+                        url: appBasePath + "MM_CHECK_ROUTINE/deleteCheckRoutine",
                         type: 'POST',
                         data: {
                             lstid: checkedValues

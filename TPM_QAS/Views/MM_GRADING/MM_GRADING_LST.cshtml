@@ -379,7 +379,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/MM_GRADING/MM_GRADING_LST';
+            var listingURL = appBasePath + 'MM_GRADING/MM_GRADING_LST';
 
             //Audit action control
             var audit_url = '@Url.Action("MM_GRADING_AUDIT", "MM_GRADING")';
@@ -439,7 +439,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/MM_GRADING/deleteGrading",
+                        url: appBasePath + "MM_GRADING/deleteGrading",
                         type: 'POST',
                         data: {
                             lstid: checkedValues

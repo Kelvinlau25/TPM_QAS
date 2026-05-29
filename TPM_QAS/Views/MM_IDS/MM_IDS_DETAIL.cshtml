@@ -533,7 +533,7 @@
         checkboxChecking();
         checkbox2Checking();
 
-        var listingURL = '/MM_IDS/MM_IDS_LST';
+        var listingURL = appBasePath + 'MM_IDS/MM_IDS_LST';
 
         var from = '@ViewBag.FROM';
         if (from == 'POST') {
@@ -948,7 +948,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_IDS/InsertUpdateIDS",
+                    url: appBasePath + "MM_IDS/InsertUpdateIDS",
                     type: 'POST',
                     data: {
                         model: model
@@ -1087,7 +1087,7 @@
             lstid.push(idh)
 
             $.ajax({
-                url: "/MM_IDS/deleteIDS",
+                url: appBasePath + "MM_IDS/deleteIDS",
                 type: 'POST',
                 data: {
                     lstid: lstid

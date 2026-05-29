@@ -177,7 +177,7 @@
 
         $(document).ready(function () {
             var idh = '@Model.MM_CALC_ID' != 0 ? '@Model.MM_CALC_ID' : 0;
-            var listingURL = '/MM_CALCULATION/MM_CALCULATION_LST';
+            var listingURL = appBasePath + 'MM_CALCULATION/MM_CALCULATION_LST';
 
 
             $("#txtformula").click(function () {
@@ -262,7 +262,7 @@
                     };
 
                     $.ajax({
-                        url: "/MM_CALCULATION/UpdateInsertCalculation",
+                        url: appBasePath + "MM_CALCULATION/UpdateInsertCalculation",
                         type: 'POST',
                         data: {
                             model: model
@@ -357,7 +357,7 @@
                     console.log(model)
 
                     $.ajax({
-                        url: "/MM_CALCULATION/DraftCalculation",
+                        url: appBasePath + "MM_CALCULATION/DraftCalculation",
                         type: 'POST',
                         data: {
                             model: model

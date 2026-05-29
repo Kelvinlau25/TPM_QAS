@@ -688,6 +688,7 @@
 </head>
 
 <body class="theme-cyan">
+    <script>var appBasePath = '@Url.Content("~/")';</script>
     <div class="tr-tooltips-container"></div>
     <div class="sticky-top">
         <header class="navbar navbar-dark sticky-top flex-md-nowrap p-0 shadow tr-navbar">
@@ -768,7 +769,7 @@
                         @*acl*@
                         <ul class="nav flex-column mb-2" id="sidebarcontent"></ul>
 
-                        <a id="chgpassword_btn" href="/Home/ChangePassword">Change Password</a>
+                        <a id="chgpassword_btn" href="@Url.Action("ChangePassword", "Home")">Change Password</a>
                         <div class="tr-help" style="padding-bottom:0.4%;">
                             <div class="center">
                                 <span class="tr-help-txt">
@@ -960,7 +961,7 @@
             });
 
             //JH230712
-            $("#sidebarcontent").load('@Url.Content("/Home/SideBar")', function () {
+            $("#sidebarcontent").load('@Url.Content("~/Home/SideBar")', function () {
                 setActiveSidebar();
             });
 

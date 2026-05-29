@@ -233,7 +233,7 @@
 
         checkboxChecking();
         checkbox2Checking();
-        var listingURL = '/MM_PROD_TYPE/MM_PROD_TYPE_LST';
+        var listingURL = appBasePath + 'MM_PROD_TYPE/MM_PROD_TYPE_LST';
 
         //REMOVE D
         $('#removeBtn').on('click', function () {
@@ -444,7 +444,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_PROD_TYPE/InsertUpdateProdType",
+                    url: appBasePath + "MM_PROD_TYPE/InsertUpdateProdType",
                     type: 'POST',
                     data: {
                         model: model
@@ -635,7 +635,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_PROD_TYPE/DraftProdType",
+                    url: appBasePath + "MM_PROD_TYPE/DraftProdType",
                     type: 'POST',
                     data: {
                         model: model
@@ -676,7 +676,7 @@
     function prodtypeDuplicate(idh) {
         if (idh != null && idh != '' && idh != '0') {
             $.ajax({
-                url: "/MM_PROD_TYPE/getDuplicateProdType",
+                url: appBasePath + "MM_PROD_TYPE/getDuplicateProdType",
                 type: 'POST',
                 data: {
                     id: idh

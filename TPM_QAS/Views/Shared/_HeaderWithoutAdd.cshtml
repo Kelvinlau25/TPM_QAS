@@ -147,7 +147,7 @@
                 function advanceSearchClick() {
                     //debugger
                     //alert("test");
-                    $("#advanceSearchDiv").load('@(Url.Content("/Home/AdvancedSearch") + "?actionRequested=" + ViewContext.RouteData.Values["action"].ToString() + "/" + ViewContext.RouteData.Values["controller"].ToString())');
+                    $("#advanceSearchDiv").load('@(Url.Content("~/Home/AdvancedSearch") + "?actionRequested=" + ViewContext.RouteData.Values["action"].ToString() + "/" + ViewContext.RouteData.Values["controller"].ToString())');
                 }
 
                 function CheckDeleted() {
@@ -208,7 +208,7 @@
                 function advanceSearchClick() {
                     //debugger
                     //alert("test");
-                    $("#advanceSearchDiv").load('@(Url.Content("/Home/AdvancedSearch") + "?actionRequested=" + ViewContext.RouteData.Values["action"].ToString() + "/" + ViewContext.RouteData.Values["controller"].ToString())');
+                    $("#advanceSearchDiv").load('@(Url.Content("~/Home/AdvancedSearch") + "?actionRequested=" + ViewContext.RouteData.Values["action"].ToString() + "/" + ViewContext.RouteData.Values["controller"].ToString())');
                 }
 
                 function CheckDeleted() {
@@ -245,7 +245,7 @@
 
             source: function (request, response) {
                 $.ajax({
-                    url: "/Mstmain/GenerateAutoComplete",
+                    url: appBasePath + "Mstmain/GenerateAutoComplete",
                     type: "POST",
                     dataType: "json",
                     data: { Prefix: request.term, SearchSourceValue: '@postto', View: '@ViewAutoGen' },

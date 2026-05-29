@@ -449,7 +449,7 @@
         checkbox2Checking();
         checkbox3Checking();
 
-        var listingURL = '/MM_GRADING/MM_GRADING_LST';
+        var listingURL = appBasePath + 'MM_GRADING/MM_GRADING_LST';
 
         fillProperty();
         fillPropItem();
@@ -1035,7 +1035,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_GRADING/InsertUpdateGrading",
+                    url: appBasePath + "MM_GRADING/InsertUpdateGrading",
                     type: 'POST',
                     data: {
                         model: model
@@ -1076,7 +1076,7 @@
             lstid.push(idh)
 
             $.ajax({
-                url: "/MM_GRADING/deleteGrading",
+                url: appBasePath + "MM_GRADING/deleteGrading",
                 type: 'POST',
                 data: {
                     lstid: lstid
@@ -1141,7 +1141,7 @@
     function gradingDuplicate(idh) {
         if (idh != null && idh != '' && idh != '0') {
             $.ajax({
-                url: "/MM_GRADING/getDuplicateGrading",
+                url: appBasePath + "MM_GRADING/getDuplicateGrading",
                 type: 'POST',
                 data: {
                     id: idh

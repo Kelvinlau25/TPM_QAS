@@ -456,7 +456,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/DE_IDS_TRANS_REV/DE_IDS_TRANS_REV_LST';
+            var listingURL = appBasePath + 'DE_IDS_TRANS_REV/DE_IDS_TRANS_REV_LST';
 
             //Audit action control
             var audit_url = '@Url.Action("DE_IDS_TRANS_REV_AUDIT", "DE_IDS_TRANS_REV")';
@@ -498,7 +498,7 @@
                 var cont = true;
                 var message = "";
 
-                var listingURL = '/DE_IDS_TRANS_REV/DE_IDS_TRANS_REV_LST';
+                var listingURL = appBasePath + 'DE_IDS_TRANS_REV/DE_IDS_TRANS_REV_LST';
 
                 var checkedValues = [];
                 var checkboxes = table.column(0).nodes().to$().find('.dt-checkboxes');
@@ -518,7 +518,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/DE_IDS_TRANS_REV/deleteIDSTrans",
+                        url: appBasePath + "DE_IDS_TRANS_REV/deleteIDSTrans",
                         type: 'POST',
                         data: {
                             lstid: checkedValues

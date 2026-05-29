@@ -376,7 +376,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/MM_IDS/MM_IDS_LST';
+            var listingURL = appBasePath + 'MM_IDS/MM_IDS_LST';
             //Audit action control
             var audit_url = '@Url.Action("MM_IDS_AUDIT", "MM_IDS")';
 
@@ -435,7 +435,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/MM_IDS/deleteIDS",
+                        url: appBasePath + "MM_IDS/deleteIDS",
                         type: 'POST',
                         data: {
                             lstid: checkedValues

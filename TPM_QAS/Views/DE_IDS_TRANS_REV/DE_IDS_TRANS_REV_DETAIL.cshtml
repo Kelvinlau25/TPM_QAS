@@ -1416,7 +1416,7 @@
     <!-- common button and document ready function-->
     <script>
         $(document).ready(function () {
-            var listingURL = '/DE_IDS_TRANS/DE_IDS_TRANS_LST';
+            var listingURL = appBasePath + 'DE_IDS_TRANS/DE_IDS_TRANS_LST';
 
             $('#btnCancelView').on('click', function () {
                 window.location.href = listingURL;
@@ -3902,13 +3902,13 @@
         });
 
         $('#btnConfirmDel').on('click', function () {
-            var listingURL = '/DE_IDS_TRANS/DE_IDS_TRANS_LST';
+            var listingURL = appBasePath + 'DE_IDS_TRANS/DE_IDS_TRANS_LST';
             var idh = '@ViewBag.IDH'
             var lstid = [];
             lstid.push(idh)
 
             $.ajax({
-                url: "/DE_IDS_TRANS/deleteIDSTrans",
+                url: appBasePath + "DE_IDS_TRANS/deleteIDSTrans",
                 type: 'POST',
                 data: {
                     lstid: lstid

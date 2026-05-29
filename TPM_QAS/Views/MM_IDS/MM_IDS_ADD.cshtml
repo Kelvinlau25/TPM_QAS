@@ -463,7 +463,7 @@
         checkboxChecking();
         checkbox2Checking();
 
-        var listingURL = '/MM_IDS/MM_IDS_LST';
+        var listingURL = appBasePath + 'MM_IDS/MM_IDS_LST';
 
         $("#readingtypeHidden").val("AVERAGE");
 
@@ -885,7 +885,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_IDS/InsertUpdateIDS",
+                    url: appBasePath + "MM_IDS/InsertUpdateIDS",
                     type: 'POST',
                     data: {
                         model: model
@@ -1270,7 +1270,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_IDS/DraftIDS",
+                    url: appBasePath + "MM_IDS/DraftIDS",
                     type: 'POST',
                     data: {
                         model: model

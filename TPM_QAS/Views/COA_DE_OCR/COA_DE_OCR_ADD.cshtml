@@ -210,7 +210,7 @@
 
     <script>
         $(document).ready(function () {
-            var listingURL = '/COA_DE_OCR/COA_DE_OCR_LST';
+            var listingURL = appBasePath + 'COA_DE_OCR/COA_DE_OCR_LST';
             var idh = '@Model.DE_OCR_H_ID' != 0 ? '@Model.DE_OCR_H_ID' : 0;
 
             $('[data-bs-toggle="tooltip"]').tooltip();
@@ -273,7 +273,7 @@
                     formData.append("coalang", coalang);
 
                     $.ajax({
-                        url: "/COA_DE_OCR/UploadOCRFile",
+                        url: appBasePath + "COA_DE_OCR/UploadOCRFile",
                         type: "POST",
                         data: formData,
                         processData: false,
@@ -526,7 +526,7 @@
                     $('#firstOCRmodal').modal('hide');
 
                     $.ajax({
-                        url: "/COA_DE_OCR/getOCRFileData",
+                        url: appBasePath + "COA_DE_OCR/getOCRFileData",
                         type: "POST",
                         data: formData,
                         processData: false,
@@ -751,7 +751,7 @@
                     console.log(model);
 
                     $.ajax({
-                        url: "/COA_DE_OCR/InsertUpdateDEOCR",
+                        url: appBasePath + "COA_DE_OCR/InsertUpdateDEOCR",
                         type: 'POST',
                         data: {
                             model: model,

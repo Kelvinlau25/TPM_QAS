@@ -286,7 +286,7 @@
         $(document).ready(function () {
             checkboxChecking();
 
-            var listingURL = '/COA_DE_MANUAL/COA_DE_MANUAL_LST';
+            var listingURL = appBasePath + 'COA_DE_MANUAL/COA_DE_MANUAL_LST';
             var idh = '@Model.DE_OCR_H_ID';
 
             //SUBMIT
@@ -438,7 +438,7 @@
                     console.log(model)
 
                     $.ajax({
-                        url: "/COA_DE_OCR/InsertUpdateDEOCR",
+                        url: appBasePath + "COA_DE_OCR/InsertUpdateDEOCR",
                         type: 'POST',
                         data: {
                             model: model
@@ -488,7 +488,7 @@
                 lstid.push(idh)
 
                 $.ajax({
-                    url: "/COA_DE_OCR/deleteCOAOCR",
+                    url: appBasePath + "COA_DE_OCR/deleteCOAOCR",
                     type: 'POST',
                     data: {
                         lstid: lstid
@@ -535,7 +535,7 @@
 
         function viewFile(name) {
             $.ajax({
-                url: "/COA_DE_OCR/CheckFileExists",
+                url: appBasePath + "COA_DE_OCR/CheckFileExists",
                 type: "POST",
                 data: { fileName: name },
                 success: function (response) {

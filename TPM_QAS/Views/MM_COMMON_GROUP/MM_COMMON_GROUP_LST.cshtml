@@ -346,7 +346,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/MM_COMMON_GROUP/MM_COMMON_GROUP_LST';
+            var listingURL = appBasePath + 'MM_COMMON_GROUP/MM_COMMON_GROUP_LST';
 
             //Audit action control
             var audit_url = '@Url.Action("MM_COMMON_GROUP_AUDIT", "MM_COMMON_GROUP")';
@@ -406,7 +406,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/MM_COMMON_GROUP/deleteCommonGroup",
+                        url: appBasePath + "MM_COMMON_GROUP/deleteCommonGroup",
                         type: 'POST',
                         data: {
                             lstid: checkedValues

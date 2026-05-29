@@ -343,7 +343,7 @@
                         };
 
                         $.ajax({
-                            url: "/DATA_INT/RunIntegration",
+                            url: appBasePath + "DATA_INT/RunIntegration",
                             type: 'POST',
                             data: {
                                 model: model
@@ -358,13 +358,13 @@
                                     if (response.prodlinemsg != "") {  // has failed prodline
                                         displayToast("s", response.prodlinemsg);
                                         setTimeout(function () {
-                                            window.location.href = '/DATA_INT/DATA_INT';
+                                            window.location.href = appBasePath + 'DATA_INT/DATA_INT';
                                         }, 6000);
 
                                     } else {
                                         displayToast("s", "Data has been successfully integrated");
                                         setTimeout(function () {
-                                            window.location.href = '/DATA_INT/DATA_INT';
+                                            window.location.href = appBasePath + 'DATA_INT/DATA_INT';
                                         }, 2000);
                                     }
 

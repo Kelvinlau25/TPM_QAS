@@ -263,7 +263,7 @@
     var listFieldValue = []
     $(document).ready(function () {
         checkboxChecking();
-        var listingURL = '/MM_PROPERTIES/MM_PROPERTIES_LST';
+        var listingURL = appBasePath + 'MM_PROPERTIES/MM_PROPERTIES_LST';
         var idh = '@Model.MM_PROPERTIES_H_ID' != 0 ? '@Model.MM_PROPERTIES_H_ID' : 0;
 
         //ADD
@@ -475,7 +475,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_PROPERTIES/InsertUpdateProperties",
+                    url: appBasePath + "MM_PROPERTIES/InsertUpdateProperties",
                     type: 'POST',
                     data: {
                         model: model
@@ -489,7 +489,7 @@
                             displayToast("s", "Data save successfully. Please edit new property sequence in IDS Report Sequence");
 
                             setTimeout(function () {
-                                window.location.href = '/MM_PROPERTIES/MM_PROPERTIES_REPORT_SEQ';
+                                window.location.href = appBasePath + 'MM_PROPERTIES/MM_PROPERTIES_REPORT_SEQ';
                             }, 2000);
 
                         } else {
@@ -651,7 +651,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_PROPERTIES/DraftProperties",
+                    url: appBasePath + "MM_PROPERTIES/DraftProperties",
                     type: 'POST',
                     data: {
                         model: model
@@ -809,7 +809,7 @@
             //column ddl
 
             $.ajax({
-                url: "/MM_PROPERTIES/getColumnDDL",
+                url: appBasePath + "MM_PROPERTIES/getColumnDDL",
                 type: 'POST',
                 data: {
                     path: itemPath

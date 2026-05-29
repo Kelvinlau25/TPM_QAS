@@ -198,7 +198,7 @@
 
             e.preventDefault();
             $.ajax({
-                url: '/ReportIDS/IDS_REPORT',
+                url: appBasePath + 'ReportIDS/IDS_REPORT',
                 type: 'POST',
                 data: $(this).serialize(),
                 beforeSend: function () {
@@ -208,7 +208,7 @@
                     loadings(false);
                     if (response.success) {
                         // Trigger download
-                        window.location.href = '/ReportIDS/DownloadReport?datefr=' + datefr + '&dateto=' + dateto + '&fileKey=' + response.fileKey;
+                        window.location.href = appBasePath + 'ReportIDS/DownloadReport?datefr=' + datefr + '&dateto=' + dateto + '&fileKey=' + response.fileKey;
                         loadings(false);
                     } else {
                         alert(response.message); // Show error

@@ -707,7 +707,7 @@
         }
 
     $(document).ready(function () {
-        var listingURL = '/COA_MM_MATERIAL/COA_MM_MATERIAL_LST';
+        var listingURL = appBasePath + 'COA_MM_MATERIAL/COA_MM_MATERIAL_LST';
 
 
         checkboxChecking();
@@ -986,7 +986,7 @@
             lstid.push(idh)
 
             $.ajax({
-                url: "/COA_MM_MATERIAL/deleteCOAMaterial",
+                url: appBasePath + "COA_MM_MATERIAL/deleteCOAMaterial",
                 type: 'POST',
                 data: {
                     lstid: lstid

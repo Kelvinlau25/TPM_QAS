@@ -366,7 +366,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/MM_APP_ROLE/MM_APP_ROLE_LST';
+            var listingURL = appBasePath + 'MM_APP_ROLE/MM_APP_ROLE_LST';
 
             //Audit action control
             var audit_url = '@Url.Action("MM_APP_ROLE_AUDIT", "MM_APP_ROLE")';
@@ -426,7 +426,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/MM_APP_ROLE/deleteAppRole",
+                        url: appBasePath + "MM_APP_ROLE/deleteAppRole",
                         type: 'POST',
                         data: {
                             lstid: checkedValues

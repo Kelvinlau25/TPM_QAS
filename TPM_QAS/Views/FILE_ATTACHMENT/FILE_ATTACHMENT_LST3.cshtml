@@ -418,17 +418,17 @@
                 var activelinkStyle = 'color:#004098 !important; text-decoration:none !important;font-weight:bold !important;';
 
                 var fileAttachmentLink = $('<a>')
-                    .attr('href', '/FILE_ATTACHMENT/FILE_ATTACHMENT_LST')
+                    .attr('href', appBasePath + 'FILE_ATTACHMENT/FILE_ATTACHMENT_LST')
                     .attr('style', linkStyle)
                     .text('File Attachment');
 
                 var modtypeLink = $('<a>')
-                    .attr('href', '/FILE_ATTACHMENT/FILE_ATTACHMENT_LST2/' + modtypeEncoded)
+                    .attr('href', appBasePath + 'FILE_ATTACHMENT/FILE_ATTACHMENT_LST2/' + modtypeEncoded)
                     .attr('style', linkStyle)
                     .text(folder);
 
                 var seldateLink = $('<a>')
-                    .attr('href', '/FILE_ATTACHMENT/FILE_ATTACHMENT_LST3/' + modtypeEncoded + '?date=' + seldateEncoded)
+                    .attr('href', appBasePath + 'FILE_ATTACHMENT/FILE_ATTACHMENT_LST3/' + modtypeEncoded + '?date=' + seldateEncoded)
                     .attr('style', activelinkStyle)
                     .text(seldate);
 
@@ -443,7 +443,7 @@
 
 
                 $('#btnCancelView').on('click', function () {
-                    window.location.href = "/FILE_ATTACHMENT/FILE_ATTACHMENT_LST2/" + modtype;
+                    window.location.href = appBasePath + "FILE_ATTACHMENT/FILE_ATTACHMENT_LST2/" + modtype;
                 });
 
                 $('#btnConfirmDel').on('click', function () {
@@ -480,7 +480,7 @@
                     if (cont) {
 
                         $.ajax({
-                            url: "/FILE_ATTACHMENT/deleteFileAtt",
+                            url: appBasePath + "FILE_ATTACHMENT/deleteFileAtt",
                             type: 'POST',
                             data: {
                                 lstid: checkedValues
@@ -542,7 +542,7 @@
                     if (cont) {
 
                         $.ajax({
-                            url: "/FILE_ATTACHMENT/FILE_ATTACHMENT_DL",
+                            url: appBasePath + "FILE_ATTACHMENT/FILE_ATTACHMENT_DL",
                             type: 'POST',
                             data: { lstid: checkedValues },
                             xhrFields: {

@@ -357,7 +357,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/COA_MM_SUPPLIER/COA_MM_SUPPLIER_LST';
+            var listingURL = appBasePath + 'COA_MM_SUPPLIER/COA_MM_SUPPLIER_LST';
 
             //Audit action control
             var audit_url = '@Url.Action("COA_MM_SUPPLIER_AUDIT", "COA_MM_SUPPLIER")';
@@ -417,7 +417,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/COA_MM_SUPPLIER/deleteSupplier",
+                        url: appBasePath + "COA_MM_SUPPLIER/deleteSupplier",
                         type: 'POST',
                         data: {
                             lstid: checkedValues

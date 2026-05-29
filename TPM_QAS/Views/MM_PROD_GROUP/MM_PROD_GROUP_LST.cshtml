@@ -354,7 +354,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/MM_PROD_GROUP/MM_PROD_GROUP_LST';
+            var listingURL = appBasePath + 'MM_PROD_GROUP/MM_PROD_GROUP_LST';
 
             //Audit action control
             var audit_url = '@Url.Action("MM_PROD_GROUP_AUDIT", "MM_PROD_GROUP")';
@@ -414,7 +414,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/MM_PROD_GROUP/deleteProdGroup",
+                        url: appBasePath + "MM_PROD_GROUP/deleteProdGroup",
                         type: 'POST',
                         data: {
                             lstid: checkedValues

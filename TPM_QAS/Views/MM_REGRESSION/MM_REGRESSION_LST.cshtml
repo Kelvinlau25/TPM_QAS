@@ -385,7 +385,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/MM_REGRESSION/MM_REGRESSION_LST';
+            var listingURL = appBasePath + 'MM_REGRESSION/MM_REGRESSION_LST';
             //Audit action control
             var audit_url = '@Url.Action("MM_REGRESSION_AUDIT", "MM_REGRESSION")';
 
@@ -444,7 +444,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/MM_REGRESSION/deleteRegression",
+                        url: appBasePath + "MM_REGRESSION/deleteRegression",
                         type: 'POST',
                         data: {
                             lstid: checkedValues
