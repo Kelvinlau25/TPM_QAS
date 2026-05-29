@@ -1,3 +1,0 @@
-﻿<Project>
-  <Import Project="../build/TPM_QAS.props" />
-</Project>
