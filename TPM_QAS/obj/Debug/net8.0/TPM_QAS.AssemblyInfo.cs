@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("TPM_QAS")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1458afe28987ab23781d7eaa2987dcab5df6a16d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+26f56db3fb1160c5dfdd5ad2a13b46bd4429e281")]
 [assembly: System.Reflection.AssemblyProductAttribute("TPM_QAS")]
 [assembly: System.Reflection.AssemblyTitleAttribute("TPM_QAS")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
