@@ -17,10 +17,10 @@ namespace TPM_QAS.DAL
     {
         public async Task<DataTable> getIDS_MainLst_Data(string deleted = "0")
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
             string createdby = USERID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             DataTable dt = new DataTable();
@@ -68,10 +68,10 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getIDS_MainLst_Sel(int id, string deleted)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
             string createdby = USERID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             DataTable dt = new DataTable();
@@ -120,7 +120,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getIDS_Mix_Data(string ID, string type)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             DataTable dt = new DataTable();
@@ -169,10 +169,10 @@ namespace TPM_QAS.DAL
         {
             string result = "0";
 
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
             string createdby = USERID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -235,10 +235,10 @@ namespace TPM_QAS.DAL
         {
             string result = "0";
 
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
             string createdby = USERID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -287,7 +287,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getIDS_Direct_Data(string ID, string type)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -336,10 +336,10 @@ namespace TPM_QAS.DAL
         {
             string result = "0";
 
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
             string createdby = USERID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -387,10 +387,10 @@ namespace TPM_QAS.DAL
         {
             string result = "0";
 
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
             string createdby = USERID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -437,7 +437,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getMachine_Data(int idh, string prop, string propitem)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try

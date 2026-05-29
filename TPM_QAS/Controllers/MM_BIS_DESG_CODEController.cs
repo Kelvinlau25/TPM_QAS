@@ -29,9 +29,9 @@ namespace qas.Controllers
 
         //    //if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(password_cur))
         //    //{
-        //    //    string systemName = TPM_QAS.DAL.Database.GetAppSettingStatic("SystemName_ACL"];
-        //    //    string companyCode = TPM_QAS.DAL.Database.GetAppSettingStatic("CompanyCode_ACL"];
-        //    //    string DatabaseType = TPM_QAS.DAL.Database.GetAppSettingStatic("DBTYPE"];
+        //    //    string systemName = TPM_QAS.DAL.Database.GetAppSettingStatic("SystemName_ACL");
+        //    //    string companyCode = TPM_QAS.DAL.Database.GetAppSettingStatic("CompanyCode_ACL");
+        //    //    string DatabaseType = TPM_QAS.DAL.Database.GetAppSettingStatic("DBTYPE");
 
         //    //    LoginRequest loginmodel = new LoginRequest();
 
@@ -48,7 +48,7 @@ namespace qas.Controllers
         //    //    ByteArrayContent clientbodystr = new StringContent(JsonConvert.SerializeObject(loginmodel), Encoding.UTF8, "application/json");
 
         //    //    HttpClient client = new HttpClient();
-        //    //    HttpResponseMessage response = await client.PostAsync(TPM_QAS.DAL.Database.GetAppSettingStatic("ACL_API"] + "/api/v1/login/login", clientbodystr);
+        //    //    HttpResponseMessage response = await client.PostAsync(TPM_QAS.DAL.Database.GetAppSettingStatic("ACL_API") + "/api/v1/login/login", clientbodystr);
         //    //    if (response.IsSuccessStatusCode == true)
         //    //    {
         //    //        var responseBody = await response.Content.ReadAsStringAsync();

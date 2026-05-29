@@ -55,6 +55,14 @@
               "target": "Package",
               "version": "[2.1.35, )"
             },
+            "EPPlus": {
+              "target": "Package",
+              "version": "[7.5.2, )"
+            },
+            "Microsoft.AspNetCore.Mvc.NewtonsoftJson": {
+              "target": "Package",
+              "version": "[8.0.12, )"
+            },
             "Microsoft.Data.SqlClient": {
               "target": "Package",
               "version": "[5.2.2, )"
@@ -74,6 +82,10 @@
             "System.Data.OleDb": {
               "target": "Package",
               "version": "[8.0.1, )"
+            },
+            "iTextSharp.LGPLv2.Core": {
+              "target": "Package",
+              "version": "[3.4.22, )"
             }
           },
           "imports": [

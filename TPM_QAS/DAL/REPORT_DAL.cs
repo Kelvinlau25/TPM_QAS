@@ -19,7 +19,7 @@ namespace TPM_QAS.DAL
 
         public async Task<List<SelectListItem>> GetProdTypeList() //Simulation By 
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             List<SelectListItem> items = new List<SelectListItem>();
@@ -64,7 +64,7 @@ namespace TPM_QAS.DAL
 
         public async Task<SummaryVM> GetSummaryData(string id)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             SummaryVM data = new SummaryVM();
@@ -124,7 +124,7 @@ namespace TPM_QAS.DAL
 
         public async Task<List<MoldAndPropVM>> GetMoldingPropertyData(string prodtype, string lotno, string type)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             List<MoldAndPropVM> model = new List<MoldAndPropVM>();
@@ -214,10 +214,10 @@ namespace TPM_QAS.DAL
         {
             string result = "0";
 
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
             string createdby = USERID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -268,7 +268,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getReportData(string id, string prodtype, string lotno, string type)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -316,7 +316,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getFirstBag(string id)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -362,7 +362,7 @@ namespace TPM_QAS.DAL
         // History Transaction Table        
         public async Task<DataTable> GetHistoryTransactionData(string idListAsStr, string prodtype, string lotno)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -410,7 +410,7 @@ namespace TPM_QAS.DAL
         // Appearance        
         public async Task<DataTable> GetAppearanceTable(string prodtype, string lotno, int type)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -457,7 +457,7 @@ namespace TPM_QAS.DAL
 
         public async Task<List<ReportNGVM>> getNGReport(ReportNGVM m)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             List<ReportNGVM> model = new List<ReportNGVM>();
@@ -515,7 +515,7 @@ namespace TPM_QAS.DAL
 
         public async Task<List<ReportSummary>> getSummaryNG(ReportSummary m)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             List<ReportSummary> model = new List<ReportSummary>();
@@ -568,7 +568,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getLHSpec(string prodtype, string listproperties, string prodlinefrom, string prodlineto)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -616,7 +616,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getDllData(int ID, string act, string category)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -665,7 +665,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getdtcoa(string graded)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -709,7 +709,7 @@ namespace TPM_QAS.DAL
         }
         public async Task<DataTable> getdtcoaExcel(string graded)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -758,7 +758,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getdtwgradepl()
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             string year = DateTime.Now.Year.ToString();
@@ -809,7 +809,7 @@ namespace TPM_QAS.DAL
         }
         public async Task<DataTable> getdtwgradepl_Excel()
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             string year = DateTime.Now.Year.ToString();

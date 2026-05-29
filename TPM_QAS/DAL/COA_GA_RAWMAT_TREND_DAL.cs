@@ -16,7 +16,7 @@ namespace TPM_QAS.DAL
     {
         public async Task<List<SelectListItem>> getInspItem(string suppID, string matID)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             List<SelectListItem> chop = new List<SelectListItem>();
@@ -64,7 +64,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getTrendAnalysis(RawMatTrendModel model)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -115,7 +115,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getTrendAnalysisExcel(RawMatTrendModel model)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try

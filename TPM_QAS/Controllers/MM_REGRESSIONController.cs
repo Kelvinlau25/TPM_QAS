@@ -774,7 +774,7 @@ namespace TPM_QAS.Controllers
 
             items = await LoadInnerDllData(0, "", "PROD_GROUP");
             items.RemoveAll(item => item.Text == "Select an option.." && item.Value == "");
-            return Json(items, JsonRequestBehavior.AllowGet);
+            return Json(items);
         }
 
         public async Task<ActionResult> fillMachine(string propitemid)
@@ -783,7 +783,7 @@ namespace TPM_QAS.Controllers
 
             items = await LoadInnerDllDataMach(0, propitemid, "MACHINE_NAME");
 
-            return Json(items, JsonRequestBehavior.AllowGet);
+            return Json(items);
         }
 
         private async Task<List<SelectListItem>> LoadInnerDllDataMach(int ID, string act, string category)

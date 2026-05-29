@@ -548,15 +548,15 @@ namespace TPM_QAS.Controllers
             _pMssql.Add(new SqlParameter("@SortType", "DESC"));
 
             string dbname = "";
-            string isTest = TPM_QAS.DAL.Database.GetAppSettingStatic("isTest"];
+            string isTest = TPM_QAS.DAL.Database.GetAppSettingStatic("isTest");
 
             if (string.Equals(isTest, "TRUE", StringComparison.OrdinalIgnoreCase))
             {
-                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("DEV"];
+                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("DEV");
             }
             else
             {
-                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("LIVE"];
+                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("LIVE");
             }
 
             AuditTrailModels = await AuditTrailHelper.AuditTrailStoreProcedureSqlAsync("PSP_GET_AUDIT_TRAIL", CommandType.StoredProcedure, _pMssql, dbname);

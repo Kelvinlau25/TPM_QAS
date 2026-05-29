@@ -179,7 +179,7 @@ namespace TPM_QAS.Controllers
             ci.Yaxis = UOM;
 
             string result = JsonConvert.SerializeObject(ci).ToString();
-            return Json(result, JsonRequestBehavior.AllowGet);
+            return Json(result);
 
             //return View(model);
         }

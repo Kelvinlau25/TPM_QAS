@@ -1,4 +1,4 @@
-﻿@using Newtonsoft.Json;
+@using Newtonsoft.Json;
 @using TPM_QAS.Models
 @model TPM_QAS.Models.DailyIDSTransVM
 
@@ -1626,7 +1626,7 @@
                     <table class="table table-striped" id="example">
                         <tr>
                             <td style="width: 20%">
-                                @Html.Label("*", new { style = "color:red" })
+                                @Html.Label("*", "*", new { style = "color:red" })
                                 @Html.Label("Reading#1")
                             </td>
                             <td> : </td>
@@ -1934,7 +1934,7 @@
                     <table class="table table-striped" style="width:100%">
                         <tr>
                             <td>
-                                @Html.Label("Result will be ", new { id = "cresult" })
+                                @Html.Label("Result will be ", "Result will be ", new { id = "cresult" })
                                 <span hidden id="txtfresult"></span>
                             </td>
                         </tr>
@@ -2008,9 +2008,9 @@
         $(document).ready(function () {
             var listingURL = '/DE_IDS_TRANS/DE_IDS_TRANS_LST';
 
-            var propgradespec = @Html.Raw(Json.Encode(Model.PropGradeSpecList));
+            var propgradespec = @Html.Raw(Json.Serialize(Model.PropGradeSpecList));
             console.log(propgradespec)
-            var yiformula = @Html.Raw(Json.Encode(Model.YIFORMULA));
+            var yiformula = @Html.Raw(Json.Serialize(Model.YIFORMULA));
 
             var rstatus = '@(Model.STATUS != null ? Model.STATUS.ToString().ToUpper() : "")';
             if (rstatus != 'DRAFT') {
@@ -2089,7 +2089,7 @@
             var FinalIndex = [];
             var indexs = [];
 
-            var ratioList = @Html.Raw(Json.Encode(Model.ratioList));
+            var ratioList = @Html.Raw(Json.Serialize(Model.ratioList));
             var table = $('.tblAppearance').length;
 
             for (var j = 0; j < ratioList.length; j++) {
@@ -2123,8 +2123,8 @@
 
         $(document).on('focusout', '.yidata', function (e) {
 
-            var yiformula = @Html.Raw(Json.Encode(Model.YIFORMULA));
-            @*var propgradespec = @Html.Raw(Json.Encode(Model.PropGradeSpecList));
+            var yiformula = @Html.Raw(Json.Serialize(Model.YIFORMULA));
+            @*var propgradespec = @Html.Raw(Json.Serialize(Model.PropGradeSpecList));
             console.log(propgradespec);*@
             tonnaget = $(this).closest("tr").find("td:eq(0)").text();
             var grdbtn = $("td").filter(function () {
@@ -2325,7 +2325,7 @@
             var g = 0;
             var row = 0;
 
-            var ratioList = @Html.Raw(Json.Encode(Model.ratioList));
+            var ratioList = @Html.Raw(Json.Serialize(Model.ratioList));
             var table = $('.tblAppearance').length;
 
             for (var j = 0; j < ratioList.length; j++) {
@@ -3848,7 +3848,7 @@
         }
 
         function getround(propitem, grdind) {
-            var propgradespec = @Html.Raw(Json.Encode(Model.PropGradeSpecList));
+            var propgradespec = @Html.Raw(Json.Serialize(Model.PropGradeSpecList));
             var rnd = 0;
 
             for (let i = 0; i < propgradespec.length; i++) {
@@ -3861,7 +3861,7 @@
 
 
         function grdSearch(target, reading, grdind) {
-            var propgradespec = @Html.Raw(Json.Encode(Model.PropGradeSpecList));
+            var propgradespec = @Html.Raw(Json.Serialize(Model.PropGradeSpecList));
             var indexes = '';
             var grade = '';
             for (let i = 0; i < propgradespec.length; i++) {
@@ -3880,7 +3880,7 @@
         }
 
         function grdSearchfb(target, reading, grdind) {
-            var propgradespec = @Html.Raw(Json.Encode(Model.PropGradeSpecList));
+            var propgradespec = @Html.Raw(Json.Serialize(Model.PropGradeSpecList));
 
             console.log(propgradespec);
             console.log('reading :' + reading);
@@ -3933,7 +3933,7 @@
         }
 
         function firstbagreflect(x) {
-            var propgradespec = @Html.Raw(Json.Encode(Model.PropGradeSpecList));
+            var propgradespec = @Html.Raw(Json.Serialize(Model.PropGradeSpecList));
             var firsttag = $("#tblAppearance tbody tr:eq(3) td:eq(" + x + ") input[type='text']");
             var top = $("#tblAppearance tbody tr:eq(0) td:eq(" + x + ") input[type='text']");
             var middle = $("#tblAppearance tbody tr:eq(1) td:eq(" + x + ") input[type='text']");
@@ -4146,7 +4146,7 @@
                      AFTERPRODTYPCHG: $("#txtOverwrite").val(),
                      PRODTYPCHGIND: boolPRODTYPCHGIND,
                      MoldingList: null,
-                     descriptionList: @Html.Raw(Json.Encode(Model.descriptionList)),
+                     descriptionList: @Html.Raw(Json.Serialize(Model.descriptionList)),
                  }
 
                  $.ajax({
@@ -5185,8 +5185,8 @@
                                 });
                             });
 
-                            var decList = '@Html.Raw(Json.Encode(Model.descriptionList))'
-                            var HisList = '@Html.Raw(Json.Encode(Model.HistoryList))'
+                            var decList = '@Html.Raw(Json.Serialize(Model.descriptionList))'
+                            var HisList = '@Html.Raw(Json.Serialize(Model.HistoryList))'
 
                             var newhistoryModel = [];
 

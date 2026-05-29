@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Threading.Tasks;
 using DatabaseModel;
+using Database = TPM_QAS.DAL.Database;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using System.Net.Http;
@@ -30,7 +31,7 @@ namespace DBModel
         string Value, string SortField, string Direction,
         string FrmRowno, string ToRowno, string Deleted)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -88,7 +89,7 @@ namespace DBModel
         string Value, string SortField, string Direction,
         string FrmRowno, string ToRowno, string Deleted)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -142,7 +143,7 @@ namespace DBModel
         
         public async Task<DataTable> AuditList(string Table, string pid)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -189,7 +190,7 @@ namespace DBModel
 
         public async Task<List<SelectListItem>> PSP_COMMON_DDL(string type, string p1, string p2, string p3, string p4, string p5, string p6)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             List<SelectListItem> items = new List<SelectListItem>();
@@ -246,7 +247,7 @@ namespace DBModel
 
         public async Task<DataTable> getDllData(int ID, string act, string category)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -293,7 +294,7 @@ namespace DBModel
 
         public async Task<DataTable> getSectionDllData(int ID, string act, string category)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -338,7 +339,7 @@ namespace DBModel
 
         public async Task<DataTable> getPicDllData(int ID, string section, string act, string category)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -389,7 +390,7 @@ namespace DBModel
         
         public async Task<DataTable> getRoleList(string EMPNO)
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -491,8 +492,8 @@ namespace DBModel
             public Object test { get; set; }
         }
 
-        public readonly string m_clientAddress = WebTPM_QAS.DAL.Database.GetAppSettingStatic("CompareWordClientAddress"].ToString();
-        public readonly string Api_key = WebTPM_QAS.DAL.Database.GetAppSettingStatic("api_key"].ToString();
+        public readonly string m_clientAddress = Database.GetAppSettingStatic("CompareWordClientAddress").ToString();
+        public readonly string Api_key = Database.GetAppSettingStatic("api_key").ToString();
 
         public async Task<SimilarityResponseModel> GetSimilarity(string i_no, List<String> i_comparelist)
         {
@@ -512,8 +513,8 @@ namespace DBModel
         {
             try
             {
-                string credentialUser = WebTPM_QAS.DAL.Database.GetAppSettingStatic("proxyEmail"].ToString();
-                string credentialPassword = WebTPM_QAS.DAL.Database.GetAppSettingStatic("proxyPassword"].ToString();
+                string credentialUser = Database.GetAppSettingStatic("proxyEmail").ToString();
+                string credentialPassword = Database.GetAppSettingStatic("proxyPassword").ToString();
                 //First create a proxy object
 
                 var httpClientHandler = new HttpClientHandler();

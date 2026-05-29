@@ -415,7 +415,7 @@ namespace TPM_QAS.Controllers
             }
             catch (Exception ex)
             {
-                return new HttpStatusCodeResult(500, "Error generating ZIP: " + ex.Message);
+                return StatusCode(500, "Error generating ZIP: " + ex.Message);
             }
         }
 

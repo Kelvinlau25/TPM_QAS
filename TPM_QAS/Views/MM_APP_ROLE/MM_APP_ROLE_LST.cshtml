@@ -1,4 +1,4 @@
-﻿@using TPM_QAS.Models
+@using TPM_QAS.Models
 @model IEnumerable<AppRoleModel>
 
 @{
@@ -134,7 +134,7 @@
     <script type="text/javascript">
         var table;
         var data = [], dataAll = [];
-        var jsonData = @Html.Raw(Json.Encode(Model));
+        var jsonData = @Html.Raw(Json.Serialize(Model));
         var data = jsonData;
         dataAll = data;
 

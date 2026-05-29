@@ -254,7 +254,7 @@ namespace TPM_QAS.Helpers
 
                 url = blobpath + "/" + url;
 
-                string originalUrl = HttpUtility.UrlDecode(url);
+                string originalUrl = System.Net.WebUtility.UrlDecode(url);
                 BlobServiceClient blobServiceClient;
                 HttpClientHandler httpClientHandler = new HttpClientHandler();
 

@@ -21,12 +21,10 @@ using System.Security.Cryptography.Xml;
 using Newtonsoft.Json.Linq;
 using DocumentFormat.OpenXml.Spreadsheet;
 using System.Linq;
-using System.Web.Services.Description;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Microsoft.Data.SqlClient;
 using DocumentFormat.OpenXml.Bibliography;
-using iTextSharp.xmp.impl.xpath;
 
 namespace TPM_QAS.Controllers
 {
@@ -61,7 +59,7 @@ namespace TPM_QAS.Controllers
 
             ViewBag.Deleted = Deleted;
 
-            string emp_no = (Session["AclUser"] as ACL_UserObj).EMP_NO.ToString();
+            string emp_no = (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).EMP_NO.ToString();
 
             DataTable chkApproval = await dbdal.CheckUserAppRole(emp_no);
             if (chkApproval != null && chkApproval.Rows.Count > 0)
@@ -70,7 +68,7 @@ namespace TPM_QAS.Controllers
             }
 
             //for KS and Izzah
-            if ((Session["AclUser"] as ACL_UserObj).USER_ID.ToString() == "800133" || (Session["AclUser"] as ACL_UserObj).USER_ID.ToString() == "800179")
+            if ((HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString() == "800133" || (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString() == "800179")
             {
                 ViewBag.isManager = "Y";
             }
@@ -160,7 +158,7 @@ namespace TPM_QAS.Controllers
                 }
             }
 
-            string emp_no = (Session["AclUser"] as ACL_UserObj).EMP_NO.ToString();
+            string emp_no = (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).EMP_NO.ToString();
 
             DataTable chkApproval = await dbdal.CheckUserAppRole(emp_no);
             if (chkApproval != null && chkApproval.Rows.Count > 0)
@@ -169,7 +167,7 @@ namespace TPM_QAS.Controllers
             }
 
             //for KS and Izzah
-            if ((Session["AclUser"] as ACL_UserObj).USER_ID.ToString() == "800133" || (Session["AclUser"] as ACL_UserObj).USER_ID.ToString() == "800179")
+            if ((HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString() == "800133" || (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString() == "800179")
             {
                 ViewBag.isManager = "Y";
             }
@@ -208,11 +206,11 @@ namespace TPM_QAS.Controllers
         [SessionExpire]
         public async Task<ActionResult> InsertUpdateDEOCR(COAOCRModel model, string loc = "")
         {
-            string EMP_NO = (Session["AclUser"] as ACL_UserObj).EMP_NO.ToString();
+            string EMP_NO = (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).EMP_NO.ToString();
             bool success = true;
             string message = "";
             string type = "";
-            string isTest = TPM_QAS.DAL.Database.GetAppSettingStatic("isTest"];
+            string isTest = TPM_QAS.DAL.Database.GetAppSettingStatic("isTest");
 
             if (ModelState.IsValid)
             {
@@ -312,8 +310,8 @@ namespace TPM_QAS.Controllers
                                         {
                                             if (prevlot != lot_no)
                                             {  
-                                                string firstPath = Server.MapPath("~/Splitpath/");
-                                                string firstocrpath = Server.MapPath("~/COA_DE_OCR/FirstOCRFiles/");
+                                                string firstPath = Path.Combine(Directory.GetCurrentDirectory(), "~/Splitpath/");
+                                                string firstocrpath = Path.Combine(Directory.GetCurrentDirectory(), "~/COA_DE_OCR/FirstOCRFiles/");
 
                                                 string firstpdf = Path.Combine(firstPath, ori_name);
                                                 string firstocrfile = Path.Combine(firstocrpath, model.FILE_NAME);
@@ -493,14 +491,14 @@ namespace TPM_QAS.Controllers
                     ////save pdf file in server
                     //DateTime currentDateTime = DateTime.Now;
                     //string filename = DataUploadFile.FileName;
-                    //string uploadPath = Server.MapPath("~/COA_DE_OCR/FirstOCRFiles/");
+                    //string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "~/COA_DE_OCR/FirstOCRFiles/");
                     //if (!Directory.Exists(uploadPath))
                     //{
                     //    Directory.CreateDirectory(uploadPath);
                     //}
 
                     //string filePath = Path.Combine(uploadPath, filename);
-                    //DataUploadFile.SaveAs(filePath);
+                    //using (var _fs = new FileStream(filePath, FileMode.Create)) {{ DataUploadFile.CopyTo(_fs); }}
 
                     //List<FirstOCRLstModel> listItemsAdd = new List<FirstOCRLstModel>();
 
@@ -553,14 +551,14 @@ namespace TPM_QAS.Controllers
                     DateTime currentDateTime = DateTime.Now;
                     //string filename = "COA_OCR_" + currentDateTime.ToString("yyyy-MM-dd_HHmmss") + ".pdf";
                     string filename = DataUploadFile.FileName;
-                    string uploadPath = Server.MapPath("~/COA_DE_OCR/FirstOCRFiles/");
+                    string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "~/COA_DE_OCR/FirstOCRFiles/");
                     if (!Directory.Exists(uploadPath))
                     {
                         Directory.CreateDirectory(uploadPath);
                     }
 
                     string filePath = Path.Combine(uploadPath, filename);
-                    DataUploadFile.SaveAs(filePath);
+                    using (var _fs = new FileStream(filePath, FileMode.Create)) {{ DataUploadFile.CopyTo(_fs); }}
 
                     using (HttpClient client = new HttpClient(handler))
                     {
@@ -658,7 +656,7 @@ namespace TPM_QAS.Controllers
                 {
                     return Json(new { success = false, message = "No file uploaded." });
                 }
-                string EMP_NO = (Session["AclUser"] as ACL_UserObj).EMP_NO.ToString();
+                string EMP_NO = (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).EMP_NO.ToString();
 
                 MultipartFormDataContent formData = new MultipartFormDataContent();
                 List<KeyInfoData> KeyInfoData = new List<KeyInfoData>();
@@ -674,7 +672,7 @@ namespace TPM_QAS.Controllers
 
                 #region split pdf
 
-                string splitpath = Path.Combine(Server.MapPath("~/Splitpath"));
+                string splitpath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "~/Splitpath"));
 
 
                 if (!Directory.Exists(splitpath))
@@ -2692,17 +2690,17 @@ namespace TPM_QAS.Controllers
         {
             try
             {
-                string isTest = TPM_QAS.DAL.Database.GetAppSettingStatic("isTest"];
+                string isTest = TPM_QAS.DAL.Database.GetAppSettingStatic("isTest");
 
                 return new AppConfig
                 {
-                    ProxyAddress = TPM_QAS.DAL.Database.GetAppSettingStatic("ProxyAddress"] ?? throw new Exception("ProxyAddress is missing"),
-                    ProxyEmail = TPM_QAS.DAL.Database.GetAppSettingStatic("ProxyEmail"] ?? throw new Exception("ProxyEmail is missing"),
-                    ProxyPassword = TPM_QAS.DAL.Database.GetAppSettingStatic("ProxyPassword"] ?? throw new Exception("ProxyPassword is missing"),
+                    ProxyAddress = TPM_QAS.DAL.Database.GetAppSettingStatic("ProxyAddress") ?? throw new Exception("ProxyAddress is missing"),
+                    ProxyEmail = TPM_QAS.DAL.Database.GetAppSettingStatic("ProxyEmail") ?? throw new Exception("ProxyEmail is missing"),
+                    ProxyPassword = TPM_QAS.DAL.Database.GetAppSettingStatic("ProxyPassword") ?? throw new Exception("ProxyPassword is missing"),
                     OCREndpoint = string.Equals(isTest, "TRUE", StringComparison.OrdinalIgnoreCase)
-                        ? TPM_QAS.DAL.Database.GetAppSettingStatic("OCR_API_Test"] ?? throw new Exception("OCR_API_Test is missing")
-                        : TPM_QAS.DAL.Database.GetAppSettingStatic("OCR_API_Live"] ?? throw new Exception("OCR_API_Live is missing"),
-                    TMSUserAPIKey = TPM_QAS.DAL.Database.GetAppSettingStatic("TMSUserAPIKey"] ?? throw new Exception("TMSUserAPIKey is missing"),
+                        ? TPM_QAS.DAL.Database.GetAppSettingStatic("OCR_API_Test") ?? throw new Exception("OCR_API_Test is missing")
+                        : TPM_QAS.DAL.Database.GetAppSettingStatic("OCR_API_Live") ?? throw new Exception("OCR_API_Live is missing"),
+                    TMSUserAPIKey = TPM_QAS.DAL.Database.GetAppSettingStatic("TMSUserAPIKey") ?? throw new Exception("TMSUserAPIKey is missing"),
                 };
             }
             catch (Exception ex)
@@ -2714,8 +2712,8 @@ namespace TPM_QAS.Controllers
 
         public void DeleteOldFiles()
         {
-            string firstPath = Server.MapPath("~/COA_DE_OCR/FirstOCRFiles/");
-            string secondPath = Server.MapPath("~/Splitpath/");
+            string firstPath = Path.Combine(Directory.GetCurrentDirectory(), "~/COA_DE_OCR/FirstOCRFiles/");
+            string secondPath = Path.Combine(Directory.GetCurrentDirectory(), "~/Splitpath/");
             DateTime forteenDaysAgo = DateTime.Today.AddDays(-14);
 
             if (Directory.Exists(firstPath))
@@ -2846,15 +2844,15 @@ namespace TPM_QAS.Controllers
             _pMssql.Add(new SqlParameter("@SortType", "DESC"));
 
             string dbname = "";
-            string isTest = TPM_QAS.DAL.Database.GetAppSettingStatic("isTest"];
+            string isTest = TPM_QAS.DAL.Database.GetAppSettingStatic("isTest");
 
             if (string.Equals(isTest, "TRUE", StringComparison.OrdinalIgnoreCase))
             {
-                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("DEV"];
+                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("DEV");
             }
             else
             {
-                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("LIVE"];
+                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("LIVE");
             }
 
             AuditTrailModels = await AuditTrailHelper.AuditTrailStoreProcedureSqlAsync("PSP_GET_AUDIT_TRAIL", CommandType.StoredProcedure, _pMssql, dbname);
@@ -2884,7 +2882,7 @@ namespace TPM_QAS.Controllers
 
             items = await LoadInnerDllData(0, "", "COA_SUPPLIER");
 
-            return Json(items, JsonRequestBehavior.AllowGet);
+            return Json(items);
         }
 
         public async Task<ActionResult> fillMaterial(string supp)
@@ -2893,7 +2891,7 @@ namespace TPM_QAS.Controllers
 
             items = await LoadInnerDllData(0, supp, "COA_SUPP_MAT");
 
-            return Json(items, JsonRequestBehavior.AllowGet);
+            return Json(items);
         }
 
         private async Task<List<SelectListItem>> LoadInnerDllData(int ID, string act, string category)

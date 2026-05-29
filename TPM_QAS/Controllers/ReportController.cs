@@ -24,7 +24,6 @@ using OfficeOpenXml.Style;
 using System.Threading.Tasks;
 using System.Globalization;
 using DBModel;
-using System.Web.UI.WebControls;
 using TPM_QAS.Controllers;
 using Image = iTextSharp.text.Image;
 using ClosedXML.Excel;
@@ -123,19 +122,19 @@ namespace qas.Models
 
                 if (dt != null && dt.Rows.Count > 0)
                 {
-                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = true });
                 }
                 else
                 {
-                    return Json(new { success = false, message = "No data available to export." }, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = false, message = "No data available to export." });
                 }
             }
             catch (Exception ex)
             {
                 ErrorLogSys err = new ErrorLogSys();
-                await err.ErrorLog_Add_V2(System.Reflection.MethodBase.GetCurrentMethod().Name, ex, (Session["AclUser"] as ACL_UserObj).USER_ID.ToString());
+                await err.ErrorLog_Add_V2(System.Reflection.MethodBase.GetCurrentMethod().Name, ex, (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString());
                 err = null;
-                return Json(new { success = false, message = "Error occurred while checking data." }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "Error occurred while checking data." });
             }
         }
 
@@ -202,21 +201,21 @@ namespace qas.Models
                         var httpResponse = Response;
                         httpResponse.Clear();
                         httpResponse.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                        httpResponse.AddHeader("content-disposition", "attachment;filename=" + filename + ".xlsx");
+                        httpResponse.Headers.Append("content-disposition", "attachment;filename=" + filename + ".xlsx");
 
                         using (MemoryStream tmpMemoryStream = new MemoryStream())
                         {
                             workbook.SaveAs(tmpMemoryStream);
-                            tmpMemoryStream.WriteTo(httpResponse.OutputStream);
+                            tmpMemoryStream.WriteTo(httpResponse.Body);
                             tmpMemoryStream.Close();
                         }
-                        httpResponse.End();
+                        // Response.End() removed - not available in .NET Core
                     }
                 }
                 catch (Exception ex)
                 {
                     ErrorLogSys err = new ErrorLogSys();
-                    await err.ErrorLog_Add_V2(System.Reflection.MethodBase.GetCurrentMethod().Name, ex, (Session["AclUser"] as ACL_UserObj).USER_ID.ToString());
+                    await err.ErrorLog_Add_V2(System.Reflection.MethodBase.GetCurrentMethod().Name, ex, (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString());
                     err = null;
                     //return null;
                 }
@@ -265,13 +264,13 @@ namespace qas.Models
                         fileUpload = await blob.uploadBlobpdf(partfilename, common.getContainerName(), pdfBytes);
                     }
                 }
-                return Json(new { message = "PDFs generated" }, JsonRequestBehavior.AllowGet);
+                return Json(new { message = "PDFs generated" });
                 
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return Json(new { message = ex.Message }, JsonRequestBehavior.AllowGet);
+                return Json(new { message = ex.Message });
 
             }
         }
@@ -281,9 +280,9 @@ namespace qas.Models
         {
             // nisa
             // Create path to pdf file
-            string filePath = Server.MapPath("\\") + "IDS_INT_REPORT" + ".pdf";
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "\\") + "IDS_INT_REPORT" + ".pdf";
 
-            string username = (Session["AclUser"] as ACL_UserObj).USER_ID.ToString();
+            string username = (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString();
 
             Document doc = new Document();
             doc.SetPageSize(PageSize.A4);
@@ -368,7 +367,7 @@ namespace qas.Models
 
                 };
 
-                string imagePath = Path.Combine(Server.MapPath("\\Images\\"), "torayv3.png");
+                string imagePath = Path.Combine(Path.Combine(Directory.GetCurrentDirectory(), "\\Images\\"), "torayv3.png");
 
                 if (System.IO.File.Exists(imagePath))
                 {
@@ -1544,7 +1543,7 @@ namespace qas.Models
                         HorizontalAlignment = Element.ALIGN_CENTER,
                         PaddingTop = 3,
                         PaddingBottom = 3,
-                        BackgroundColor = counter % 2 == 0 ? BaseColor.WHITE : altRowColor
+                        BackgroundColor = counter % 2 == 0 ? BaseColor.White : altRowColor
 
                     };
 
@@ -1590,7 +1589,7 @@ namespace qas.Models
                 // close document, stream and writer
                 string filename = summaryVM.LOTNO.ToString() + "_" + summaryVM.PRODTYPE.ToString();
                 doc.Close();
-                doc.CloseDocument();
+                doc.Close();
                 doc.Dispose();
                 writer.Close();
                 writer.Dispose();
@@ -1602,9 +1601,9 @@ namespace qas.Models
                 {
                     Response.Clear();
                     Response.ContentType = "application/pdf";
-                    Response.AppendHeader("Content-Disposition", "attachment; filename=" + filename + ".pdf");
-                    Response.TransmitFile(filePath);
-                    Response.End();
+                    Response.Headers.Append("Content-Disposition", "attachment; filename=" + filename + ".pdf");
+                    Response.SendFileAsync(filePath);
+                    // Response.End() removed - not available in .NET Core
                 }
                 System.IO.File.Delete(filePath);
                 return fileBytes;
@@ -1618,7 +1617,7 @@ namespace qas.Models
             {
                 // close document, stream and writer
                 doc.Close();
-                doc.CloseDocument();
+                doc.Close();
                 doc.Dispose();
                 writer.Close();
                 writer.Dispose();
@@ -1716,8 +1715,8 @@ namespace qas.Models
         //public async Task<byte[]> Test2(string id)
         //{
         //    // Create path to pdf file
-        //    string filePath = Server.MapPath("\\") + "IDS_REPORT" + ".pdf";
-        //    string username = (Session["AclUser"] as ACL_UserObj).USER_ID.ToString();
+        //    string filePath = Path.Combine(Directory.GetCurrentDirectory(), "\\") + "IDS_REPORT" + ".pdf";
+        //    string username = (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString();
         //    // Create document and its writing process
         //    Document doc = new Document(new Rectangle(288f, 144f), 70, 50, 1, 1);
         //    doc.SetPageSize(PageSize.A4);
@@ -1734,8 +1733,8 @@ namespace qas.Models
         //        BaseColor altRowColor = new BaseColor(227, 227, 227);
 
         //        Font titleFont = FontFactory.GetFont(FontFactory.TIMES_BOLD, 12);
-        //        Font subTitleFont = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.BOLD, BaseColor.BLACK);
-        //        Font tableTitleFont = FontFactory.GetFont(FontFactory.TIMES_ROMAN, 8, Font.UNDERLINE | Font.BOLD, BaseColor.BLACK);
+        //        Font subTitleFont = FontFactory.GetFont(FontFactory.TIMES_ROMAN, 10, Font.BOLD, BaseColor.Black);
+        //        Font tableTitleFont = FontFactory.GetFont(FontFactory.TIMES_ROMAN, 8, Font.UNDERLINE | Font.BOLD, BaseColor.Black);
         //        Font normalTextFont = FontFactory.GetFont(FontFactory.TIMES_ROMAN, 8);
 
         //        Font colHeaderFont = FontFactory.GetFont(FontFactory.TIMES_BOLD, 8);
@@ -2149,7 +2148,7 @@ namespace qas.Models
 
         //        dataPdfTable5p.DeleteBodyRows();
 
-        //        Image imgUnchecked = Image.GetInstance(Server.MapPath("\\") + "\\images\\Checkbox-Unchecked.png");
+        //        Image imgUnchecked = Image.GetInstance(Path.Combine(Directory.GetCurrentDirectory(), "\\") + "\\images\\Checkbox-Unchecked.png");
         //        Chunk chunkCheckBox = new Chunk(imgUnchecked, 2, 0, false);
 
         //        dataCellR1C1.Border = Rectangle.NO_BORDER;
@@ -2194,7 +2193,7 @@ namespace qas.Models
         //        doc.Add(dataPdfTable1);
         //        // close document, stream and writer
         //        doc.Close();
-        //        doc.CloseDocument();
+        //        doc.Close();
         //        doc.Dispose();
         //        writer.Close();
         //        writer.Dispose();
@@ -2204,9 +2203,9 @@ namespace qas.Models
         //        byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
         //        Response.Clear();
         //        Response.ContentType = "application/pdf";
-        //        Response.AppendHeader("Content-Disposition", "attachment; filename=IDS_REPORT.pdf");
-        //        Response.TransmitFile(filePath);
-        //        Response.End();
+        //        Response.Headers.Append("Content-Disposition", "attachment; filename=IDS_REPORT.pdf");
+        //        Response.SendFileAsync(filePath);
+        //        // Response.End() removed - not available in .NET Core
         //        System.IO.File.Delete(filePath);
         //        return fileBytes;
 
@@ -2221,7 +2220,7 @@ namespace qas.Models
         //    {
         //        // close document, stream and writer
         //        doc.Close();
-        //        doc.CloseDocument();
+        //        doc.Close();
         //        doc.Dispose();
         //        writer.Close();
         //        writer.Dispose();
@@ -2233,8 +2232,8 @@ namespace qas.Models
         public async Task<byte[]> Test(string id)
         {
             // Create path to pdf file
-            string filePath = Server.MapPath("\\") + "IDS_REPORT" + ".pdf";
-            string username = (Session["AclUser"] as ACL_UserObj).USER_ID.ToString();
+            string filePath = Path.Combine(Directory.GetCurrentDirectory(), "\\") + "IDS_REPORT" + ".pdf";
+            string username = (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString();
             // Create document and its writing process
             Document document = new Document(new Rectangle(288f, 144f), 15, 15, 20, 10);
             document.SetPageSize(PageSize.A4);
@@ -2253,8 +2252,8 @@ namespace qas.Models
                 BaseColor altRowColor = new BaseColor(227, 227, 227);
 
                 Font titleFont = FontFactory.GetFont(FontFactory.TIMES_BOLD, 14);
-                Font subTitleFont = new Font(Font.FontFamily.TIMES_ROMAN, 10, Font.BOLD, BaseColor.BLACK);
-                Font tableTitleFont = FontFactory.GetFont(FontFactory.TIMES_ROMAN, 8, Font.UNDERLINE | Font.BOLD, BaseColor.BLACK);
+                Font subTitleFont = FontFactory.GetFont(FontFactory.TIMES_ROMAN, 10, Font.BOLD, BaseColor.Black);
+                Font tableTitleFont = FontFactory.GetFont(FontFactory.TIMES_ROMAN, 8, Font.UNDERLINE | Font.BOLD, BaseColor.Black);
                 Font normalTextFont = FontFactory.GetFont(FontFactory.TIMES_ROMAN, 8);
 
                 Font colHeaderFont = FontFactory.GetFont(FontFactory.TIMES_BOLD, 8);
@@ -2430,7 +2429,7 @@ namespace qas.Models
                         HorizontalAlignment = Element.ALIGN_CENTER,
                         PaddingTop = 3,
                         PaddingBottom = 3,
-                        BackgroundColor = counter % 2 == 0 ? BaseColor.WHITE : altRowColor
+                        BackgroundColor = counter % 2 == 0 ? BaseColor.White : altRowColor
                     };
 
                     // Loop property and get values
@@ -2596,7 +2595,7 @@ namespace qas.Models
                         HorizontalAlignment = Element.ALIGN_CENTER,
                         PaddingTop = 3,
                         PaddingBottom = 3,
-                        BackgroundColor = counter % 2 == 0 ? BaseColor.WHITE : altRowColor
+                        BackgroundColor = counter % 2 == 0 ? BaseColor.White : altRowColor
 
                     };
 
@@ -2707,7 +2706,7 @@ namespace qas.Models
 
                 // close document, stream and writer
                 document.Close();
-                document.CloseDocument();
+                document.Close();
                 document.Dispose();
                 writer.Close();
                 writer.Dispose();
@@ -2717,9 +2716,9 @@ namespace qas.Models
                 byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
                 Response.Clear();
                 Response.ContentType = "application/pdf";
-                Response.AppendHeader("Content-Disposition", "attachment; filename=IDS_REPORT.pdf");
-                Response.TransmitFile(filePath);
-                Response.End();
+                Response.Headers.Append("Content-Disposition", "attachment; filename=IDS_REPORT.pdf");
+                Response.SendFileAsync(filePath);
+                // Response.End() removed - not available in .NET Core
                 System.IO.File.Delete(filePath);
                 return fileBytes;
             }
@@ -2732,7 +2731,7 @@ namespace qas.Models
             {
                 // close document, stream and writer
                 document.Close();
-                document.CloseDocument();
+                document.Close();
                 document.Dispose();
                 writer.Close();
                 writer.Dispose();
@@ -2748,7 +2747,7 @@ namespace qas.Models
             model.DropdownPropItem = await LoadDllData(0, "", "PROP_ITEM_ALL");
             model.DropdownProdType = await db.GetProdTypeList();
             //ViewBag.prodtype = db.GetProdTypeList();
-            Session["refreshtrend"] = 1;
+            HttpContext.Session.SetString("refreshtrend", 1.ToString() ?? "");
             return View(model);
         }
 
@@ -2972,13 +2971,13 @@ namespace qas.Models
                     }
 
                     Response.Clear();
-                    Response.Charset = System.Text.UTF8Encoding.UTF8.WebName;
-                    Response.ContentEncoding = System.Text.UTF8Encoding.UTF8;
-                    Response.AddHeader("content-disposition", "attachment;  filename=TrendReport.xlsx");
+                    // Charset set via ContentType in .NET Core
+                    // ContentEncoding set via ContentType in .NET Core
+                    Response.Headers.Append("content-disposition", "attachment;  filename=TrendReport.xlsx");
                     Response.ContentType = "application/text";
-                    Response.ContentEncoding = System.Text.Encoding.GetEncoding("utf-8");
-                    Response.BinaryWrite(pck.GetAsByteArray());
-                    Response.End();
+                    // ContentEncoding set via ContentType in .NET Core
+                    Response.Body.Write(pck.GetAsByteArray());
+                    // Response.End() removed - not available in .NET Core
                 }
             }
             return View(m);
@@ -3725,13 +3724,13 @@ namespace qas.Models
 
             }
             Response.Clear();
-            Response.Charset = System.Text.UTF8Encoding.UTF8.WebName;
-            Response.ContentEncoding = System.Text.UTF8Encoding.UTF8;
-            Response.AddHeader("content-disposition", "attachment;  filename=MonthlyNG" + DateTime.Now + ".xlsx");
+            // Charset set via ContentType in .NET Core
+            // ContentEncoding set via ContentType in .NET Core
+            Response.Headers.Append("content-disposition", "attachment;  filename=MonthlyNG" + DateTime.Now + ".xlsx");
             Response.ContentType = "application/text";
-            Response.ContentEncoding = System.Text.Encoding.GetEncoding("utf-8");
-            Response.BinaryWrite(pck.GetAsByteArray());
-            Response.End();
+            // ContentEncoding set via ContentType in .NET Core
+            Response.Body.Write(pck.GetAsByteArray());
+            // Response.End() removed - not available in .NET Core
             
             return View(model);
 
@@ -3795,7 +3794,7 @@ namespace qas.Models
             rectangle.Right -= 10;
             rectangle.Top -= 10;
             rectangle.Bottom += 10; 
-            content.SetColorStroke(BaseColor.BLACK);
+            content.SetColorStroke(BaseColor.Black);
             content.Rectangle(rectangle.Left, rectangle.Bottom, rectangle.Width, rectangle.Height);
             content.Stroke();
 

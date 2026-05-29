@@ -1,4 +1,4 @@
-﻿@using TPM_QAS.Helpers;
+@using TPM_QAS.Helpers;
 <!DOCTYPE html>
 <html class="h-100">
 
@@ -6,21 +6,22 @@
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>@System.Configuration.ConfigurationManager.AppSettings["SystemName"]</title>
-    @Styles.Render("~/Content/css")
-    @Styles.Render("~/Content/fontawesome")
-    @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/jqueryui")
-    @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/Scripts/Main.js")
-    @Scripts.Render("~/bundles/datatables")
-    @Scripts.Render("~/bundles/js")
-    @Scripts.Render("~/Scripts/vendor")
+    <title>@TPM_QAS.DAL.Database.GetAppSettingStatic("SystemName")</title>
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" href="~/Content/site.css" />
+    <!-- Styles.Render removed - use direct link references -->
+    <script src="~/Scripts/modernizr-2.6.2.js"></script>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <!-- Scripts.Render removed - use direct script references -->
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <!-- Scripts.Render removed - use direct script references -->
+    <!-- Scripts.Render removed - use direct script references -->
+    <!-- Scripts.Render removed - use direct script references -->
+    <!-- Scripts.Render removed - use direct script references -->
 
     @RenderSection("VendorCSS", required: false)
-    @Scripts.Render("~/bundles/vendorscripts.bundle.js")
-    @Scripts.Render("~/bundles/mainscripts.bundle.js")
+    <!-- Scripts.Render removed - use direct script references -->
+    <!-- Scripts.Render removed - use direct script references -->
 
     @section VendorCSS {
         <link rel="stylesheet" href="~/Content/c3.min.css" />
@@ -697,12 +698,12 @@
                 <div class="tr-nav-divider"></div>
                 <div id="accountMenu" class="d-md-none collapse">
                     <div class="row mb-2">
-                        <p class="h4 text-secondary m-0 px-4">@System.Configuration.ConfigurationManager.AppSettings["SystemName"]</p>
+                        <p class="h4 text-secondary m-0 px-4">@TPM_QAS.DAL.Database.GetAppSettingStatic("SystemName")</p>
                     </div>
                     <div class="row mb-2">
-                        @if (Session["AclUser"] != null)
+                        @if (Context.Session.GetString("AclUser") != null)
                         {
-                            <p class="h6 text-secondary m-0 px-4"><i class="fa-solid fa-user px-2"></i>@((Session["AclUser"] as ACL_UserObj).EMP_NAME)</p>
+                            <p class="h6 text-secondary m-0 px-4"><i class="fa-solid fa-user px-2"></i>@(Context.Session.GetObject<ACL_UserObj>("AclUser")?.EMP_NAME)</p>
                         }
                         else
                         {
@@ -715,16 +716,16 @@
                 </div>
             </div>
             <div class="me-auto d-none d-md-block">
-                <p class="m-0 px-4 tr-navbar-title">@System.Configuration.ConfigurationManager.AppSettings["SystemName"]</p>
+                <p class="m-0 px-4 tr-navbar-title">@TPM_QAS.DAL.Database.GetAppSettingStatic("SystemName")</p>
             </div>
             <div class="navbar-nav d-none d-md-block">
                 <div class="nav-item text-nowrap">
                     <form class="d-flex align-items-center">
                         <div class="mx-2 text-uppercase">
-                            @if (Session["AclUser"] != null)
+                            @if (Context.Session.GetString("AclUser") != null)
                             {
                                 <a id="btnProfile" href="#" class="m-0 px-1 text-reset tr-navbar-logout">
-                                    <i class="fa-solid fa-user px-2"></i>@((Session["AclUser"] as ACL_UserObj).EMP_NAME)
+                                    <i class="fa-solid fa-user px-2"></i>@(Context.Session.GetObject<ACL_UserObj>("AclUser")?.EMP_NAME)
                                 </a>
                             }
                             else
@@ -805,14 +806,14 @@
     </div>
     <div class="tr-footer d-flex flex-row" style="z-index:999;">
         <div class="flex-column px-1 text-black-50 tr-footer-text" style="margin:auto">
-            <span>@System.Configuration.ConfigurationManager.AppSettings["VersionText"]</span>
+            <span>@TPM_QAS.DAL.Database.GetAppSettingStatic("VersionText")</span>
         </div>
         <div class="flex-column flex-grow-1 text-center text-black-50 tr-footer-text" style="margin:auto; margin-left: -80px">
             @TPM_QAS.Helpers.Copyright.GetCopyrightText()
         </div>
     </div>
     @*<div class="w-100" style="height:35px; position: absolute">
-            <p class="text-center p-1 text-black-50">@System.Configuration.ConfigurationManager.AppSettings["CopyrightText"]</p>
+            <p class="text-center p-1 text-black-50">@TPM_QAS.DAL.Database.GetAppSettingStatic("CopyrightText")</p>
         </div>*@
 
     <!--Popup message delete-->

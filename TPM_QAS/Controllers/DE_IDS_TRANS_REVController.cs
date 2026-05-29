@@ -50,7 +50,7 @@ namespace TPM_QAS.Controllers
             List<DailyIDSTransVM> model = await common.PSP_COMMON_DAPPER<DailyIDSTransVM>("PSP_COMMON_LIST", CommandType.StoredProcedure, param) ?? new List<DailyIDSTransVM>();
             ViewBag.SerializedData = JsonConvert.SerializeObject(model);
 
-            string emp_no = (Session["AclUser"] as ACL_UserObj).EMP_NO.ToString();
+            string emp_no = (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).EMP_NO.ToString();
 
             DataTable chkApproval = await dbdal.CheckUserAppRole(emp_no);
             if (chkApproval != null && chkApproval.Rows.Count > 0)
@@ -59,7 +59,7 @@ namespace TPM_QAS.Controllers
             }
 
             //for KS
-            if ((Session["AclUser"] as ACL_UserObj).USER_ID.ToString() == "800133")
+            if ((HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString() == "800133")
             {
                 ViewBag.isManager = "Y";
             }
@@ -86,10 +86,10 @@ namespace TPM_QAS.Controllers
         //    string result = "";
         //    string NG = "";
         //    //ActionType = "Draft";	
-        //    string loc = System.Web.HttpContext.Request.UserHostAddress;
-        //    var aclUser = Session["AclUser"];
+        //    string loc = HttpContext.Connection.RemoteIpAddress?.ToString();
+        //    var aclUser = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
 
-        //    m.CREATED_BY = (aclUser as ACL_UserObj).USER_ID;
+        //    m.CREATED_BY = aclUser.USER_ID;
         //    m.CREATED_LOC = loc;
         //    m.GRADE = "";
         //    if (action == "btnDraft")
@@ -116,15 +116,15 @@ namespace TPM_QAS.Controllers
         //            }
         //            result = "Data save successfully";
         //            await dbdal.lockCheck(m, "3", tmp2[1]);
-        //            return Json(result, JsonRequestBehavior.AllowGet);
+        //            return Json(result);
         //        }
         //        else
         //        {
         //            result = tmp2[0];
-        //            return Json(result, JsonRequestBehavior.AllowGet);
+        //            return Json(result);
         //        }
 
-        //        //return Json("FOR TEST PURPOSE", JsonRequestBehavior.AllowGet);
+        //        //return Json("FOR TEST PURPOSE");
 
         //    }
         //    catch (Exception ex)
@@ -141,9 +141,9 @@ namespace TPM_QAS.Controllers
 
                 DailyIDSTransVM data = await dbdal.dataByProdtype(prodtype, lotno);
 
-                var aclUser = Session["AclUser"];
-                data.UPDATEDBY = (aclUser as ACL_UserObj).USER_ID;
-                data.TESTEDBY = (aclUser as ACL_UserObj).USER_ID;
+                var aclUser = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+                data.UPDATEDBY = aclUser.USER_ID;
+                data.TESTEDBY = aclUser.USER_ID;
                 data.FullNG = "50";
                 data.PACKEDDATE = DateTime.Today.ToString("dd-MM-yyyy");
 
@@ -171,7 +171,7 @@ namespace TPM_QAS.Controllers
                 //    data.ratioList = app.ratioList;
                 //}
 
-                //Session["lotno"] = lotno;
+                //HttpContext.Session.SetString("lotno", lotno?.ToString() ?? "");
 
                 //var _datatable = await dbdal.GetData1(prodtype, "1", lotno, packeddate);
                 //var prodgroup = "";
@@ -190,7 +190,7 @@ namespace TPM_QAS.Controllers
                 //{
                 //    if (_datatable2 != null && _datatable2.Rows.Count > 0)
                 //    {
-                //        Session["_datatable2"] = _datatable2;
+                //        HttpContext.Session.SetString("_datatable2", _datatable2.ToString() ?? "");
 
                 //        for (int x = 0; x < _datatable2.Rows.Count; x++)
                 //        {
@@ -3086,10 +3086,10 @@ namespace TPM_QAS.Controllers
         //    {
 
 
-        //        string loc = System.Web.HttpContext.Request.UserHostAddress;
-        //        var aclUser = Session["AclUser"];
+        //        string loc = HttpContext.Connection.RemoteIpAddress?.ToString();
+        //        var aclUser = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
 
-        //        m.CREATED_BY = (aclUser as ACL_UserObj).USER_ID;
+        //        m.CREATED_BY = aclUser.USER_ID;
         //        m.CREATED_LOC = loc;
 
         //        var mach = m.MoldingList[i].MachineName == null ? "" : m.MoldingList[i].MachineName;
@@ -3356,7 +3356,7 @@ namespace TPM_QAS.Controllers
 
         //    string JSONString = string.Empty;
         //    JSONString = JsonConvert.SerializeObject(dt);
-        //    return Json(JSONString, JsonRequestBehavior.AllowGet);
+        //    return Json(JSONString);
         //}
 
         //public async Task saveapptab(List<List<List<tagnomodel>>> tagList, List<descmodel> description, string idH, string NG, string rectype, DailyIDSTransVM m, List<List<fieldnamemodel>> field)
@@ -3364,9 +3364,9 @@ namespace TPM_QAS.Controllers
         //    var grade = "";
         //    var tempDL = "";
         //    string result = "";
-        //    string loc = System.Web.HttpContext.Request.UserHostAddress;
-        //    var aclUser = Session["AclUser"];
-        //    m.CREATED_BY = (aclUser as ACL_UserObj).USER_ID;
+        //    string loc = HttpContext.Connection.RemoteIpAddress?.ToString();
+        //    var aclUser = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+        //    m.CREATED_BY = aclUser.USER_ID;
         //    m.CREATED_LOC = loc;
         //    var tempD = "";
         //    try
@@ -3424,10 +3424,10 @@ namespace TPM_QAS.Controllers
         //    try
         //    {
         //        DailyIDSTransVM data = await dbdal.dataByProdtype(model.PRODTYPE, model.LOTNO);
-        //        string loc = System.Web.HttpContext.Request.UserHostAddress;
-        //        var aclUser = Session["AclUser"];
-        //        data.UPDATEDBY = (aclUser as ACL_UserObj).USER_ID;
-        //        data.TESTEDBY = (aclUser as ACL_UserObj).USER_ID;
+        //        string loc = HttpContext.Connection.RemoteIpAddress?.ToString();
+        //        var aclUser = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+        //        data.UPDATEDBY = aclUser.USER_ID;
+        //        data.TESTEDBY = aclUser.USER_ID;
         //        data.FullNG = "50";
         //        data.PACKEDDATE = DateTime.Today.ToString();
         //        ViewBag.prodtype = await dbdal.getProdTypeList();
@@ -3444,8 +3444,8 @@ namespace TPM_QAS.Controllers
         //        data.descriptionList = app.descriptionList;
         //        data.ratioList = app.ratioList;
         //        TempData["prodtype"] = model.PRODTYPE;
-        //        Session["lotno"] = model.LOTNO;
-        //        Session["pack"] = model.PACKEDDATE2;
+        //        HttpContext.Session.SetString("lotno", model.LOTNO?.ToString() ?? "");
+        //        HttpContext.Session.SetString("pack", model.PACKEDDATE2.ToString() ?? "");
 
         //        var _datatable = await dbdal.GetData1(model.PRODTYPE, "1", model.LOTNO, model.PACKEDDATE2);
         //        var prodgroup = "";
@@ -3459,7 +3459,7 @@ namespace TPM_QAS.Controllers
 
         //        if (_datatable2 != null && _datatable2.Rows.Count > 0)
         //        {
-        //            Session["_datatable2"] = _datatable2;
+        //            HttpContext.Session.SetString("_datatable2", _datatable2.ToString() ?? "");
 
         //            for (int x = 0; x < _datatable2.Rows.Count; x++)
         //            {
@@ -3675,7 +3675,7 @@ namespace TPM_QAS.Controllers
         //            if (datatable3 != null && datatable3.Rows.Count > 0)
         //            {
         //                int data3Count = datatable3.Rows.Count;
-        //                Session["hid"] = data3Count;
+        //                HttpContext.Session.SetString("hid", data3Count?.ToString() ?? "");
 
 
         //                for (int i = 0; i < data3Count; i++)
@@ -3889,7 +3889,7 @@ namespace TPM_QAS.Controllers
         //            }
         //        }
         //    }
-        //    return Json(model, JsonRequestBehavior.AllowGet);
+        //    return Json(model);
         //}
 
         //public async Task<JsonResult> GetMachineName(string propitem, string lotno, string prodgroup)
@@ -3898,7 +3898,7 @@ namespace TPM_QAS.Controllers
         //    //lotno = "301-11-507"; //for test purpose
         //    //prodgroup = "ASA"; //for test purpose		
         //    var vm = await dbdal.getMachineName(lotno, propitem, prodgroup);
-        //    return Json(vm, JsonRequestBehavior.AllowGet);
+        //    return Json(vm);
 
         //}
 
@@ -3915,7 +3915,7 @@ namespace TPM_QAS.Controllers
         //        formula = dt.Rows[0]["REGRESSFORMULA"].ToString();
         //    }
 
-        //    return Json(formula, JsonRequestBehavior.AllowGet);
+        //    return Json(formula);
         //}
 
         //public async Task<ActionResult> GetMachineData(string lotNo)
@@ -3958,7 +3958,7 @@ namespace TPM_QAS.Controllers
 
 
 
-        //    return Json(machineDataList2, JsonRequestBehavior.AllowGet);
+        //    return Json(machineDataList2);
         //}
 
         //public async Task<JsonResult> oldCalculateResult(List<MachineNameModel> machinename, DailyIDSTransVM mod)
@@ -3998,7 +3998,7 @@ namespace TPM_QAS.Controllers
 
         //    }
 
-        //    return Json(m, JsonRequestBehavior.AllowGet);
+        //    return Json(m);
         //}
 
         //public async Task<JsonResult> CalculateResult(List<MachineNameModel> machinename, DailyIDSTransVM mod)
@@ -4058,15 +4058,15 @@ namespace TPM_QAS.Controllers
 
         //    }
 
-        //    return Json(m, JsonRequestBehavior.AllowGet);
+        //    return Json(m);
         //}
 
         //public async Task<ActionResult> MoldingTab(MoldingModel model)  // check grading for each reading
         //{
         //    DailyIDSTransVM data = new DailyIDSTransVM();
 
-        //    var lotno = Session["lotno"].ToString();
-        //    //var pack = Session["pack"].ToString();
+        //    var lotno = HttpContext.Session.GetString("lotno").ToString();
+        //    //var pack = HttpContext.Session.GetString("pack").ToString();
         //    //var moldRead = await dbdal.getMoldDetail(lotno, model.PropItem, model.prodtype);
         //var moldRead = await dbdal.getPropItemDet(lotno, model.PropItem, model.prodtype); //slow 22082024
 
@@ -4147,7 +4147,7 @@ namespace TPM_QAS.Controllers
         //        }
         //        if (curcnt > txtCnt)
         //        {
-        //            return JavaScript("alert('Error: Cannot Enter More Than Max Count Set In IDS Maintenance')");
+        //            return Content("<script>alert('Error: Cannot Enter More Than Max Count Set In IDS Maintenance')</script>", "text/html");
         //        }
         //        else
         //        {
@@ -4155,7 +4155,7 @@ namespace TPM_QAS.Controllers
         //        }
         //    }
 
-        //    return Json(model, JsonRequestBehavior.AllowGet);
+        //    return Json(model);
         //}
 
         //public async Task<ActionResult> GetCalcFormula(string propitem)
@@ -4164,7 +4164,7 @@ namespace TPM_QAS.Controllers
         //    dt = await dbdal.GetDataDLLALL("Formula", propitem, "", "", "", "", "");
         //    string JSONString = string.Empty;
         //    JSONString = JsonConvert.SerializeObject(dt);
-        //    return Json(JSONString, JsonRequestBehavior.AllowGet);
+        //    return Json(JSONString);
         //}
         //#endregion
 
@@ -4211,7 +4211,7 @@ namespace TPM_QAS.Controllers
         //    {
         //        if (_datatable2 != null && _datatable2.Rows.Count > 0)
         //        {
-        //            Session["_datatable2"] = _datatable2;
+        //            HttpContext.Session.SetString("_datatable2", _datatable2.ToString() ?? "");
 
         //            for (int x = 0; x < _datatable2.Rows.Count; x++)
         //            {
@@ -4234,7 +4234,7 @@ namespace TPM_QAS.Controllers
 
         //    // leha add mandatory end
 
-        //    Session["idhis"] = idhis;
+        //    HttpContext.Session.SetString("idhis", idhis?.ToString() ?? "");
 
         //    var history = await dbdal.getTransHistData(idhis, m.PRODTYPE, m.LOTNO);
         //    var reg = "";
@@ -4428,12 +4428,12 @@ namespace TPM_QAS.Controllers
         //        }
         //    }
 
-        //    Session["lotno"] = summary.LOTNO;
+        //    HttpContext.Session.SetString("lotno", summary.LOTNO?.ToString() ?? "");
 
 
         //    DEIDSTCM.ModelObj = m;
 
-        //    string emp_no = (Session["AclUser"] as ACL_UserObj).EMP_NO.ToString();
+        //    string emp_no = (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).EMP_NO.ToString();
 
         //    DataTable chkApproval = await dbdal.CheckUserAppRole(emp_no);
         //    if (chkApproval != null && chkApproval.Rows.Count > 0)
@@ -4442,7 +4442,7 @@ namespace TPM_QAS.Controllers
         //    }
 
         //    //for KS
-        //    if ((Session["AclUser"] as ACL_UserObj).USER_ID.ToString() == "800133")
+        //    if ((HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString() == "800133")
         //    {
         //        ViewBag.isManager = "Y";
         //    }
@@ -4454,13 +4454,13 @@ namespace TPM_QAS.Controllers
         //[HttpPost]
         //public async Task<ActionResult> DE_IDS_TRANS_REV_DETAIL(DailyIDSTransVM m, List<List<fieldnamemodel>> field, List<List<List<tagnomodel>>> tag, List<descmodel> description, string rectype)
         //{
-        //    string loc = System.Web.HttpContext.Request.UserHostAddress;
-        //    var aclUser = Session["AclUser"];
+        //    string loc = HttpContext.Connection.RemoteIpAddress?.ToString();
+        //    var aclUser = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
 
-        //    m.CREATED_BY = (aclUser as ACL_UserObj).USER_ID;
+        //    m.CREATED_BY = aclUser.USER_ID;
         //    m.CREATED_LOC = loc;
 
-        //    string emp_no = (Session["AclUser"] as ACL_UserObj).EMP_NO.ToString();
+        //    string emp_no = (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).EMP_NO.ToString();
 
         //    DataTable chkApproval = await dbdal.CheckUserAppRole(emp_no);
         //    if (chkApproval != null && chkApproval.Rows.Count > 0)
@@ -4469,7 +4469,7 @@ namespace TPM_QAS.Controllers
         //    }
 
         //    //for KS
-        //    if ((Session["AclUser"] as ACL_UserObj).USER_ID.ToString() == "800133")
+        //    if ((HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString() == "800133")
         //    {
         //        ViewBag.isManager = "Y";
         //    }
@@ -4496,12 +4496,12 @@ namespace TPM_QAS.Controllers
         //            await chkData(m, result);
         //            result = "Data save successfully";
         //            await dbdal.lockCheck(m, "3", tmp2[1]);
-        //            return Json(result, JsonRequestBehavior.AllowGet);
+        //            return Json(result);
         //        }
         //        else
         //        {
         //            result = tmp2[0];
-        //            return Json(result, JsonRequestBehavior.AllowGet);
+        //            return Json(result);
         //        }
         //    }
         //    else
@@ -4530,27 +4530,27 @@ namespace TPM_QAS.Controllers
         //        else
         //        {
         //            result = tmp2[0];
-        //            return Json(result, JsonRequestBehavior.AllowGet);
+        //            return Json(result);
         //        }
 
         //    }
 
-        //    return Json(result, JsonRequestBehavior.AllowGet);
+        //    return Json(result);
         //}
 
         //public async Task<JsonResult> SaveComplete(DailyIDSTransVM model)
         //{
-        //    string loc = System.Web.HttpContext.Request.UserHostAddress;
-        //    var aclUser = Session["AclUser"];
+        //    string loc = HttpContext.Connection.RemoteIpAddress?.ToString();
+        //    var aclUser = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
 
-        //    model.CREATED_BY = (aclUser as ACL_UserObj).USER_ID;
+        //    model.CREATED_BY = aclUser.USER_ID;
         //    model.CREATED_LOC = loc;
         //    model.STATUS = "Completed";
 
         //    var vm = await dbdal.IDS_H_Maint(model, "6");
         //    await chkData(model, model.ID_IDS_H.ToString());
         //    vm = "Data save successfully";
-        //    return Json(vm, JsonRequestBehavior.AllowGet);
+        //    return Json(vm);
         //}
 
         //public async Task<JsonResult> DeleteDraft(string id_ids_h)
@@ -4558,7 +4558,7 @@ namespace TPM_QAS.Controllers
         //    var result = "";
         //    result = await dbdal.DeleteDraft(id_ids_h);
 
-        //    return Json(result, JsonRequestBehavior.AllowGet);
+        //    return Json(result);
         //}
 
         //public async Task<DailyIDSTransVM>apptabE(string id, DailyIDSTransVM vm)
@@ -4680,7 +4680,7 @@ namespace TPM_QAS.Controllers
         //    dt = await dbdal.IDS_SUM_SEL(idsh);
         //    string JSONString = string.Empty;
         //    JSONString = JsonConvert.SerializeObject(dt);
-        //    return Json(JSONString, JsonRequestBehavior.AllowGet);
+        //    return Json(JSONString);
         //}
 
         //public async Task<JsonResult> GetSegregationL(string part, string id_ids_d, string prodtype, string propitem, string packeddate2, string lotno)
@@ -4784,7 +4784,7 @@ namespace TPM_QAS.Controllers
         //    TempData["id_ids_d"] = id_ids_d;
         //    TempData["pype"] = pddlVal;
 
-        //    return Json(segL, JsonRequestBehavior.AllowGet);
+        //    return Json(segL);
         //}
 
         //public async Task<DataTable>  calltable1(string part, string id_ids_d, string prodtype, string propitem, string packeddate2, string lotno, string _from, string _to)
@@ -4855,10 +4855,10 @@ namespace TPM_QAS.Controllers
         //            grade += item.tagno + " : " + item.grade + " \n ";
         //        }
 
-        //        string loc = System.Web.HttpContext.Request.UserHostAddress;
-        //        var aclUser = Session["AclUser"];
+        //        string loc = HttpContext.Connection.RemoteIpAddress?.ToString();
+        //        var aclUser = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
 
-        //        var created_by = (aclUser as ACL_UserObj).USER_ID;
+        //        var created_by = aclUser.USER_ID;
         //        var location = loc;
 
         //        var _tempD = await dbdal.IDS_Seg_Maint(item.id_ids_segl, item.id_ids_d, tagfrom, tagto, item.reading, item.grade, item.gradeInd, paction, item.ptype, created_by, location);
@@ -4907,7 +4907,7 @@ namespace TPM_QAS.Controllers
         //        vm = "ok";
         //    }
 
-        //    return Json(vm, JsonRequestBehavior.AllowGet);
+        //    return Json(vm);
         //}
 
         //public async Task<JsonResult> LoadSubSeg(string part, string tagnofrom, string tagnoto, string reading, string gradeInd, string lotno, string ids_d)
@@ -4926,7 +4926,7 @@ namespace TPM_QAS.Controllers
 
         //    if (dt == null || dt.Rows.Count <= 0)
         //    {
-        //        return Json(vm, JsonRequestBehavior.AllowGet);
+        //        return Json(vm);
         //    }
         //    else
         //    {
@@ -4956,7 +4956,7 @@ namespace TPM_QAS.Controllers
         //            }
         //        }
 
-        //        return Json(sub, JsonRequestBehavior.AllowGet);
+        //        return Json(sub);
         //    }
         //}
 
@@ -5014,7 +5014,7 @@ namespace TPM_QAS.Controllers
         //            }
         //        }
         //    }
-        //    return Json(segBS, JsonRequestBehavior.AllowGet);
+        //    return Json(segBS);
         //}
 
         //public async Task<JsonResult> SaveSegregationBS(List<SegregationBSModel> seglist)
@@ -5039,17 +5039,17 @@ namespace TPM_QAS.Controllers
 
         //        var GradeInd = item.gradeInd;
 
-        //        string loc = System.Web.HttpContext.Request.UserHostAddress;
-        //        var aclUser = Session["AclUser"];
+        //        string loc = HttpContext.Connection.RemoteIpAddress?.ToString();
+        //        var aclUser = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
 
-        //        var updatedby = (aclUser as ACL_UserObj).USER_ID;
+        //        var updatedby = aclUser.USER_ID;
 
         //        var tempD = await dbdal.IDS_Seg_Maint(item.id, item.id_ids_d, tagfrom, tagto, item.reading, item.grade, GradeInd, "1", "", updatedby, loc);
 
         //        vm = "ok";
         //    }
 
-        //    return Json(vm, JsonRequestBehavior.AllowGet);
+        //    return Json(vm);
         //}
 
         //public async Task VerticalPerCen(DailyIDSTransVM m)
@@ -5246,10 +5246,10 @@ namespace TPM_QAS.Controllers
 
         //public async Task<JsonResult> IDS_SL_MAINT(DailyIDSTransVM m)
         //{
-        //    string loc = System.Web.HttpContext.Request.UserHostAddress;
-        //    var aclUser = Session["AclUser"];
+        //    string loc = HttpContext.Connection.RemoteIpAddress?.ToString();
+        //    var aclUser = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
 
-        //    m.CREATED_BY = (aclUser as ACL_UserObj).USER_ID;
+        //    m.CREATED_BY = aclUser.USER_ID;
         //    m.CREATED_LOC = loc;
         //    List<TransactionHistModel> list = new List<TransactionHistModel>();
 
@@ -5271,7 +5271,7 @@ namespace TPM_QAS.Controllers
         //            var sl = await dbdal.IDS_SL_MAINT(prodgroup, id_ids_d.ToString(), reading1, reading2, reading3, reading4, reading5, reading6,
         //                m.newHistoryList[i].Average, m.newHistoryList[i].Grade, "1", m.CREATED_BY, m.CREATED_LOC);
 
-        //            var idshis = Session["idhis"].ToString();
+        //            var idshis = HttpContext.Session.GetString("idhis").ToString();
         //            var history = await dbdal.getTransHistData(idshis, m.PRODTYPE, m.LOTNO);
         //            var reg = "";
         //            var FinalR1 = "";
@@ -5413,7 +5413,7 @@ namespace TPM_QAS.Controllers
         //        }
         //    }
 
-        //    return Json(list, JsonRequestBehavior.AllowGet);
+        //    return Json(list);
         //}
 
         //public async Task<JsonResult> SaveSubSegregationL(List<SubSegregationSegLModel> seglist)
@@ -5446,10 +5446,10 @@ namespace TPM_QAS.Controllers
         //        }
 
 
-        //        string loc = System.Web.HttpContext.Request.UserHostAddress;
-        //        var aclUser = Session["AclUser"];
+        //        string loc = HttpContext.Connection.RemoteIpAddress?.ToString();
+        //        var aclUser = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
 
-        //        var created_by = (aclUser as ACL_UserObj).USER_ID;
+        //        var created_by = aclUser.USER_ID;
         //        var location = loc;
 
         //        var _tempD = await dbdal.IDS_Seg_Maint("0", id_ids_d, tagfrom, tagto, item.reading, item.grade, gradeInd.ToString(), "3", pype, created_by, location);
@@ -5457,7 +5457,7 @@ namespace TPM_QAS.Controllers
         //        vm = "ok";
         //    }
 
-        //    return Json(vm, JsonRequestBehavior.AllowGet);
+        //    return Json(vm);
         //}
 
         //private async Task<List<SelectListItem>> LoadDllData(string ID)

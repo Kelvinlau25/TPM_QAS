@@ -112,7 +112,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -158,7 +158,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -258,7 +258,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            //string loc = HttpContext.Request.UserHostAddress.ToString();
+            //string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -479,7 +479,7 @@ namespace TPM_QAS.DAL
         {
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -584,7 +584,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -691,7 +691,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -796,7 +796,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -1015,7 +1015,7 @@ namespace TPM_QAS.DAL
         {
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -1159,7 +1159,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -1266,7 +1266,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -1328,7 +1328,7 @@ namespace TPM_QAS.DAL
         #region grn
         public async Task<DataTable> getUngradedGRN()
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             List<OraMaterialList> oramat = new List<OraMaterialList>();
@@ -1371,7 +1371,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -1423,7 +1423,7 @@ namespace TPM_QAS.DAL
         #region W Grade Production Listing
         public async Task<DataTable> getWGradePL()
         {
-            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             string year = DateTime.Now.Year.ToString();
@@ -1503,7 +1503,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             string year = DateTime.Now.Year.ToString();

@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -5,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System;
 using TPM_QAS.DAL;
+using TPM_QAS.Helpers;
 
 namespace TPM_QAS
 {
@@ -38,6 +40,10 @@ namespace TPM_QAS
 
             // Set configuration for Database class (replaces ConfigurationManager usage)
             Database.SetConfiguration(app.Configuration);
+
+            // Set HttpContextAccessor for static access in non-controller classes
+            var httpContextAccessor = app.Services.GetRequiredService<IHttpContextAccessor>();
+            HttpContextHelper.Configure(httpContextAccessor);
 
             // Configure the HTTP request pipeline
             if (!app.Environment.IsDevelopment())

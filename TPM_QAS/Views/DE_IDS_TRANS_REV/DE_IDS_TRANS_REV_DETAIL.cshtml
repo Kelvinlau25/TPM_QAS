@@ -1,4 +1,4 @@
-﻿@using TPM_QAS.Models
+@using TPM_QAS.Models
 @model TPM_QAS.Models.CommonModel<DailyIDSTransVM, DailyIDSTransVM>
 
 @{
@@ -1006,7 +1006,7 @@
                     <table class="table table-striped" id="example">
                         <tr>
                             <td style="width: 20%">
-                                @Html.Label("*", new { style = "color:red" })
+                                @Html.Label("*", "*", new { style = "color:red" })
                                 @Html.Label("Reading#1")
                             </td>
                             <td> : </td>
@@ -1338,7 +1338,7 @@
                     <table class="table table-striped" style="width:100%">
                         <tr>
                             <td>
-                                @Html.Label("Result will be ", new { id = "cresult" })
+                                @Html.Label("Result will be ", "Result will be ", new { id = "cresult" })
                                 <span hidden id="txtfresult"></span>
                             </td>
                         </tr>
@@ -1474,7 +1474,7 @@
             var FinalIndex = [];
             var indexs = [];
 
-            var ratioList = @Html.Raw(Json.Encode(Model.ModelObj.ratioList));
+            var ratioList = @Html.Raw(Json.Serialize(Model.ModelObj.ratioList));
             var table = $('.tblAppearance').length;
 
             for (var j = 0; j < ratioList.length; j++) {
@@ -1563,7 +1563,7 @@
             var g = 0;
             var row = 0;
 
-            var ratioList = @Html.Raw(Json.Encode(Model.ModelObj.ratioList));
+            var ratioList = @Html.Raw(Json.Serialize(Model.ModelObj.ratioList));
             var table = $('.tblAppearance').length;
 
             for (var j = 0; j < ratioList.length; j++) {
@@ -2916,7 +2916,7 @@
                      AFTERPRODTYPCHG: $("#txtOverwrite").val(),
                      PRODTYPCHGIND: boolPRODTYPCHGIND,
                      MoldingList: null,
-                     descriptionList: @Html.Raw(Json.Encode(Model.ModelObj.descriptionList)),
+                     descriptionList: @Html.Raw(Json.Serialize(Model.ModelObj.descriptionList)),
                  }
 
                  console.log(machinename)
@@ -3836,8 +3836,8 @@
                                 });
                             });
 
-                            var decList = '@Html.Raw(Json.Encode(Model.ModelObj.descriptionList))'
-                            var HisList = '@Html.Raw(Json.Encode(Model.ModelObj.HistoryList))'
+                            var decList = '@Html.Raw(Json.Serialize(Model.ModelObj.descriptionList))'
+                            var HisList = '@Html.Raw(Json.Serialize(Model.ModelObj.HistoryList))'
 
                             var boolPRODTYPCHGIND = false;
                             if ($("#txtOverwrite").val().trim = "") {
