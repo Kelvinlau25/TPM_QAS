@@ -56,6 +56,7 @@ namespace TPM_QAS.DAL
                 {
                     DatabaseConnectionString dbConnectionString = new DatabaseConnectionString();
                     connectionString = await dbConnectionString.OpenAclConnection(dbName);
+                    connectionString = EnsureTrustServerCertificate(connectionString);
                     AddConnectionString(key: dbName, value: connectionString);
                 }
 
@@ -135,6 +136,7 @@ namespace TPM_QAS.DAL
                 {
                     DatabaseConnectionString dbConnectionString = new DatabaseConnectionString();
                     connectionString = await dbConnectionString.OpenAclConnection(dbName);
+                    connectionString = EnsureTrustServerCertificate(connectionString);
                     AddConnectionString(key: dbName, value: connectionString);
                 }
 
@@ -157,6 +159,7 @@ namespace TPM_QAS.DAL
                 {
                     DatabaseConnectionString dbConnectionString = new DatabaseConnectionString();
                     connectionString = await dbConnectionString.OpenAclConnection(dbName);
+                    connectionString = EnsureTrustServerCertificate(connectionString);
                     AddConnectionString(key: dbName, value: connectionString);
                 }
 
@@ -213,6 +216,20 @@ namespace TPM_QAS.DAL
             {
                 throw ex;
             }
+        }
+
+        protected static string EnsureTrustServerCertificate(string connectionString)
+        {
+            if (string.IsNullOrWhiteSpace(connectionString))
+                return connectionString;
+
+            if (connectionString.IndexOf("TrustServerCertificate", StringComparison.OrdinalIgnoreCase) < 0)
+            {
+                var trimmed = connectionString.TrimEnd(';');
+                connectionString = trimmed + ";TrustServerCertificate=True";
+            }
+
+            return connectionString;
         }
     }
 }

@@ -5,9 +5,12 @@
     src: url(../fonts/Roboto/Roboto-Regular.ttf) format('truetype');
 }
 
-scrollbar-width: none; /* Firefox */
--ms-overflow-style: none; /* IE 10+ */
-:: -webkit-scrollbar-track {
+html {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE 10+ */
+}
+
+::-webkit-scrollbar-track {
     -webkit-box-shadow: none !important;
     background-color: transparent;
 }
