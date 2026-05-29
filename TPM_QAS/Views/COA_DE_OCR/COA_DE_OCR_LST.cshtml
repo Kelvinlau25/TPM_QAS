@@ -343,7 +343,7 @@
                 if (e.target.value == "All") {
                     data = dataAll;
                 } else {
-                    data = dataAll.filter(x => x.FINAL_RESULT.toUpperCase().toString() == e.target.value.toUpperCase());
+                    data = dataAll.filter(x => x.FINAL_RESULT && x.FINAL_RESULT.toUpperCase().toString() == e.target.value.toUpperCase());
                 }
                 if (data.length > 1) {
                     $('.tr-rec').text(data.length + ' entries');
