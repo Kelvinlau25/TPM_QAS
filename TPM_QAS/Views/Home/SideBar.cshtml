@@ -87,7 +87,7 @@
                     if (row2.RESOURCE_PARENT_ID == row.ID_ACL_RESOURCE && row2.LAYER == 2)
                     {
                         <li class="nav-item">
-                            @Html.ActionLink(row2.RESOURCE_name, row2.RESOURCE_VIEW, row2.RESOURCE_CONTROLLER, "", new { @id = "btnDashboard_" + count2, @class = "nav-link sub-header-text", target = ""})
+                            @Html.ActionLink(row2.RESOURCE_name, row2.RESOURCE_VIEW, row2.RESOURCE_CONTROLLER, null, new { @id = "btnDashboard_" + count2, @class = "nav-link sub-header-text" })
                         </li>
                     }
                 }
