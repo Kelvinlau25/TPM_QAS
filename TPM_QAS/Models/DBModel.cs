@@ -32,7 +32,7 @@ namespace DBModel
         string FrmRowno, string ToRowno, string Deleted)
         {
             ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
-            string USERID = userobj.EMP_NAME.ToString();
+            string USERID = userobj?.EMP_NAME?.ToString() ?? "";
 
             try
             {
@@ -90,7 +90,7 @@ namespace DBModel
         string FrmRowno, string ToRowno, string Deleted)
         {
             ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
-            string USERID = userobj.EMP_NAME.ToString();
+            string USERID = userobj?.EMP_NAME?.ToString() ?? "";
 
             try
             {
@@ -144,7 +144,7 @@ namespace DBModel
         public async Task<DataTable> AuditList(string Table, string pid)
         {
             ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
-            string USERID = userobj.EMP_NAME.ToString();
+            string USERID = userobj?.EMP_NAME?.ToString() ?? "";
 
             try
             {
@@ -191,7 +191,7 @@ namespace DBModel
         public async Task<List<SelectListItem>> PSP_COMMON_DDL(string type, string p1, string p2, string p3, string p4, string p5, string p6)
         {
             ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
-            string USERID = userobj.EMP_NAME.ToString();
+            string USERID = userobj?.EMP_NAME?.ToString() ?? "";
 
             List<SelectListItem> items = new List<SelectListItem>();
             DataTable dt = new DataTable();
@@ -248,7 +248,7 @@ namespace DBModel
         public async Task<DataTable> getDllData(int ID, string act, string category)
         {
             ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
-            string USERID = userobj.EMP_NAME.ToString();
+            string USERID = userobj?.EMP_NAME?.ToString() ?? "";
 
             try
             {
@@ -295,7 +295,7 @@ namespace DBModel
         public async Task<DataTable> getSectionDllData(int ID, string act, string category)
         {
             ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
-            string USERID = userobj.EMP_NAME.ToString();
+            string USERID = userobj?.EMP_NAME?.ToString() ?? "";
 
             try
             {
@@ -340,7 +340,7 @@ namespace DBModel
         public async Task<DataTable> getPicDllData(int ID, string section, string act, string category)
         {
             ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
-            string USERID = userobj.EMP_NAME.ToString();
+            string USERID = userobj?.EMP_NAME?.ToString() ?? "";
 
             try
             {
@@ -391,7 +391,7 @@ namespace DBModel
         public async Task<DataTable> getRoleList(string EMPNO)
         {
             ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
-            string USERID = userobj.EMP_NAME.ToString();
+            string USERID = userobj?.EMP_NAME?.ToString() ?? "";
 
             try
             {

@@ -1112,7 +1112,9 @@
                 selectionCssClass: 'tr-no-border'
             });
 
-            var abc = $('.tr-select2').multiselect({
+            var abc = $('.tr-select2').filter(function() {
+                return !$(this).parent().hasClass('multiselect-native-select');
+            }).multiselect({
                 buttonClass: 'form-select form-control text-start',
                 templates: {
                     button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
@@ -1126,7 +1128,9 @@
             //abc.multiselect('rebuild');
 
 
-            $('.multiselectpicker').multiselect({
+            $('.multiselectpicker').filter(function() {
+                return !$(this).parent().hasClass('multiselect-native-select');
+            }).multiselect({
                 buttonClass: 'form-select form-control text-start',
                 includeSelectAllOption: true,
                 templates: {

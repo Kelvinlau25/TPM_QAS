@@ -82,7 +82,10 @@ namespace TPM_QAS.Controllers
                 }
             }
 
-            dataitemOcrResult = dataitemOcrResult.Substring(0, dataitemOcrResult.Length - 2);
+            if (dataitemOcrResult.Length > 1)
+            {
+                dataitemOcrResult = dataitemOcrResult.Substring(0, dataitemOcrResult.Length - 2);
+            }
             dataitemOcrResult = dataitemOcrResult + "]";
 
             ViewBag.OcrResulData = dataitemOcrResult;
@@ -91,12 +94,15 @@ namespace TPM_QAS.Controllers
 
             List<DataPoint> dataPoints = new List<DataPoint>();
 
-            for (int i = 0; i < dtpie.Rows.Count; i++)
+            if (dtpie != null)
             {
-                DataPoint CG = new DataPoint();
-                //dataPoints.Add(new DataPoint(Convert.ToDateTime(dtpie.Rows[i]["CREATED_DATE"]).ToString("dd/MM"), Convert.ToDouble(Convert.ToDouble(dtpie.Rows[i]["OCR_RESULT"]).ToString("###,###,##0.0"))));
-                dataPoints.Add(new DataPoint(dtpie.Rows[i]["LOT_NO"].ToString(), Convert.ToDouble(dtpie.Rows[i]["OCR_RESULT"])));
+                for (int i = 0; i < dtpie.Rows.Count; i++)
+                {
+                    DataPoint CG = new DataPoint();
+                    //dataPoints.Add(new DataPoint(Convert.ToDateTime(dtpie.Rows[i]["CREATED_DATE"]).ToString("dd/MM"), Convert.ToDouble(Convert.ToDouble(dtpie.Rows[i]["OCR_RESULT"]).ToString("###,###,##0.0"))));
+                    dataPoints.Add(new DataPoint(dtpie.Rows[i]["LOT_NO"].ToString(), Convert.ToDouble(dtpie.Rows[i]["OCR_RESULT"])));
 
+                }
             }
 
 
@@ -150,7 +156,10 @@ namespace TPM_QAS.Controllers
                 }
             }
 
-            dataitemOcrResult = dataitemOcrResult.Substring(0, dataitemOcrResult.Length - 2);
+            if (dataitemOcrResult.Length > 1)
+            {
+                dataitemOcrResult = dataitemOcrResult.Substring(0, dataitemOcrResult.Length - 2);
+            }
             dataitemOcrResult = dataitemOcrResult + "]";
 
             ViewBag.OcrResulData2 = dataitemOcrResult;
@@ -159,12 +168,15 @@ namespace TPM_QAS.Controllers
             chartinfo ci = new chartinfo();
             List<DataPoint> dataPoints = new List<DataPoint>();
 
-            for (int i = 0; i < dtpie.Rows.Count; i++)
+            if (dtpie != null)
             {
-                DataPoint CG = new DataPoint();
-                //dataPoints.Add(new DataPoint(Convert.ToDateTime(dtpie.Rows[i]["CREATED_DATE"]).ToString("dd/MM"), Convert.ToDouble(Convert.ToDouble(dtpie.Rows[i]["OCR_RESULT"]).ToString("###,###,##0.0"))));
-                dataPoints.Add(new DataPoint(dtpie.Rows[i]["LOT_NO"].ToString(),Convert.ToDouble(dtpie.Rows[i]["OCR_RESULT"])));
+                for (int i = 0; i < dtpie.Rows.Count; i++)
+                {
+                    DataPoint CG = new DataPoint();
+                    //dataPoints.Add(new DataPoint(Convert.ToDateTime(dtpie.Rows[i]["CREATED_DATE"]).ToString("dd/MM"), Convert.ToDouble(Convert.ToDouble(dtpie.Rows[i]["OCR_RESULT"]).ToString("###,###,##0.0"))));
+                    dataPoints.Add(new DataPoint(dtpie.Rows[i]["LOT_NO"].ToString(),Convert.ToDouble(dtpie.Rows[i]["OCR_RESULT"])));
 
+                }
             }
 
 

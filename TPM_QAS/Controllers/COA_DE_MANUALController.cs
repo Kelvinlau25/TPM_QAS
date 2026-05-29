@@ -53,18 +53,22 @@ namespace TPM_QAS.Controllers
 
             ViewBag.Deleted = Deleted;
 
-            string emp_no = (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).EMP_NO.ToString();
-
-            DataTable chkApproval = await dbocr.CheckUserAppRole(emp_no);
-            if (chkApproval != null && chkApproval.Rows.Count > 0)
+            var aclUser = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            if (aclUser != null)
             {
-                ViewBag.isManager = "Y";
-            }
+                string emp_no = aclUser.EMP_NO?.ToString() ?? "";
 
-            //for KS and Izzah
-            if ((HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString() == "800133" || (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString() == "800179")
-            {
-                ViewBag.isManager = "Y";
+                DataTable chkApproval = await dbocr.CheckUserAppRole(emp_no);
+                if (chkApproval != null && chkApproval.Rows.Count > 0)
+                {
+                    ViewBag.isManager = "Y";
+                }
+
+                //for KS and Izzah
+                if (aclUser.USER_ID?.ToString() == "800133" || aclUser.USER_ID?.ToString() == "800179")
+                {
+                    ViewBag.isManager = "Y";
+                }
             }
 
             return View(model);
