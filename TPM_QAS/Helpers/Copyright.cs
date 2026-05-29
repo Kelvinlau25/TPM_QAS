@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Web;
+using System;
+using TPM_QAS.DAL;
 
 namespace TPM_QAS.Helpers
 {
@@ -10,7 +7,7 @@ namespace TPM_QAS.Helpers
     {
         public static string GetCopyrightText()
         {
-            string copyrightText = ConfigurationManager.AppSettings["CopyrightText"];
+            string copyrightText = Database.GetAppSettingStatic("CopyrightText");
             int currentYear = DateTime.Now.Year;
 
             return copyrightText.Replace("{YEAR}", currentYear.ToString());

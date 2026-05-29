@@ -1,11 +1,12 @@
-﻿using DBModel;
+using DBModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.DAL;
 using TPM_QAS.Models;
 using TPM_QAS.Filters;
@@ -1037,7 +1038,7 @@ namespace TPM_QAS.Controllers
 
             items = await LoadInnerDllData(0, "", "PROPERTIES");
 
-            return Json(items, JsonRequestBehavior.AllowGet);
+            return Json(items);
         }
 
         public async Task<ActionResult> fillPropItem(string property)
@@ -1046,7 +1047,7 @@ namespace TPM_QAS.Controllers
 
             items = await LoadInnerDllData(0, property, "PROP_ITEM");
 
-            return Json(items, JsonRequestBehavior.AllowGet);
+            return Json(items);
         }
 
         public async Task<ActionResult> fillSection()
@@ -1055,7 +1056,7 @@ namespace TPM_QAS.Controllers
 
             items = await LoadInnerDllData(0, "", "SECTION");
 
-            return Json(items, JsonRequestBehavior.AllowGet);
+            return Json(items);
         }
 
         public async Task<ActionResult> fillFieldName(string section)
@@ -1064,7 +1065,7 @@ namespace TPM_QAS.Controllers
 
             items = await LoadInnerDllData(0, section, "FIELD_NAME");
 
-            return Json(items, JsonRequestBehavior.AllowGet);
+            return Json(items);
         }
 
         public async Task<ActionResult> fillProdType(string comp)
@@ -1073,7 +1074,7 @@ namespace TPM_QAS.Controllers
 
             items = await LoadDllData(0, comp, "PROD_TYPE_COMP");
 
-            return Json(items, JsonRequestBehavior.AllowGet);
+            return Json(items);
         }
 
         private async Task<List<SelectListItem>> LoadInnerDllData(int ID, string act, string category)

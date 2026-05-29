@@ -1,10 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
 using Azure.Core.Pipeline;
 using DocumentFormat.OpenXml.Math;
 using static TPM_QAS.Models.AzureBlob;
@@ -18,7 +17,9 @@ using static Azure.Core.HttpHeader;
 using TPM_QAS.Helpers;
 using System.Security.Policy;
 using System.IO.Compression;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace TPM_QAS.Helpers
 {
@@ -63,7 +64,7 @@ namespace TPM_QAS.Helpers
             }
         }
 
-        public async Task<Dictionary<string, string>> uploadBlob(string path, string container, HttpPostedFileBase file)
+        public async Task<Dictionary<string, string>> uploadBlob(string path, string container, IFormFile file)
         {
             Dictionary<string, string> dic = new Dictionary<string, string>();
 
@@ -88,7 +89,7 @@ namespace TPM_QAS.Helpers
                 BlobClient blobClient = containerClient.GetBlobClient(path);
 
                 // Upload the file
-                using (var fileStream = file.InputStream)
+                using (var fileStream = file.OpenReadStream())
                 {
                     if (fileStream.CanSeek)
                     {
@@ -253,7 +254,7 @@ namespace TPM_QAS.Helpers
 
                 url = blobpath + "/" + url;
 
-                string originalUrl = HttpUtility.UrlDecode(url);
+                string originalUrl = System.Net.WebUtility.UrlDecode(url);
                 BlobServiceClient blobServiceClient;
                 HttpClientHandler httpClientHandler = new HttpClientHandler();
 

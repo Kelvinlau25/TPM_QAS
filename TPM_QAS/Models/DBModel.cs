@@ -1,16 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Configuration;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.Extensions.Configuration;
 using System.Net;
 using System.Threading.Tasks;
 using DatabaseModel;
+using Database = TPM_QAS.DAL.Database;
 using System.Data;
-using System.Data.SqlClient;
-using System.Configuration;
+using Microsoft.Data.SqlClient;
 using System.Net.Http;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
@@ -30,7 +31,7 @@ namespace DBModel
         string Value, string SortField, string Direction,
         string FrmRowno, string ToRowno, string Deleted)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -47,15 +48,15 @@ namespace DBModel
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
 
-                        cmd.Parameters.Add(new SqlParameter("@Table", Table)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@TableID", TableID)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@Search", Search)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@Value", Value)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@SortField", SortField)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@Direction", Direction)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@FrmRowno", FrmRowno)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@ToRowno", ToRowno)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@Deleted", Deleted)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@Table", Table)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@TableID", TableID)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@Search", Search)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@Value", Value)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@SortField", SortField)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@Direction", Direction)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@FrmRowno", FrmRowno)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@ToRowno", ToRowno)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@Deleted", Deleted)).Direction = ParameterDirection.Input;
 
                         reader = await cmd.ExecuteReaderAsync();
                         dt.Load(reader);
@@ -88,7 +89,7 @@ namespace DBModel
         string Value, string SortField, string Direction,
         string FrmRowno, string ToRowno, string Deleted)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -105,15 +106,15 @@ namespace DBModel
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
 
-                        cmd.Parameters.Add(new SqlParameter("@Table", Table)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@TableID", TableID)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@Search", Search)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@Value", Value)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@SortField", SortField)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@Direction", Direction)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@FrmRowno", FrmRowno)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@ToRowno", ToRowno)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@Deleted", Deleted)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@Table", Table)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@TableID", TableID)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@Search", Search)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@Value", Value)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@SortField", SortField)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@Direction", Direction)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@FrmRowno", FrmRowno)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@ToRowno", ToRowno)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@Deleted", Deleted)).Direction = ParameterDirection.Input;
                         reader = await cmd.ExecuteReaderAsync();
                         dt.Load(reader);
                         reader.Close();
@@ -142,7 +143,7 @@ namespace DBModel
         
         public async Task<DataTable> AuditList(string Table, string pid)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -159,8 +160,8 @@ namespace DBModel
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
 
-                        cmd.Parameters.Add(new SqlParameter("@pTable", Table)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pKeyValue", pid)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pTable", Table)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pKeyValue", pid)).Direction = ParameterDirection.Input;
                         reader = await cmd.ExecuteReaderAsync();
                         dt.Load(reader);
                         reader.Close();
@@ -189,7 +190,7 @@ namespace DBModel
 
         public async Task<List<SelectListItem>> PSP_COMMON_DDL(string type, string p1, string p2, string p3, string p4, string p5, string p6)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             List<SelectListItem> items = new List<SelectListItem>();
@@ -207,13 +208,13 @@ namespace DBModel
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandTimeout = 0;
 
-                        cmd.Parameters.Add(new SqlParameter("@pID", type)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@ptext", p1)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@ptext2", p2)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@ptext3", p3)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@ptext4", p4)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@ptext5", p5)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@ptext6", p6)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pID", type)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@ptext", p1)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@ptext2", p2)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@ptext3", p3)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@ptext4", p4)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@ptext5", p5)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@ptext6", p6)).Direction = ParameterDirection.Input;
 
                         reader = await cmd.ExecuteReaderAsync();
                         dt.Load(reader);
@@ -246,7 +247,7 @@ namespace DBModel
 
         public async Task<DataTable> getDllData(int ID, string act, string category)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -263,9 +264,9 @@ namespace DBModel
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
 
-                        cmd.Parameters.Add(new SqlParameter("@pID", ID)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pACTION", act)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pCATEGORY", category)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pID", ID)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pACTION", act)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pCATEGORY", category)).Direction = ParameterDirection.Input;
                         reader = await cmd.ExecuteReaderAsync();
                         dt.Load(reader);
                         reader.Close();
@@ -293,7 +294,7 @@ namespace DBModel
 
         public async Task<DataTable> getSectionDllData(int ID, string act, string category)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -310,7 +311,7 @@ namespace DBModel
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
 
-                        cmd.Parameters.Add(new SqlParameter("@pHdrId ", ID)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pHdrId ", ID)).Direction = ParameterDirection.Input;
                         reader = await cmd.ExecuteReaderAsync();
                         dt.Load(reader);
                         reader.Close();
@@ -338,7 +339,7 @@ namespace DBModel
 
         public async Task<DataTable> getPicDllData(int ID, string section, string act, string category)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -355,10 +356,10 @@ namespace DBModel
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
 
-                        cmd.Parameters.Add(new SqlParameter("@pID", ID)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pSECTION", section)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pACTION", act)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pCATEGORY", category)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pID", ID)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pSECTION", section)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pACTION", act)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pCATEGORY", category)).Direction = ParameterDirection.Input;
 
                         reader = await cmd.ExecuteReaderAsync();
                         dt.Load(reader);
@@ -389,7 +390,7 @@ namespace DBModel
         
         public async Task<DataTable> getRoleList(string EMPNO)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -406,7 +407,7 @@ namespace DBModel
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
 
-                        cmd.Parameters.Add(new SqlParameter("@pEMPNO", EMPNO)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pEMPNO", EMPNO)).Direction = ParameterDirection.Input;
                         reader = await cmd.ExecuteReaderAsync();
                         dt.Load(reader);
                         reader.Close();
@@ -491,8 +492,8 @@ namespace DBModel
             public Object test { get; set; }
         }
 
-        public readonly string m_clientAddress = WebConfigurationManager.AppSettings["CompareWordClientAddress"].ToString();
-        public readonly string Api_key = WebConfigurationManager.AppSettings["api_key"].ToString();
+        public readonly string m_clientAddress = Database.GetAppSettingStatic("CompareWordClientAddress").ToString();
+        public readonly string Api_key = Database.GetAppSettingStatic("api_key").ToString();
 
         public async Task<SimilarityResponseModel> GetSimilarity(string i_no, List<String> i_comparelist)
         {
@@ -512,8 +513,8 @@ namespace DBModel
         {
             try
             {
-                string credentialUser = WebConfigurationManager.AppSettings["proxyEmail"].ToString();
-                string credentialPassword = WebConfigurationManager.AppSettings["proxyPassword"].ToString();
+                string credentialUser = Database.GetAppSettingStatic("proxyEmail").ToString();
+                string credentialPassword = Database.GetAppSettingStatic("proxyPassword").ToString();
                 //First create a proxy object
 
                 var httpClientHandler = new HttpClientHandler();

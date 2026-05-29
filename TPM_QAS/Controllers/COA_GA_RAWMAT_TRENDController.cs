@@ -1,4 +1,4 @@
-﻿using ClosedXML.Excel;
+using ClosedXML.Excel;
 using DBModel;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Newtonsoft.Json;
@@ -8,8 +8,9 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.DAL;
 using TPM_QAS.Filters;
 using TPM_QAS.Helpers;
@@ -131,7 +132,7 @@ namespace TPM_QAS.Controllers
             model.MM_MATERIAL_H_ID == 0 || string.IsNullOrEmpty(model.MM_SUPPLIER_H_ID_STRING) ||
             string.IsNullOrEmpty(model.MM_MATERIAL_D2_ID_STRING))
             {
-                return Json(new { success = false, message = "Required field cannot be empty." }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "Required field cannot be empty." });
             }
 
             try
@@ -140,19 +141,19 @@ namespace TPM_QAS.Controllers
 
                 if (dt != null && dt.Rows.Count > 0)
                 {
-                    return Json(new { success = true }, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = true });
                 }
                 else
                 {
-                    return Json(new { success = false, message = "No data available to export." }, JsonRequestBehavior.AllowGet);
+                    return Json(new { success = false, message = "No data available to export." });
                 }
             }
             catch (Exception ex)
             {
                 ErrorLogSys err = new ErrorLogSys();
-                await err.ErrorLog_Add_V2(System.Reflection.MethodBase.GetCurrentMethod().Name, ex, (Session["AclUser"] as ACL_UserObj).USER_ID.ToString());
+                await err.ErrorLog_Add_V2(System.Reflection.MethodBase.GetCurrentMethod().Name, ex, (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString());
                 err = null;
-                return Json(new { success = false, message = "Error occurred while checking data." }, JsonRequestBehavior.AllowGet);
+                return Json(new { success = false, message = "Error occurred while checking data." });
             }
         }
 
@@ -228,21 +229,21 @@ namespace TPM_QAS.Controllers
                     var httpResponse = Response;
                     httpResponse.Clear();
                     httpResponse.ContentType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
-                    httpResponse.AddHeader("content-disposition", "attachment;filename=" + filename + ".xlsx");
+                    httpResponse.Headers.Append("content-disposition", "attachment;filename=" + filename + ".xlsx");
 
                     using (MemoryStream tmpMemoryStream = new MemoryStream())
                     {
                         workbook.SaveAs(tmpMemoryStream);
-                        tmpMemoryStream.WriteTo(httpResponse.OutputStream);
+                        tmpMemoryStream.WriteTo(httpResponse.Body);
                         tmpMemoryStream.Close();
                     }
-                    httpResponse.End();
+                    // Response.End() removed - not available in .NET Core
                 }
             }
             catch (Exception ex)
             {
                 ErrorLogSys err = new ErrorLogSys();
-                await err.ErrorLog_Add_V2(System.Reflection.MethodBase.GetCurrentMethod().Name, ex, (Session["AclUser"] as ACL_UserObj).USER_ID.ToString());
+                await err.ErrorLog_Add_V2(System.Reflection.MethodBase.GetCurrentMethod().Name, ex, (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString());
                 err = null;
                 //return null;
             }

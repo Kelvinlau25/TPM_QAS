@@ -1,11 +1,12 @@
-﻿using DBModel;
+using DBModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.Filters;
 using TPM_QAS.Helpers;
 using TPM_QAS.DAL;
@@ -773,7 +774,7 @@ namespace TPM_QAS.Controllers
 
             items = await LoadInnerDllData(0, "", "PROD_GROUP");
             items.RemoveAll(item => item.Text == "Select an option.." && item.Value == "");
-            return Json(items, JsonRequestBehavior.AllowGet);
+            return Json(items);
         }
 
         public async Task<ActionResult> fillMachine(string propitemid)
@@ -782,7 +783,7 @@ namespace TPM_QAS.Controllers
 
             items = await LoadInnerDllDataMach(0, propitemid, "MACHINE_NAME");
 
-            return Json(items, JsonRequestBehavior.AllowGet);
+            return Json(items);
         }
 
         private async Task<List<SelectListItem>> LoadInnerDllDataMach(int ID, string act, string category)

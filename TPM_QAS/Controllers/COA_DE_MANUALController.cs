@@ -1,4 +1,4 @@
-﻿using DBModel;
+using DBModel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using iTextSharp.text.pdf;
 using Newtonsoft.Json.Linq;
@@ -11,15 +11,15 @@ using System.Linq;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.DAL;
 using TPM_QAS.Filters;
 using TPM_QAS.Helpers;
 using TPM_QAS.Models;
-using System.Configuration;
-using System.Data.SqlClient;
-using System.Windows.Controls;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Data.SqlClient;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Quartz.Xml.JobSchedulingData20;
 
@@ -53,7 +53,7 @@ namespace TPM_QAS.Controllers
 
             ViewBag.Deleted = Deleted;
 
-            string emp_no = (Session["AclUser"] as ACL_UserObj).EMP_NO.ToString();
+            string emp_no = (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).EMP_NO.ToString();
 
             DataTable chkApproval = await dbocr.CheckUserAppRole(emp_no);
             if (chkApproval != null && chkApproval.Rows.Count > 0)
@@ -62,7 +62,7 @@ namespace TPM_QAS.Controllers
             }
 
             //for KS and Izzah
-            if ((Session["AclUser"] as ACL_UserObj).USER_ID.ToString() == "800133" || (Session["AclUser"] as ACL_UserObj).USER_ID.ToString() == "800179")
+            if ((HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString() == "800133" || (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString() == "800179")
             {
                 ViewBag.isManager = "Y";
             }
@@ -164,7 +164,7 @@ namespace TPM_QAS.Controllers
                 }
             }
 
-            string emp_no = (Session["AclUser"] as ACL_UserObj).EMP_NO.ToString();
+            string emp_no = (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).EMP_NO.ToString();
 
             DataTable chkApproval = await dbocr.CheckUserAppRole(emp_no);
             if (chkApproval != null && chkApproval.Rows.Count > 0)
@@ -173,7 +173,7 @@ namespace TPM_QAS.Controllers
             }
 
             //for KS and Izzah
-            if ((Session["AclUser"] as ACL_UserObj).USER_ID.ToString() == "800133" || (Session["AclUser"] as ACL_UserObj).USER_ID.ToString() == "800179")
+            if ((HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString() == "800133" || (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).USER_ID.ToString() == "800179")
             {
                 ViewBag.isManager = "Y";
             }
@@ -255,15 +255,15 @@ namespace TPM_QAS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UploadManualFile(HttpPostedFileBase DataUploadFile, string supplierID, string material, string lotno, string coaindicator)
+        public async Task<ActionResult> UploadManualFile(IFormFile DataUploadFile, string supplierID, string material, string lotno, string coaindicator)
         {
-            string EMP_NO = (Session["AclUser"] as ACL_UserObj).EMP_NO.ToString();
+            string EMP_NO = (HttpContext.Session.GetObject<ACL_UserObj>("AclUser")).EMP_NO.ToString();
 
             string message = "";
             List<MMSpecLstModel> listItemsAdd = new List<MMSpecLstModel>();
             try
             {
-                if (DataUploadFile == null || DataUploadFile.ContentLength == 0)
+                if (DataUploadFile == null || DataUploadFile.Length == 0)
                 {
                     return Json(new { success = false, message = "No file uploaded." });
                 }
@@ -292,7 +292,7 @@ namespace TPM_QAS.Controllers
                     //save pdf file in server
 
                     string filename = DataUploadFile.FileName;
-                    string uploadPath = Server.MapPath("~/Splitpath/");
+                    string uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "~/Splitpath/");
                     if (!Directory.Exists(uploadPath))
                     {
                         Directory.CreateDirectory(uploadPath);
@@ -304,7 +304,7 @@ namespace TPM_QAS.Controllers
                         filename = "COA_" + lot1 + "_" + EMP_NO + ".pdf";
                         string pagePath = Path.Combine(uploadPath, filename);
                         string filePath = Path.Combine(uploadPath, filename);
-                        DataUploadFile.SaveAs(filePath);
+                        using (var _fs = new FileStream(filePath, FileMode.Create)) {{ DataUploadFile.CopyTo(_fs); }}
                     }
 
                     string path = "";
@@ -588,15 +588,15 @@ namespace TPM_QAS.Controllers
             _pMssql.Add(new SqlParameter("@SortType", "DESC"));
 
             string dbname = "";
-            string isTest = ConfigurationManager.AppSettings["isTest"];
+            string isTest = TPM_QAS.DAL.Database.GetAppSettingStatic("isTest");
 
             if (string.Equals(isTest, "TRUE", StringComparison.OrdinalIgnoreCase))
             {
-                dbname = ConfigurationManager.AppSettings["DEV"];
+                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("DEV");
             }
             else
             {
-                dbname = ConfigurationManager.AppSettings["LIVE"];
+                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("LIVE");
             }
 
             AuditTrailModels = await AuditTrailHelper.AuditTrailStoreProcedureSqlAsync("PSP_GET_AUDIT_TRAIL", CommandType.StoredProcedure, _pMssql, dbname);
@@ -619,7 +619,7 @@ namespace TPM_QAS.Controllers
 
             items = await LoadInnerDllData(0, "", "COA_SUPPLIER");
 
-            return Json(items, JsonRequestBehavior.AllowGet);
+            return Json(items);
         }
 
         public async Task<ActionResult> fillMaterial(string supp)
@@ -628,7 +628,7 @@ namespace TPM_QAS.Controllers
 
             items = await LoadInnerDllData(0, supp, "COA_SUPP_MAT");
 
-            return Json(items, JsonRequestBehavior.AllowGet);
+            return Json(items);
         }
 
         private async Task<List<SelectListItem>> LoadInnerDllData(int ID, string act, string category)

@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.Helpers;
 using TPM_QAS.Models;
 
@@ -15,7 +16,7 @@ namespace TPM_QAS.DAL
     {
         public async Task<List<SelectListItem>> getInspItem(string suppID, string matID)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             List<SelectListItem> chop = new List<SelectListItem>();
@@ -33,8 +34,8 @@ namespace TPM_QAS.DAL
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
-                        cmd.Parameters.Add(new SqlParameter("@PSuppID", suppID)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pMatID", matID)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@PSuppID", suppID)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pMatID", matID)).Direction = ParameterDirection.Input;
 
                         using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                         {
@@ -63,7 +64,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getTrendAnalysis(RawMatTrendModel model)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -114,7 +115,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getTrendAnalysisExcel(RawMatTrendModel model)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try

@@ -1,4 +1,4 @@
-﻿@using TPM_QAS.Models
+@using TPM_QAS.Models
 @model TPM_QAS.Models.CommonModel<DailyIDSTransVM, DailyIDSTransVM>
 @{
     ViewBag.Title = Model.Title;
@@ -414,7 +414,7 @@
                         <tr>
                             <td style="width: 20%">
                                 @Html.Label("Reading#1")
-                                @Html.Label("*", new { style = "color:red" })
+                                @Html.Label("*", "*", new { style = "color:red" })
                             </td>
                             <td> : </td>
                             <td>
@@ -598,7 +598,7 @@
                     <table class="table table-striped" style="width:100%">
                         <tr>
                             <td>
-                                @Html.Label("Result will be ", new { id = "cresult" })
+                                @Html.Label("Result will be ", "Result will be ", new { id = "cresult" })
                                 <span hidden id="txtfresult"></span>
                             </td>
                         </tr>
@@ -1286,7 +1286,7 @@ function getAverageApp1() {
     var g = 0;
     var row = 0;
 
-    var ratioList = sratioList; @*@Html.Raw(Json.Encode(Model.ModelObj.ratioList));*@
+    var ratioList = sratioList; @*@Html.Raw(Json.Serialize(Model.ModelObj.ratioList));*@
     var table = $('.tblAppearance').length;
     for (var j = 0; j < ratioList.length; j++) {
         for (var i = 0; i < table; i++) {
@@ -1707,7 +1707,7 @@ $("#confirm-machinename").off("click").on("click", function (e) {
                 AFTERPRODTYPCHG: $("#txtOverwrite").val(),
                 PRODTYPCHGIND: boolPRODTYPCHGIND,//$("#chkoverwite").prop('checked'),
                 MoldingList: null,
-                descriptionList: sdescriptionList, //Html.Raw(Json.Encode(Model.descriptionList)),
+                descriptionList: sdescriptionList, //Html.Raw(Json.Serialize(Model.descriptionList)),
             }
                 $.ajax({
                     //headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]', $("#product-type-form")).val() },

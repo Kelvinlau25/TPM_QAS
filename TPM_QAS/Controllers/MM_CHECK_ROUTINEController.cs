@@ -1,11 +1,12 @@
-﻿using DBModel;
+using DBModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.Filters;
 using TPM_QAS.Helpers;
 using TPM_QAS.DAL;

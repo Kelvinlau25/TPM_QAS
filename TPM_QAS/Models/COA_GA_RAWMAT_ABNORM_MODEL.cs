@@ -1,14 +1,14 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
-using System.Data.SqlClient;
-using System.Configuration;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
 using System.Runtime.Serialization;
 using System.Data;
-using System.Web.Mvc;
 
 namespace TPM_QAS.Models
 {

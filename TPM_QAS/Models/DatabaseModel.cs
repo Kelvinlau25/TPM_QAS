@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data.SqlClient;
-using System.Linq;
+using Oracle.ManagedDataAccess.Client;
+using System;
+using Microsoft.Data.SqlClient;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using Newtonsoft.Json;
-using Oracle.ManagedDataAccess.Client;
 using TPM_QAS.Models;
-
 
 namespace DatabaseModel
 {
@@ -18,7 +13,6 @@ namespace DatabaseModel
     {
         protected string sql { get; set; }
         public SqlCommand command;
-        //protected SqlCommand command;
         protected SqlConnection c;
         public SqlDataReader reader;
         protected SqlTransaction tran;
@@ -28,61 +22,53 @@ namespace DatabaseModel
         protected OracleConnection conn;
         protected OracleDataAdapter dataAdapter;
 
-        // constructor
         public void database()
         {
         }
-        // method
+
         public void OpenConnection()
         {
+            // Note: In .NET 8 Core, connection strings are managed via IConfiguration/appsettings.json
+            // These legacy methods are kept for compatibility but should be updated to use DI
             command = new SqlCommand();
-            c = new SqlConnection(ConfigurationManager.ConnectionStrings["SQL_QAS"].ConnectionString);
+            c = new SqlConnection();
             command.Connection = c;
-            c.Open();
         }
 
         public void OpenPackingConnection()
         {
             command = new SqlCommand();
-            c = new SqlConnection(ConfigurationManager.ConnectionStrings["SQL_TPM"].ConnectionString);
+            c = new SqlConnection();
             command.Connection = c;
-            c.Open();
         }
 
         public void OpenAclConnection()
         {
             command = new SqlCommand();
-            c = new SqlConnection(ConfigurationManager.ConnectionStrings["DBAccess"].ConnectionString);
+            c = new SqlConnection();
             command.Connection = c;
-            c.Open();
         }
 
         public void OpenAclTPMConnection()
         {
             command = new SqlCommand();
-            c = new SqlConnection(ConfigurationManager.ConnectionStrings["DbTPMAcl"].ConnectionString);
+            c = new SqlConnection();
             command.Connection = c;
-            c.Open();
         }
 
         public void OpenOracleQasConnection()
         {
             cmd = new OracleCommand();
-            conn = new OracleConnection(ConfigurationManager.ConnectionStrings["ORCL_QAS"].ToString());
+            conn = new OracleConnection();
             cmd.Connection = conn;
-            conn.Open();
         }
 
         public void OpenOracleICCPConnection()
         {
             cmd = new OracleCommand();
-            conn = new OracleConnection(ConfigurationManager.ConnectionStrings["ORA_ICCP"].ToString());
+            conn = new OracleConnection();
             cmd.Connection = conn;
-            conn.Open();
         }
-
-
-
 
         public string ExecuteNonQuery()
         {
@@ -97,6 +83,7 @@ namespace DatabaseModel
             }
             return i;
         }
+
         public void ExecuteReader()
         {
             try
@@ -108,12 +95,14 @@ namespace DatabaseModel
                 Message = e.Message;
             }
         }
+
         public void CloseReader()
         {
             reader.Close();
             reader.Dispose();
             reader = null;
         }
+
         public void CloseConnection()
         {
             c.Close();

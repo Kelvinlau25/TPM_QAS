@@ -1,10 +1,11 @@
-﻿using DBModel;
+using DBModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.Filters;
 using TPM_QAS.Helpers;
 using TPM_QAS.DAL;
@@ -12,7 +13,7 @@ using TPM_QAS.Models;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using System.Net.Http;
-using System.Configuration;
+using Microsoft.Extensions.Configuration;
 
 namespace qas.Controllers
 {
@@ -28,9 +29,9 @@ namespace qas.Controllers
 
         //    //if (!string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(password_cur))
         //    //{
-        //    //    string systemName = ConfigurationManager.AppSettings["SystemName_ACL"];
-        //    //    string companyCode = ConfigurationManager.AppSettings["CompanyCode_ACL"];
-        //    //    string DatabaseType = ConfigurationManager.AppSettings["DBTYPE"];
+        //    //    string systemName = TPM_QAS.DAL.Database.GetAppSettingStatic("SystemName_ACL");
+        //    //    string companyCode = TPM_QAS.DAL.Database.GetAppSettingStatic("CompanyCode_ACL");
+        //    //    string DatabaseType = TPM_QAS.DAL.Database.GetAppSettingStatic("DBTYPE");
 
         //    //    LoginRequest loginmodel = new LoginRequest();
 
@@ -47,7 +48,7 @@ namespace qas.Controllers
         //    //    ByteArrayContent clientbodystr = new StringContent(JsonConvert.SerializeObject(loginmodel), Encoding.UTF8, "application/json");
 
         //    //    HttpClient client = new HttpClient();
-        //    //    HttpResponseMessage response = await client.PostAsync(ConfigurationManager.AppSettings["ACL_API"] + "/api/v1/login/login", clientbodystr);
+        //    //    HttpResponseMessage response = await client.PostAsync(TPM_QAS.DAL.Database.GetAppSettingStatic("ACL_API") + "/api/v1/login/login", clientbodystr);
         //    //    if (response.IsSuccessStatusCode == true)
         //    //    {
         //    //        var responseBody = await response.Content.ReadAsStringAsync();

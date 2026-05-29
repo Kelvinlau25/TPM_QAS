@@ -1,13 +1,15 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
+using Microsoft.Extensions.Configuration;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.Filters;
 using TPM_QAS.Helpers;
 using TPM_QAS.Models;
@@ -22,7 +24,6 @@ using OfficeOpenXml.Style;
 using System.Threading.Tasks;
 using System.Globalization;
 using DBModel;
-using System.Web.UI.WebControls;
 using TPM_QAS.Controllers;
 using Image = iTextSharp.text.Image;
 using ClosedXML.Excel;
@@ -100,7 +101,7 @@ namespace qas.Models
         [SessionExpire]
         public async Task<ActionResult> W_GRADE_PL_EXCEL()
         {
-            ACL_UserObj userobj = (ACL_UserObj)Session["AclUser"];
+            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME;
 
             try
@@ -266,7 +267,7 @@ namespace qas.Models
         //[SessionExpire]
         //public async Task<ActionResult> W_GRADE_PL_EXCEL()
         //{
-        //    ACL_UserObj userobj = (ACL_UserObj)Session["AclUser"];
+        //    ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
         //    string USERID = userobj.EMP_NAME;
 
         //    try
@@ -426,7 +427,7 @@ namespace qas.Models
             model.DropdownPropItem = await LoadDllData(0, "", "DE_IDS_REPORT_PROP");
             model.DropdownProdType = await db.GetProdTypeList();
             //ViewBag.prodtype = db.GetProdTypeList();
-            Session["refreshids"] = 1;
+            HttpContext.Session.SetString("refreshids", 1.ToString() ?? "");
             return View(model);
         }
 
@@ -434,7 +435,7 @@ namespace qas.Models
         [SessionExpire]
         public async Task<ActionResult> IDS_REPORT(REPORT_IDS_VM m)
         {
-            ACL_UserObj userobj = (ACL_UserObj)Session["AclUser"];
+            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME;
             CommonFunction common = new CommonFunction();
 

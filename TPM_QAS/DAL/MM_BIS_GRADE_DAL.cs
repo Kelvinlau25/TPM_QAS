@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.Helpers;
 using TPM_QAS.Models;
 
@@ -15,9 +16,9 @@ namespace TPM_QAS.DAL
     {
         public async Task<MM_BIS_GRADE_VIEWMODEL> GetBisGradeHeaderData(string pID)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string aclUser = userobj.USER_ID.ToString();
-            string loc = System.Web.HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
 
             MM_BIS_GRADE_VIEWMODEL model = new MM_BIS_GRADE_VIEWMODEL();
             try
@@ -65,9 +66,9 @@ namespace TPM_QAS.DAL
 
         public async Task<List<MM_BIS_GRADE>> GetBisGradeDetailData(string pID)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string aclUser = userobj.USER_ID.ToString();
-            string loc = System.Web.HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
 
             List<MM_BIS_GRADE> mlist = new List<MM_BIS_GRADE>();
             try
@@ -120,9 +121,9 @@ namespace TPM_QAS.DAL
         {
             string result = "0";
 
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string aclUser = userobj.USER_ID.ToString();
-            string loc = System.Web.HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
 
             try
             {
@@ -163,9 +164,9 @@ namespace TPM_QAS.DAL
         {
             string result = "0";
 
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string aclUser = userobj.USER_ID.ToString();
-            string loc = System.Web.HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
 
             try
             {

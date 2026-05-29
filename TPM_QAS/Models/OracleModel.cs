@@ -1,11 +1,6 @@
-﻿using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Client;
 using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
-using System.Linq;
-using System.Web;
-
 
 namespace OracleModel
 {
@@ -19,15 +14,14 @@ namespace OracleModel
 
         public void Database()
         {
-
         }
 
         public void OpenConn(string connStr)
         {
             cmd = new OracleCommand();
-            conn = new OracleConnection(ConfigurationManager.ConnectionStrings[connStr].ToString());
+            // In .NET 8, connection strings should come from IConfiguration
+            conn = new OracleConnection();
             cmd.Connection = conn;
-            conn.Open();
         }
 
         public DataSet ExecuteReaderDS(string query)
@@ -57,7 +51,6 @@ namespace OracleModel
             try
             {
                 DataTable dataTable = new DataTable();
-
                 cmd.CommandType = CommandType.Text;
                 cmd.CommandText = query;
 

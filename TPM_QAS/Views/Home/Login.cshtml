@@ -1,4 +1,4 @@
-﻿@model HomeModel.AuthenticatorModel
+@model HomeModel.AuthenticatorModel
 @{
     ViewBag.Title = "System Design UI/UX Standardization";
     Layout = null;
@@ -7,15 +7,16 @@
 <html class="h-100">
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>@System.Configuration.ConfigurationManager.AppSettings["SystemName"]</title>
-    @Styles.Render("~/Content/css-login")
-    @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/bootstrap")
+    <title>@TPM_QAS.DAL.Database.GetAppSettingStatic("SystemName")</title>
+    <!-- Styles.Render removed - use direct link references -->
+    <script src="~/Scripts/modernizr-2.6.2.js"></script>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
 
-    @Scripts.Render("~/bundles/jqueryval")
-    @Scripts.Render("~/Scripts/jquery-3.3.1.min.js")
-    @Scripts.Render("~/Scripts/jquery-ui-1.12.1.min.js")
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <!-- Scripts.Render removed - use direct script references -->
+    <!-- Scripts.Render removed - use direct script references -->
 
     <script src="~/Scripts/jquery-3.3.1.js"></script>
     <script src="~/Plugins/loading-spinner-plugin/waitMe.min.js"></script>
@@ -47,7 +48,7 @@
                 </div>
                 <div class="row align-items-center tr-system-title">
                     <p class="text-center tr-system-title-text">
-                        @System.Configuration.ConfigurationManager.AppSettings["SystemName"]
+                        @TPM_QAS.DAL.Database.GetAppSettingStatic("SystemName")
                     </p>
                 </div>
                 <div class="row form-group-margin">
@@ -101,7 +102,7 @@
         </div>
         <div class="tr-footer d-flex flex-row" style="z-index:999;">
             <div class="flex-column px-1 text-black-50 tr-footer-text" style="margin:auto">
-                <span>@System.Configuration.ConfigurationManager.AppSettings["VersionText"]</span>
+                <span>@TPM_QAS.DAL.Database.GetAppSettingStatic("VersionText")</span>
             </div>
             <div class="flex-column flex-grow-1 text-center text-black-50 tr-footer-text" style="margin:auto; margin-left: -80px">
                 @TPM_QAS.Helpers.Copyright.GetCopyrightText()

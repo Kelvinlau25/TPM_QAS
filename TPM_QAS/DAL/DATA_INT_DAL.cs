@@ -1,14 +1,15 @@
-﻿using DocumentFormat.OpenXml.Office2010.Excel;
+using DocumentFormat.OpenXml.Office2010.Excel;
 using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
+using Microsoft.Extensions.Configuration;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.Helpers;
 using TPM_QAS.Models;
 
@@ -79,7 +80,7 @@ namespace TPM_QAS.DAL
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
 
-                        cmd.Parameters.Add(new SqlParameter("@PProdLine", prodline)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@PProdLine", prodline)).Direction = ParameterDirection.Input;
                         reader = await cmd.ExecuteReaderAsync();
                         dt.Load(reader);
                         reader.Close();
@@ -111,7 +112,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -157,7 +158,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -257,7 +258,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            //string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            //string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -478,7 +479,7 @@ namespace TPM_QAS.DAL
         {
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -583,7 +584,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -690,7 +691,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -795,7 +796,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -1014,7 +1015,7 @@ namespace TPM_QAS.DAL
         {
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -1158,7 +1159,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -1265,7 +1266,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -1327,7 +1328,7 @@ namespace TPM_QAS.DAL
         #region grn
         public async Task<DataTable> getUngradedGRN()
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             List<OraMaterialList> oramat = new List<OraMaterialList>();
@@ -1370,7 +1371,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             try
@@ -1422,7 +1423,7 @@ namespace TPM_QAS.DAL
         #region W Grade Production Listing
         public async Task<DataTable> getWGradePL()
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContextHelper.Current.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             string year = DateTime.Now.Year.ToString();
@@ -1502,7 +1503,7 @@ namespace TPM_QAS.DAL
             string result = "0";
             string userID = "INTEGRATION";
             string createdby = userID;
-            string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContextHelper.Current.Connection.RemoteIpAddress?.ToString().ToString();
             string pc = Environment.MachineName;
 
             string year = DateTime.Now.Year.ToString();

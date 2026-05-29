@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System;
 
 namespace TPM_QAS.Helpers
 {
     public class EmployeeObj
     {
-        #region Properties
-
-        /// <summary>
-        /// Gets or sets User ID property.
-        /// </summary>
-
         public int ID_MM_USER_H { get; set; }
         public string USER_NAME { get; set; }
         public string USER_EMAIL { get; set; }
@@ -20,9 +11,6 @@ namespace TPM_QAS.Helpers
         public string SHIFT { get; set; }
         public int EMP_NO { get; set; }
         public int APPROVAL_LEVEL { get; set; }
-
-
-        #endregion
     }
 
     public class AdEmployeeObj

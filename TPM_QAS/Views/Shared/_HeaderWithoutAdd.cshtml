@@ -4,9 +4,9 @@
     var ctrlto = this.ViewData["Ctrl"].ToString();
     var deleted = "0";
     var num = Model.Count;
-    if (Request.QueryString["Deleted"] != null)
+    if (!string.IsNullOrEmpty(Context.Request.Query["Deleted"]))
     {
-        deleted = Request.QueryString["Deleted"].ToString();
+        deleted = Context.Request.Query["Deleted"].ToString();
     }
     var ViewAutoGen = this.ViewData["AutoGenView"].ToString();
 }

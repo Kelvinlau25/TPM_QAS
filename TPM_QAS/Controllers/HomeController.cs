@@ -1,16 +1,17 @@
-﻿using System;
+using Microsoft.AspNetCore.Authorization;
+using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using HomeModel;
 using TPM_QAS.Filters;
 using System.Security.Cryptography;
 using TPM_QAS.Helpers;
 using System.IO;
 using System.Threading.Tasks;
+using TPM_QAS.DAL;
 
 namespace TPM_QAS.Controllers
 {
@@ -23,9 +24,8 @@ namespace TPM_QAS.Controllers
             string systemName = string.Empty;
 
             AuthenticatorModel model = new AuthenticatorModel();
-            //userAD = Environment.UserName;
-            userAD = System.Web.HttpContext.Current.User.Identity.Name;
-            systemName = ConfigurationManager.AppSettings["SystemName"];
+            userAD = HttpContext.User?.Identity?.Name ?? "";
+            systemName = Database.GetAppSettingStatic("SystemName");
             string[] splitWords = userAD.Split('\\');
             vUserAD = splitWords[splitWords.Length - 1];
 
@@ -36,7 +36,7 @@ namespace TPM_QAS.Controllers
             ViewBag.userAD2 = vUserAD;
             if (model.VALID_USER == true)
             {
-                Session["AclUser"] = new ACL_UserObj
+                HttpContext.Session.SetObject("AclUser", new ACL_UserObj
                 {
                     ID_ACL_USER = model.ID_ACL_USER,
                     ID_ACL_ROLE = model.ID_ACL_ROLE,
@@ -50,11 +50,10 @@ namespace TPM_QAS.Controllers
                     ROLE_DESC = model.ROLE_DESC,
                     RESOURCE_NAME = model.RESOURCE_NAME,
                     RESOURCE_DESC = model.RESOURCE_DESC
-                };
+                });
             }
 
             return View(model);
-
         }
 
         public ActionResult Help()
@@ -73,10 +72,10 @@ namespace TPM_QAS.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Login(AuthenticatorModel model)
         {
-            if (ModelState.IsValid)  //checking model is valid or not
+            if (ModelState.IsValid)
             {
                 string systemName = string.Empty;
-                systemName = ConfigurationManager.AppSettings["SystemName"];
+                systemName = Database.GetAppSettingStatic("SystemName");
                 string passwordTMP = model.PASSWORD;
                 DB db = new DB();
                 model = await db.ValidateUserInfo(model.LOGIN_ID, systemName);
@@ -95,7 +94,7 @@ namespace TPM_QAS.Controllers
                 ModelState.Clear();
                 if (model.VALID_USER == true)
                 {
-                    Session["AclUser"] = new ACL_UserObj
+                    HttpContext.Session.SetObject("AclUser", new ACL_UserObj
                     {
                         ID_ACL_USER = model.ID_ACL_USER,
                         ID_ACL_ROLE = model.ID_ACL_ROLE,
@@ -109,27 +108,24 @@ namespace TPM_QAS.Controllers
                         ROLE_DESC = model.ROLE_DESC,
                         RESOURCE_NAME = model.RESOURCE_NAME,
                         RESOURCE_DESC = model.RESOURCE_DESC
-                    };
-                    //return RedirectToAction("Cap7", model);
+                    });
                     return RedirectToAction("Menu", "Home");
                 }
                 else
                 {
                     return View(model);
                 }
-
             }
             else
             {
                 ModelState.AddModelError("", "Error in saving data");
                 return View();
             }
-
         }
 
         public async Task<ActionResult> LogOut()
         {
-            Session.Abandon();
+            HttpContext.Session.Clear();
             return RedirectToAction("Login", "Home");
         }
         #endregion
@@ -145,8 +141,9 @@ namespace TPM_QAS.Controllers
         public async Task<ActionResult> SideBar()
         {
             DB db = new DB();
-            int roleID = (Session["AclUser"] as ACL_UserObj).ID_ACL_ROLE;
-            string systemName = ConfigurationManager.AppSettings["SystemName"];
+            var aclUser = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
+            int roleID = aclUser.ID_ACL_ROLE;
+            string systemName = Database.GetAppSettingStatic("SystemName");
             var dt = await db.sideBarDB(roleID, systemName);
             List<SideBarContent> SideBarModel = CommonMethod.ConvertToList<SideBarContent>(dt);
             return View(SideBarModel);
@@ -166,14 +163,13 @@ namespace TPM_QAS.Controllers
         {
             try
             {
-                var aclUser = Session["AclUser"];
+                var aclUser = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
                 DB db = new DB();
-                DataTable dt = await db.oldPassword((aclUser as ACL_UserObj).ID_ACL_USER);
-                //DataTable dt = db.oldPassword(25);
+                DataTable dt = await db.oldPassword(aclUser.ID_ACL_USER);
                 bool a = VerifyHashedPassword(dt.Rows[0][0].ToString(), ChangePasswordModel.OLD_PASSWORD);
                 if (VerifyHashedPassword(dt.Rows[0][0].ToString(), ChangePasswordModel.OLD_PASSWORD))
                 {
-                    if (await db.NewPassWord((aclUser as ACL_UserObj).ID_ACL_USER, HashPassword(ChangePasswordModel.NEW_PASSWORD)) == "Y")
+                    if (await db.NewPassWord(aclUser.ID_ACL_USER, HashPassword(ChangePasswordModel.NEW_PASSWORD)) == "Y")
                     {
                         ViewData["Message"] = "Password is successfully changed. Please relogin again.";
                         ViewData["MessageType"] = "Y";
@@ -193,7 +189,6 @@ namespace TPM_QAS.Controllers
             }
             catch (Exception ex)
             {
-                // Info
                 Console.Write(ex);
                 ViewData["Message"] = ex.Message;
                 ViewData["MessageType"] = "E";
@@ -209,7 +204,7 @@ namespace TPM_QAS.Controllers
             {
                 throw new ArgumentNullException("password");
             }
-            using (Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, 0x10, 0x3e8))
+            using (Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, 0x10, 0x3e8, HashAlgorithmName.SHA1))
             {
                 salt = bytes.Salt;
                 buffer2 = bytes.GetBytes(0x20);
@@ -232,15 +227,11 @@ namespace TPM_QAS.Controllers
                 throw new ArgumentNullException("password");
             }
             byte[] src = Convert.FromBase64String(hashedPassword);
-            //if ((src.Length != 0x31) || (src[0] != 0))
-            //{
-            //    return false;
-            //}
             byte[] dst = new byte[0x10];
             Buffer.BlockCopy(src, 1, dst, 0, 0x10);
             byte[] buffer3 = new byte[0x20];
             Buffer.BlockCopy(src, 0x11, buffer3, 0, 0x20);
-            using (Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, dst, 0x3e8))
+            using (Rfc2898DeriveBytes bytes = new Rfc2898DeriveBytes(password, dst, 0x3e8, HashAlgorithmName.SHA1))
             {
                 buffer4 = bytes.GetBytes(0x20);
             }
@@ -252,14 +243,12 @@ namespace TPM_QAS.Controllers
         #region General Function
         public async Task<ActionResult> ViewFile(string fileName)
         {
-            // User credentials for impersonation
             string login = "tpm_cmms_app";
             string domain = "TORAY";
             string password = "tpmcmms@pp";
 
             string folderPath = @"\\10.200.0.19\tpm\tpm-engineering\5. MECHANICAL\4. General\CMMS\CMMS 2.0\fileAttachment\";
 
-            // Construct the full path to the file
             string filePath = Path.Combine(folderPath, fileName);
 
             try
@@ -272,7 +261,6 @@ namespace TPM_QAS.Controllers
                         {
                             byte[] fileData = System.IO.File.ReadAllBytes(filePath);
 
-                            // Determine the content type based on the file extension
                             string contentType;
                             if (Path.GetExtension(fileName).Equals(".pdf", StringComparison.OrdinalIgnoreCase))
                             {
@@ -282,25 +270,22 @@ namespace TPM_QAS.Controllers
                                      Path.GetExtension(fileName).Equals(".jpeg", StringComparison.OrdinalIgnoreCase) ||
                                      Path.GetExtension(fileName).Equals(".png", StringComparison.OrdinalIgnoreCase))
                             {
-                                contentType = "image/jpeg"; // Change content type based on the actual image format support
+                                contentType = "image/jpeg";
                             }
                             else
                             {
-                                // Unsupported file type, return 404 (Not Found) status
-                                return HttpNotFound("Unsupported file type.");
+                                return NotFound("Unsupported file type.");
                             }
 
-                            // Return the file content as a response with the appropriate content type
                             return File(fileData, contentType);
                         }
                     }
-                    // If the file is not found or impersonation fails, return a 404 (Not Found) status
-                    return HttpNotFound("File not found or access denied.");
+                    return NotFound("File not found or access denied.");
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                return HttpNotFound(ex.Message);
+                return NotFound(ex.Message);
             }
         }
         #endregion
@@ -315,5 +300,10 @@ namespace TPM_QAS.Controllers
             return View();
         }
         #endregion
+
+        public IActionResult Error()
+        {
+            return View();
+        }
     }
 }

@@ -1,14 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.ComponentModel.DataAnnotations;
-using System.Data.SqlClient;
-using System.Configuration;
+using Microsoft.Data.SqlClient;
 using System.Data;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations.Schema;
-using CompareAttribute = System.ComponentModel.DataAnnotations.CompareAttribute;
 using TPM_QAS.DAL;
 using System.Threading.Tasks;
 
@@ -16,7 +12,6 @@ namespace HomeModel
 {
     public class SideBarContent
     {
-
         public int ID_ACL_RESOURCE { get; set; }
         public int RESOURCE_PARENT_ID { get; set; }
         public string RESOURCE_DESC { get; set; }
@@ -41,6 +36,7 @@ namespace HomeModel
         [Display(Name = "Confirm New Password")]
         public string CONFIRM_NEW_PASSWORD { get; set; }
     }
+
     public class AuthenticatorModel
     {
         public int ID_ACL_USER { get; set; }
@@ -62,14 +58,12 @@ namespace HomeModel
         [Required(ErrorMessage = "* Please Enter password.")]
         [Display(Name = "Password")]
         public string PASSWORD { get; set; }
-
     }
 
     public class DB : Database
     {
         public DB()
         {
-
         }
 
         public async Task<AuthenticatorModel> ValidateUserInfo(string userAD, string systemName)
@@ -82,7 +76,6 @@ namespace HomeModel
 
             using (SqlConnection con = new SqlConnection(constr))
             {
-
                 using (SqlCommand cmd = new SqlCommand("PSP_ACL_USER_SEL", con))
                 {
                     await con.OpenAsync();
@@ -90,8 +83,8 @@ namespace HomeModel
                     cmd.CommandTimeout = 0;
                     cmd.Parameters.Clear();
 
-                    cmd.Parameters.Add(new SqlParameter("@pUserID", userAD)).Direction = System.Data.ParameterDirection.Input;
-                    cmd.Parameters.Add(new SqlParameter("@pSystemName", systemName)).Direction = System.Data.ParameterDirection.Input;
+                    cmd.Parameters.Add(new SqlParameter("@pUserID", userAD)).Direction = ParameterDirection.Input;
+                    cmd.Parameters.Add(new SqlParameter("@pSystemName", systemName)).Direction = ParameterDirection.Input;
 
                     using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                     {
@@ -99,7 +92,6 @@ namespace HomeModel
                         {
                             if (reader.HasRows)
                             {
-
                                 AuthenticatorModel.ID_ACL_USER = Convert.ToInt16(reader["ID_ACL_USER"]);
                                 AuthenticatorModel.ID_ACL_ROLE = Convert.ToInt16(reader["ID_ACL_ROLE"]);
                                 AuthenticatorModel.ID_ACL_RESOURCE = Convert.ToInt16(reader["ID_ACL_RESOURCE"]);
@@ -124,7 +116,6 @@ namespace HomeModel
                 }
             }
             return AuthenticatorModel;
-
         }
 
         #region menu
@@ -142,12 +133,11 @@ namespace HomeModel
                     cmd.CommandTimeout = 0;
                     cmd.Parameters.Clear();
 
-                    cmd.Parameters.Add(new SqlParameter("@ID_ACL_ROLE", roleID)).Direction = System.Data.ParameterDirection.Input;
-                    cmd.Parameters.Add(new SqlParameter("@pSystemName", SystemName)).Direction = System.Data.ParameterDirection.Input;
+                    cmd.Parameters.Add(new SqlParameter("@ID_ACL_ROLE", roleID)).Direction = ParameterDirection.Input;
+                    cmd.Parameters.Add(new SqlParameter("@pSystemName", SystemName)).Direction = ParameterDirection.Input;
                     reader = await cmd.ExecuteReaderAsync();
                     dt.Load(reader);
                     reader.Close();
-
                 }
             }
 
@@ -159,7 +149,6 @@ namespace HomeModel
             {
                 return null;
             }
-
         }
 
         public async Task<DataTable> oldPassword(int userID)
@@ -176,11 +165,10 @@ namespace HomeModel
                     cmd.CommandTimeout = 0;
                     cmd.Parameters.Clear();
 
-                    cmd.Parameters.Add(new SqlParameter("@userID", userID)).Direction = System.Data.ParameterDirection.Input;
+                    cmd.Parameters.Add(new SqlParameter("@userID", userID)).Direction = ParameterDirection.Input;
                     reader = await cmd.ExecuteReaderAsync();
                     dt.Load(reader);
                     reader.Close();
-
                 }
             }
 
@@ -192,7 +180,6 @@ namespace HomeModel
             {
                 return null;
             }
-
         }
 
         public async Task<string> NewPassWord(int userID, string newPassword)
@@ -210,19 +197,17 @@ namespace HomeModel
                     cmd.CommandTimeout = 0;
                     cmd.Parameters.Clear();
 
-                    cmd.Parameters.Add(new SqlParameter("@userID", userID)).Direction = System.Data.ParameterDirection.Input;
-                    cmd.Parameters.Add(new SqlParameter("@newPassword", newPassword)).Direction = System.Data.ParameterDirection.Input;
-                    cmd.Parameters.Add(new SqlParameter("@returnID", SqlDbType.VarChar, 1)).Direction = System.Data.ParameterDirection.Output;
+                    cmd.Parameters.Add(new SqlParameter("@userID", userID)).Direction = ParameterDirection.Input;
+                    cmd.Parameters.Add(new SqlParameter("@newPassword", newPassword)).Direction = ParameterDirection.Input;
+                    cmd.Parameters.Add(new SqlParameter("@returnID", SqlDbType.VarChar, 1)).Direction = ParameterDirection.Output;
                     reader = await cmd.ExecuteReaderAsync();
                     dt.Load(reader);
                     reader.Close();
 
                     return result = Convert.ToString(cmd.Parameters["@ReturnID"].Value);
-
                 }
             }
         }
         #endregion
-
     }
 }

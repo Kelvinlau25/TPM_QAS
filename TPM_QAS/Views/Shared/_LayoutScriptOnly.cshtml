@@ -1,4 +1,4 @@
-﻿@using TPM_QAS.Helpers;
+@using TPM_QAS.Helpers;
 <!DOCTYPE html>
 <html class="h-100">
 
@@ -6,16 +6,17 @@
     <meta charset="utf-8" />
     <meta http-equiv="x-ua-compatible" content="ie=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>@System.Configuration.ConfigurationManager.AppSettings["SystemName"]</title>
-    @Styles.Render("~/Content/css")
-    @Styles.Render("~/Content/fontawesome")
-    @Scripts.Render("~/bundles/modernizr")
-    @Scripts.Render("~/bundles/jquery")
-    @Scripts.Render("~/bundles/jqueryui")
-    @Scripts.Render("~/bundles/bootstrap")
-    @Scripts.Render("~/Scripts/Main.js")
-    @Scripts.Render("~/bundles/datatables")
-    @Scripts.Render("~/bundles/js")
+    <title>@TPM_QAS.DAL.Database.GetAppSettingStatic("SystemName")</title>
+    <link rel="stylesheet" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" href="~/Content/site.css" />
+    <!-- Styles.Render removed - use direct link references -->
+    <script src="~/Scripts/modernizr-2.6.2.js"></script>
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <!-- Scripts.Render removed - use direct script references -->
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <!-- Scripts.Render removed - use direct script references -->
+    <!-- Scripts.Render removed - use direct script references -->
+    <!-- Scripts.Render removed - use direct script references -->
 </head>
 
 <body class="theme-cyan" style="height:100vh;padding: 10px;">
