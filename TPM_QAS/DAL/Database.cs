@@ -225,7 +225,8 @@ namespace TPM_QAS.DAL
 
             if (connectionString.IndexOf("TrustServerCertificate", StringComparison.OrdinalIgnoreCase) < 0)
             {
-                connectionString = connectionString.TrimEnd(';') + ";TrustServerCertificate=True;";
+                var trimmed = connectionString.TrimEnd(';');
+                connectionString = trimmed + ";TrustServerCertificate=True";
             }
 
             return connectionString;
