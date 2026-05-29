@@ -1,0 +1,1754 @@
+﻿
+@using TPM_QAS.Models
+@model IDSModel
+@{
+    ViewBag.Title = "IDS MM - Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Html.BeginForm("MM_IDS_ADD", "MM_IDS", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">New Form - IDS</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">IDS</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+
+                    <hr />
+
+                    @Html.HiddenFor(model => model.IDH)
+                    @Html.HiddenFor(model => model.SAMPLING_TYPE, new { id = "samplingTypeHidden" })
+                    @Html.HiddenFor(model => model.COMP_GROUP, new { id = "compGroupHidden" })
+                    @Html.HiddenFor(model => model.IDSMixModel.INDICATOR, new { id = "indicatorHidden" })
+                    @Html.HiddenFor(model => model.IDSMixModel.READING_TYPE, new { id = "readingtypeHidden" })
+
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Company Group <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="compgroup" id="compounderRadio" onchange="handleCompRadioChange()" value="COMPOUNDER"
+                                       @(Model.COMP_GROUP != null && Model.COMP_GROUP.ToString() == "COMPOUNDER" ? "checked" : "")>
+                                <label class="form-check-label" for="compounderRadio">Compounder</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="compgroup" id="tpmRadio" onchange="handleCompRadioChange()" value="TPM"
+                                       @(Model.COMP_GROUP != null && Model.COMP_GROUP.ToString() == "TPM" ? "checked" : "")>
+                                <label class="form-check-label" for="tpmRadio">TPM</label>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Sampling Type <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-5">
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(m => m.SAMPLING_TYPE, "MIX", new { id = "mixRadio", @class = "form-check-input", onchange = "handleRadioChange()" })
+                                <label class="form-check-label" for="mixRadio">Mix Sample</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(m => m.SAMPLING_TYPE, "DIRECT", new { id = "directRadio", @class = "form-check-input", onchange = "handleRadioChange()" })
+                                <label class="form-check-label" for="directRadio">Direct Sample</label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="MixInfo" style="display:none">
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted"><span>Product Group </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(Model => Model.IDSMixModel.MM_PRODGROUP_ID_H, Model.DropdownProdGroup, "Select an option..", new { id = "ddlprodgroup", @class = "ddloption form-control form-select", required = "required" })
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted"><span>Main Property </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(Model => Model.IDSMixModel.PROPERTIES, Model.DropdownProperty, "Select an option..", new { id = "ddlpropertymix", @class = "ddloption form-control form-select", required = "required", onchange = "this.form.submit() + this.options['action'].value;" })
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted"><span>Property Item </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(Model => Model.IDSMixModel.MM_PROPERTIES_H_ID, Model.DropdownPropItem, "Select an option..", new { id = "ddlpropitem", @class = "ddloption form-control form-select", required = "required", onchange = "resetMachineDetails()" })
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline tpmprodline" style="display:none">
+                            <div class="col-sm-2">
+                                <p class="text-muted"><span>Product Line </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(Model => Model.IDSMixModel.PROD_LINE, Model.DropdownProdLine, "Select an option..", new { id = "ddlprodline", @class = "ddloption form-control form-select", required = "required" })
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted"><span>Unit </span><span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(Model => Model.IDSMixModel.UNIT, Model.DropdownUnit, "Select an option..", new { id = "ddlunit", @class = "ddloption form-control form-select", required = "required" })
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted"><span>Indicator </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(Model => Model.IDSMixModel.INDICATOR, Model.DropdownIndicator, "Select an option..", new { id = "ddlindicator", @class = "ddloption form-control form-select", required = "required" })
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted">Max Count <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.TextBoxFor(Model => Model.IDSMixModel.REPEAT_VALUE, new { @class = "form-control", id = "txtrepeatNG", @maxlength = "10", onkeypress = "return isNumberKey(event)" })
+                            </div>
+                        </div>
+
+                        @*ITEM FOR MACHINE*@
+                        <div class="machineItem" style="display:none">
+                            <div class="row row-cols-2 mt-4">
+                                <div class="col-2 align-self-center">
+                                    <h6 class="text-muted" style="float: left">Machine</h6>
+                                </div>
+                                <div class="col-3">
+                                    <div class="input-group">
+                                        <div class="input-group-text tr-input-group" id="searchMachine" onclick="popupMachine()">
+                                            <a href="#" class="text-reset vm tr-disabled"><i class="fa-solid fa-ellipsis" aria-hidden="true" style="color: #fff"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-7">
+                                    <div class="row row-cols-auto justify-content-end g-1">
+                                        <div class="col">
+                                            <button class="btn btn-sm btn-md btn-danger" id="removeBtn2" type="button">
+                                                Remove
+                                            </button>
+                                        </div>
+                                        <div class="col">
+                                            <button class="btn btn-sm btn-md btn-primary" id="addBtn2" onclick="popupMachine()" type="button">
+                                                Add
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-2 mx-1">
+                                <table id="item2-table" class="detailTable" style="width:100%">
+                                    <thead>
+                                        <tr class="toolbar-row">
+                                            <th style="width: 3%; text-align: center;">
+                                                <input id="trCheckbox2" type="checkbox" class="dt-checkboxes select2-all form-check-input" style="margin-top:5.5px; display:none">
+                                            </th>
+                                            <th>Machine Name</th>
+                                            <th>Machine Field</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{ var count2 = 0; }
+                                        @if (Model.IDSMixModel.IDSMixLstModel != null && Model.IDSMixModel.IDSMixLstModel.Count > 0)
+                                        {
+                                            foreach (var item in Model.IDSMixModel.IDSMixLstModel)
+                                            {
+                                                count2++;
+                                                <tr id="R2_@count2" data-did="@count2">
+                                                    <td class="text-center">
+                                                        <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk2_@count2" onClick="handleCheckbox2Click(this)">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" id="item2_name_mix_@count2" value="@item.MACHINE_NAME" placeholder="" disabled>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" id="item2_path_mix_@count2" value="@item.MACHINE_PATH" placeholder="" disabled>
+                                                    </td>
+                                                    <td class="d-none">
+                                                        <input type="text" class="form-control" id="item2_stat_@count2" value="0">
+                                                        <input type="text" class="form-control" id="item2_dbid_@count2" value="@item.MM_IDS_D_ID">
+                                                        <input type="text" class="form-control" id="item2_machineid_mix_@count2" value="@item.MACHINE_ID">
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                <input type="hidden" id="item2-count" value="@count2" />
+                            </div>
+                            <br />
+                        </div>
+
+                        <div class="shrinkRadio">
+                            <div class="row mt-2 align-items-baseline">
+                                <div class="col-sm-2">
+                                    <p class="text-muted">Shrink Down <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="form-check form-check-inline">
+                                        @Html.RadioButtonFor(m => m.IDSMixModel.SHRINK_DOWN, "1", new { id = "yesShrinkRadio", @name = "shrinkdownradio" })
+                                        <label class="form-check-label" for="yesShrinkRadio">Yes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        @Html.RadioButtonFor(m => m.IDSMixModel.SHRINK_DOWN, "0", new { id = "noShrinkRadio", @name = "shrinkdownradio" })
+                                        <label class="form-check-label" for="noShrinkRadio">No</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="readingfield" style="display:none">
+                            <div class="row mt-2 align-items-baseline">
+                                <div class="col-sm-2">
+                                    <p class="text-muted">Reading <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-5">
+                                    <label>Average Reading</label>
+                                    @*<div class="form-check form-check-inline">
+                            @Html.RadioButtonFor(m => m.IDSMixModel.READING_TYPE, "AVERAGE", new { id = "avgRadio", @name = "readingtyperadio", @checked = "checked", onchange = "readingRadioChange()" })
+                            <label class="form-check-label" for="avgRadio">Average Reading</label>
+                        </div>*@
+                                    @*<div class="form-check form-check-inline">
+                            @Html.RadioButtonFor(m => m.IDSMixModel.READING_TYPE, "SINGLE", new { id = "singleRadio", @name = "readingtyperadio", onchange = "readingRadioChange()" })
+                            <label class="form-check-label" for="singleRadio">Single Reading</label>
+                        </div>*@
+                                </div>
+                            </div>
+
+                            @*<div class="avgShrinkDown" style="display:none">
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-2">
+                            @Html.TextBoxFor(Model => Model.IDSMixModel.READING_VALUE, new { @class = "form-control", id = "txtreadingval", @maxlength = "10", onkeypress = "return isNumberKey(event)" })
+                        </div>
+                        <div class="col-auto">
+                            <p class="text-muted">Shrink Down</p>
+                        </div>
+                    </div>
+                </div>*@
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted">Horizontal Pass(%) <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.TextBoxFor(Model => Model.IDSMixModel.HORIZONTAL, new { @class = "form-control", id = "txthorz", disabled = "disabled" })
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted">Vertical Pass(%) <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.TextBoxFor(Model => Model.IDSMixModel.VERTICAL, new { @class = "form-control", id = "txtvert", disabled = "disabled" })
+                            </div>
+                        </div>
+
+                        <div class="othersfield" style="display:none">
+                            <div class="row mt-2 align-items-baseline">
+                                <div class="col-sm-2">
+                                    <p class="text-muted">Segregation <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="form-check form-check-inline">
+                                        @Html.RadioButtonFor(m => m.IDSMixModel.SEGREGATION, "1", new { id = "yesSegrRadio", @name = "segregationradio" })
+                                        <label class="form-check-label" for="yesSegrRadio">Yes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        @Html.RadioButtonFor(m => m.IDSMixModel.SEGREGATION, "0", new { id = "noSegrRadio", @name = "segregationradio" })
+                                        <label class="form-check-label" for="noSegrRadio">No</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            @*<div class="row mt-2 align-items-baseline" >
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-2">
+                        @Html.TextBoxFor(Model => Model.IDSMixModel.BEFORESEGSET, new { @class = "form-control", id = "txtbfrsegr", @maxlength = "10", onkeypress = "return isNumberKey(event)" })
+                    </div>
+                    <div class="col-auto">
+                        <p class="text-muted">/Set Before</p>
+                    </div>
+                </div>
+
+                <div class="row mt-2 align-items-baseline">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-2">
+                        @Html.TextBoxFor(Model => Model.IDSMixModel.AFTERSEGSET, new { @class = "form-control", id = "txtaftersegr", @maxlength = "10", onkeypress = "return isNumberKey(event)" })
+                    </div>
+                    <div class="col-auto">
+                        <p class="text-muted">/Set After</p>
+                    </div>
+                </div>*@
+
+                            <div class="row mt-2 align-items-baseline">
+                                <div class="col-sm-2">
+                                    <p class="text-muted">COQ <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-5">
+                                    <div class="form-check form-check-inline">
+                                        @Html.RadioButtonFor(m => m.IDSMixModel.COQ, "1", new { id = "yesCOQRadio", @name = "coqradio" })
+                                        <label class="form-check-label" for="yesCOQRadio">Yes</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        @Html.RadioButtonFor(m => m.IDSMixModel.COQ, "0", new { id = "noCOQRadio", @name = "coqradio" })
+                                        <label class="form-check-label" for="noCOQRadio">No</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-2 align-items-baseline">
+                                <div class="col-sm-2"></div>
+                                <div class="col-sm-2">
+                                    @Html.TextBoxFor(Model => Model.IDSMixModel.AFTERCOQSET, new { @class = "form-control", id = "txtafterCOQ", @maxlength = "10", onkeypress = "return isNumberKey(event)" })
+                                </div>
+                                <div class="col-auto">
+                                    <p class="text-muted">/Set After</p>
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                    <div class="DirectInfo" style="display:none">
+
+                        <div class="d-none">
+                            <input id="current_prop" />
+                            <input id="current_prop_id" />
+                            <button type="button" id="btnsubmitprop" class="btn btn-sm btn-primary">OK</button>
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted"><span>Section Name </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(Model => Model.IDSDirectModel.SECTION, Model.DropdownSectionName, "Select an option..", new { id = "ddlsectionname", @class = "ddloption form-control form-select", required = "required" })
+                            </div>
+                        </div>
+
+                        <div class="row align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted">Field Name <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5 d-flex">
+                                @Html.TextBoxFor(Model => Model.IDSDirectModel.FIELD_NAME, new { @class = "form-control", id = "txtField", @maxlength = "100" })
+                            </div>
+                        </div>
+
+                        <div class="row row-cols-2 mt-4">
+                            <div class="col-2 align-self-center">
+                                <h6 class="text-muted" style="float: left">Main Property</h6>
+                            </div>
+                            <div class="col-3">
+                                <div class="input-group">
+                                    <div class="input-group-text tr-input-group" id="searchProperty" onclick="popupcheckProperty()">
+                                        <a href="#" class="text-reset vm tr-disabled"><i class="fa-solid fa-ellipsis" aria-hidden="true" style="color: #fff"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-7">
+                                <div class="row row-cols-auto justify-content-end g-1">
+                                    <div class="col">
+                                        <button class="btn btn-sm btn-md btn-danger" id="removeBtn" type="button">
+                                            Remove
+                                        </button>
+                                    </div>
+                                    <div class="col">
+                                        <button class="btn btn-sm btn-md btn-primary" id="addBtn" onclick="popupcheckProperty()" type="button">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 mx-1">
+                            <table id="item-table" class="detailTable" style="width:100%">
+                                <thead>
+                                    <tr class="toolbar-row">
+                                        <th style="width: 3%; text-align: center;">
+                                            <input id="trCheckbox" type="checkbox" class="dt-checkboxes select-all form-check-input" style="margin-top:5.5px; display:none">
+                                        </th>
+                                        <th>Field Name</th>
+                                        <th>Main Property</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ var count = 0; }
+                                    @if (Model.IDSDirectModel.IDSDirectLstModel != null && Model.IDSDirectModel.IDSDirectLstModel.Count > 0)
+                                    {
+                                        foreach (var item in Model.IDSDirectModel.IDSDirectLstModel)
+                                        {
+                                            count++;
+                                            <tr id="R_@count" data-did="@count">
+                                                <td class="text-center">
+                                                    <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_@count" onClick="handleCheckboxClick(this)">
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="required-field form-control" id="item_field_direct_@count" value="@item.FIELD_NAME" placeholder="" disabled>
+                                                </td>
+                                                <td>
+                                                    <input type="text" class="required-field form-control" id="item_properties_direct_@count" value="@item.PROPERTIES" placeholder="" disabled>
+                                                </td>
+                                                <td class="d-none">
+                                                    <input type="text" class="form-control" id="item_stat_@count" value="0">
+                                                    <input type="text" class="form-control" id="item_dbid_@count" value="@item.MM_IDSSECTION_D_ID">
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                            <input type="hidden" id="item-count" value="@count" />
+                        </div>
+
+                        <button id="hiddenpropertybtn" onclick="popupProperty()" hidden></button>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary mx-1 my-button" data-bs-toggle="modal" data-bs-target="#back-confirmation-modal">Back</button></div>
+                <div class="col"><button hidden id="btnDraft" type="button" class="btn btn-sm btn-primary">Save As Draft</button></div>
+                <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+            </div>
+        </div>
+    </div>
+    
+}
+
+
+@section scripts{
+
+    <script>
+    var idh = '@Model.IDH' != 0 ? '@Model.IDH' : 0;
+
+    $(document).ready(function () {
+
+        checkboxChecking();
+        checkbox2Checking();
+
+        var listingURL = '/MM_IDS/MM_IDS_LST';
+
+        $("#readingtypeHidden").val("AVERAGE");
+
+        //DISABLE SAMPLING TYPE IF DRAFT
+        if (idh != 0) {
+            $('#mixRadio, #directRadio').prop('disabled', true);
+        } else {
+            $('#mixRadio, #directRadio').prop('disabled', false);
+        }
+
+        //REMOVE PROPERTIES
+        $('#removeBtn').on('click', function () {
+            $('#item-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                var tablerow = $('#item-count').val();
+                var row = $(ele).closest('tr');
+                var itemStatInput = row.find('input[id^="item_stat_"]');
+                var item_stat = itemStatInput.val();
+
+                //if (item_stat != '1') {
+                //    itemStatInput.val('5');
+                //    row.hide();
+                //} else {
+                //    row.remove();
+                //}
+
+                row.remove();
+                tablerow -= 1;
+
+                $('#item-count').val(tablerow);
+            });
+
+            checkboxChecking();
+        });
+
+        //REMOVE MACHINE ITEMS
+        $('#removeBtn2').on('click', function () {
+            $('#item2-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                var tablerow = $('#item2-count').val();
+                var row = $(ele).closest('tr');
+                var itemStatInput = row.find('input[id^="item2_stat_"]');
+                var item2_stat = itemStatInput.val();
+
+                //if (item2_stat != '1') {
+                //    itemStatInput.val('5');
+                //    row.hide();
+                //} else {
+                //    row.remove();
+                //}
+
+                row.remove();
+                tablerow -= 1;
+
+                $('#item2-count').val(tablerow);
+            });
+
+            checkbox2Checking();
+        });
+
+        //SUBMIT
+        $('#btnConfirmSubmit').on('click', function () {
+            $('.invalid-feedback').remove();
+            $('.is-invalid').removeClass('is-invalid');
+
+            var cont = true;
+            var message = "";
+
+            var model = {};
+            var list = [];
+            var comp_group = $("input[name='compgroup']:checked").val();
+
+            if (comp_group == undefined || comp_group == null || comp_group == "") {
+                cont = false;
+                message += 'Please select Company Group. <br>';
+                displayToast("error", message);
+            }
+
+            var sampletype = $("#samplingTypeHidden").val();
+
+            if (sampletype == "MIX") {
+                //SUBMIT FOR MIX
+                var ddlprodgroupID = $("#ddlprodgroup").val();
+                var ddlprodgroup = $("#ddlprodgroup option:selected").text();
+                var ddlpropertymix = $("#ddlpropertymix").val();
+                var ddlpropitemID = $("#ddlpropitem").val();
+                var ddlpropitem = $("#ddlpropitem option:selected").text();
+                var ddlprodline = $("#ddlprodline").val();
+                var ddlunit = $("#ddlunit").val();
+                var ddlindicator = $("#ddlindicator").val();
+                var txtrepeatNG = $("#txtrepeatNG").val();
+                var txthorz = $("#txthorz").val();
+                var txtvert = $("#txtvert").val();
+
+                if (ddlprodgroupID == undefined || ddlprodgroupID == null || ddlprodgroupID == 0 || ddlprodgroupID == "" || ddlprodgroupID == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Product Group. <br>';
+                }
+
+                if (ddlpropertymix == undefined || ddlpropertymix == null || ddlpropertymix == 0 || ddlpropertymix == "" || ddlpropertymix == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Main Property. <br>';
+                }
+
+                if (ddlpropitemID == undefined || ddlpropitemID == null || ddlpropitemID == 0 || ddlpropitemID == "" || ddlpropitemID == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Property Item. <br>';
+                }
+
+
+                if (ddlunit == undefined || ddlunit == null || ddlunit == 0 || ddlunit == "" || ddlunit == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Unit. <br>';
+                }
+
+                if (ddlindicator == undefined || ddlindicator == null || ddlindicator == 0 || ddlindicator == "" || ddlindicator == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Indicator. <br>';
+                }
+
+                if (txtrepeatNG == undefined || txtrepeatNG == null || txtrepeatNG == "" || txtrepeatNG == 0) {
+                    cont = false;
+                    message += 'Missing Max Count value. <br>';
+                }
+
+                if (txthorz == undefined || txthorz == null || txthorz == "" || txthorz == 0) {
+                    cont = false;
+                    message += 'Missing Horizontal Pass(%) value. <br>';
+                }
+
+                if (txtvert == undefined || txtvert == null || txtvert == "" || txtvert == 0) {
+                    cont = false;
+                    message += 'Missing Vertical Pass(%) value. <br>';
+                }
+
+                if (comp_group == "COMPOUNDER") {
+                    ddlprodline = "";
+                } else {
+                    if (comp_group == "TPM") {
+                        if (ddlprodline == undefined || ddlprodline == null || ddlprodline == 0 || ddlprodline == "" || ddlprodline == "Select an option..") {
+                            cont = false;
+                            message += 'Please select Product Line. <br>';
+                        }
+                    }
+                }
+
+
+                var shrinkdown = $('#yesShrinkRadio').is(':checked') ? "1" : ($('#noShrinkRadio').is(':checked') ? "0" : "");
+                //var readingtype = $('#avgRadio').is(':checked') ? "AVERAGE" : ($('#singleRadio').is(':checked') ? "SINGLE" : "");
+                //var txtreadingval = $("#txtreadingval").val();
+                var segregation = $('#yesSegrRadio').is(':checked') ? "1" : ($('#noSegrRadio').is(':checked') ? "0" : "");
+                //var txtbfrsegr = $("#txtbfrsegr").val();
+                //var txtaftersegr = $("#txtaftersegr").val();
+                var coq = $('#yesCOQRadio').is(':checked') ? "1" : ($('#noCOQRadio').is(':checked') ? "0" : "");
+                var txtafterCOQ = $("#txtafterCOQ").val();
+
+                if (cont) {
+                    if (ddlindicator == "Machine Input") {
+                        // check machine field
+                        var hasItem = false;
+                        var hasError = false;
+                        var hasfieldrequired = false;
+                        var hasDuplicate = false;
+                        var existedItem = [];
+
+                        $("#item2-table tbody tr").each(function () {
+                            var did = $(this).data("did");
+                            if (did != '' && did != null && did != undefined) {
+                                var item_stat = $('#item2_stat_' + did).val();
+                                var item_dbid = $('#item2_dbid_' + did).val();
+
+                                var item2_name_mix = $('#item2_name_mix_' + did).val();
+                                var item2_path_mix = $('#item2_path_mix_' + did).val();
+                                var item2_machineid_mix = $('#item2_machineid_mix_' + did).val();
+
+                                if (item_stat != '5') {
+                                    if (item2_machineid_mix !== "") {
+                                        hasItem = true;
+                                        if (existedItem.includes(item2_machineid_mix)) {
+                                            hasDuplicate = true;
+                                            return false;
+                                        } else {
+                                            if (item2_name_mix == '' || item2_path_mix == '') {
+                                                hasfieldrequired = true;
+                                                return false;
+                                            } else {
+                                                existedItem.push(item2_machineid_mix);
+                                            }
+                                        }
+                                    } else {
+                                        hasError = true;
+                                    }
+                                }
+
+                                list.push({
+                                    'MM_IDS_D_ID': 0, //item_dbid,
+                                    'RECORD_TYP': 1, //item_stat,
+
+                                    'MACHINE_ID': item2_machineid_mix,
+                                    'MACHINE_NAME': item2_name_mix,
+                                    'MACHINE_PATH': item2_path_mix
+                                });
+                            }
+                        });
+
+                        if (cont && !hasItem) {
+                            cont = false;
+                            message = "Please add at least one Machine.";
+                        }
+
+                        if (cont && hasError) {
+                            cont = false;
+                            message = "Please make sure required field in Machine are not empty.";
+                        }
+                        if (cont && hasDuplicate) {
+                            cont = false;
+                            message = "Duplicate Machine Name with similar Machine Field.";
+                        }
+
+                        if (cont && hasfieldrequired) {
+                            cont = false;
+                            message = "Please make sure required fields in Machine are not empty.";
+                        }
+                    }
+
+                    if (shrinkdown == undefined || shrinkdown == null || shrinkdown == "") {
+                        cont = false;
+                        message += 'Please select Shrink Down. <br>';
+                    }
+
+                    if (ddlindicator != "Pass/Fail") {
+
+                        //if (readingtype == undefined || readingtype == null || readingtype == "") {
+                        //    cont = false;
+                        //    message += 'Please select Reading. <br>';
+                        //}
+                        // else {
+                        //    if (readingtype == "AVERAGE") {
+                        //        if (txtreadingval == undefined || txtreadingval == null || txtreadingval == "" || txtreadingval == 0) {
+                        //            cont = false;
+                        //            message += 'Missing Shrink Down value in Reading. <br>';
+                        //        }
+                        //    }
+                        //}
+
+                        if (segregation == undefined || segregation == null || segregation == "") {
+                            cont = false;
+                            message += 'Please select Segregation. <br>';
+                        }
+
+                        //if (txtbfrsegr == undefined || txtbfrsegr == null || txtbfrsegr == "" || txtbfrsegr == 0) {
+                        //    cont = false;
+                        //    message += 'Missing Segregation Set Before value. <br>';
+                        //}
+
+                        //if (txtaftersegr == undefined || txtaftersegr == null || txtaftersegr == "" || txtaftersegr == 0) {
+                        //    cont = false;
+                        //    message += 'Missing Segregation Set After value. <br>';
+                        //}
+
+                        if (coq == undefined || coq == null || coq == "") {
+                            cont = false;
+                            message += 'Please select COQ. <br>';
+                        }
+
+                        //if (txtafterCOQ == undefined || txtafterCOQ == null || txtafterCOQ == "" || txtafterCOQ == 0) {
+                        //    cont = false;
+                        //    message += 'Missing COQ Set After value. <br>';
+                        //}
+                    }
+
+                }
+
+                if (cont) {
+
+                    model = {
+                        'SAMPLING_TYPE': sampletype,
+                        'COMP_GROUP': comp_group,
+                        'IDSMixModel.MM_IDS_H_ID': idh,
+                        'IDSMixModel.RECORD_TYP': '1',
+
+                        'IDSMixModel.SAMPLING_TYPE': sampletype,
+                        'IDSMixModel.COMP_GROUP': comp_group,
+                        'IDSMixModel.MM_PRODGROUP_ID_H': ddlprodgroupID,
+                        'IDSMixModel.PROD_GROUP': ddlprodgroup,
+                        'IDSMixModel.PROPERTIES': ddlpropertymix,
+                        'IDSMixModel.MM_PROPERTIES_H_ID': ddlpropitemID,
+                        'IDSMixModel.PROP_ITEM': ddlpropitem,
+                        'IDSMixModel.PROD_LINE': ddlprodline,
+                        'IDSMixModel.UNIT': ddlunit,
+                        'IDSMixModel.INDICATOR': ddlindicator,
+                        'IDSMixModel.SHRINK_DOWN': shrinkdown,
+                        'IDSMixModel.READING_TYPE': 'AVERAGE', //readingtype,
+                        'IDSMixModel.READING_VALUE': 0, //txtreadingval,
+                        'IDSMixModel.REPEAT_VALUE': txtrepeatNG,
+                        'IDSMixModel.HORIZONTAL': txthorz,
+                        'IDSMixModel.VERTICAL': txtvert,
+                        'IDSMixModel.SEGREGATION': segregation,
+                        'IDSMixModel.BEFORESEGSET': 0, //txtbfrsegr,
+                        'IDSMixModel.AFTERSEGSET': 0, //txtaftersegr,
+                        'IDSMixModel.COQ': coq,
+                        'IDSMixModel.AFTERCOQSET': txtafterCOQ,
+
+                        'IDSMixModel.IDSMixLstModel': list
+                    };
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            } else {
+                if (sampletype == "DIRECT") {
+                    //SUBMIT FOR DIRECT
+                    var ddlsectionname = $("#ddlsectionname").val();
+
+                    if (ddlsectionname == undefined || ddlsectionname == null || ddlsectionname == 0 || ddlsectionname == "" || ddlsectionname == "Select an option..") {
+                        cont = false;
+                        message += 'Please select Section Name. <br>';
+                    }
+
+                    $('.required-field').each(function (e) {
+                        var input_val = $(this).val().trim();
+                        if (input_val == null || input_val == undefined || input_val === "") {
+                            cont = false;
+                            $(this).addClass('is-invalid');
+                            inputError(this);
+                        }
+                    });
+
+                    var hasItem = false;
+                    var hasError = false;
+                    var hasfieldrequired = false;
+                    var hasDuplicate = false;
+                    var existedItem = [];
+
+                    $("#item-table tbody tr").each(function () {
+                        var did = $(this).data("did");
+                        if (did != '' && did != null && did != undefined) {
+                            var item_stat = $('#item_stat_' + did).val();
+                            var item_dbid = $('#item_dbid_' + did).val();
+
+                            var item_field_direct = $('#item_field_direct_' + did).val();
+                            var item_properties_direct = $('#item_properties_direct_' + did).val();
+
+                            var namepath = item_field_direct + '*' + item_properties_direct;
+
+                            if (item_stat != '5') {
+                                if (namepath !== "") {
+                                    hasItem = true;
+                                    if (existedItem.includes(namepath)) {
+                                        hasDuplicate = true;
+                                        return false;
+                                    } else {
+                                        if (item_field_direct == '' || item_properties_direct == '') {
+                                            hasfieldrequired = true;
+                                            return false;
+                                        } else {
+                                            existedItem.push(namepath);
+                                        }
+                                    }
+                                } else {
+                                    hasError = true;
+                                }
+                            }
+
+                            list.push({
+                                'MM_IDSSECTION_D_ID': 0,//item_dbid,
+                                'RECORD_TYP': 1,//item_stat,
+
+                                'FIELD_NAME': item_field_direct,
+                                'PROPERTIES': item_properties_direct
+                            });
+                        }
+                    });
+
+                    if (cont && !hasItem) {
+                        cont = false;
+                        message = "Please add at least one Main Property.";
+                    }
+
+                    if (cont && hasError) {
+                        cont = false;
+                        message = "Please make sure required field in Main Property are not empty.";
+                    }
+                    if (cont && hasDuplicate) {
+                        cont = false;
+                        message = "Duplicate Field Name with similar Main Property.";
+                    }
+
+                    if (cont && hasfieldrequired) {
+                        cont = false;
+                        message = "Please make sure required fields in Main Property are not empty.";
+                    }
+
+                    if (cont) {
+
+                        model = {
+                            'SAMPLING_TYPE': sampletype,
+                            'COMP_GROUP': comp_group,
+                            'IDSDirectModel.MM_IDSSECTION_H_ID': idh,
+                            'IDSDirectModel.RECORD_TYP': '1',
+
+                            'IDSDirectModel.SAMPLING_TYPE': sampletype,
+                            'IDSDirectModel.COMP_GROUP': comp_group,
+                            'IDSDirectModel.SECTION': ddlsectionname,
+                            'IDSDirectModel.IDSDirectLstModel': list
+                        };
+                    }
+
+                } else {
+                    cont = false;
+                    message += 'Please select Sampling Type. <br>';
+                    displayToast("error", message);
+                }
+            }
+
+            if (cont) {
+
+                console.log(model)
+
+                $.ajax({
+                    url: "/MM_IDS/InsertUpdateIDS",
+                    type: 'POST',
+                    data: {
+                        model: model
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data save successfully");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+
+        });
+
+        //DRAFT
+        $('#btnDraft').on('click', function () {
+            $('.invalid-feedback').remove();
+            $('.is-invalid').removeClass('is-invalid');
+
+            var cont = true;
+            var message = "";
+
+            var model = {};
+            var list = [];
+            var sampletype = $("#samplingTypeHidden").val();
+
+            if (sampletype == "MIX") {
+                //DRAFT FOR MIX
+                var ddlprodgroupID = $("#ddlprodgroup").val();
+                var ddlprodgroup = $("#ddlprodgroup option:selected").text();
+                var ddlpropertymix = $("#ddlpropertymix").val();
+                var ddlpropitemID = $("#ddlpropitem").val();
+                var ddlpropitem = $("#ddlpropitem option:selected").text();
+                var ddlprodline = $("#ddlprodline").val();
+                var ddlunit = $("#ddlunit").val();
+                var ddlindicator = $("#ddlindicator").val();
+                var txtrepeatNG = $("#txtrepeatNG").val();
+                var txthorz = $("#txthorz").val();
+                var txtvert = $("#txtvert").val();
+
+                if (ddlprodgroupID == undefined || ddlprodgroupID == null || ddlprodgroupID == 0 || ddlprodgroupID == "" || ddlprodgroupID == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Product Group. <br>';
+                }
+
+                if (ddlpropertymix == undefined || ddlpropertymix == null || ddlpropertymix == 0 || ddlpropertymix == "" || ddlpropertymix == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Main Property. <br>';
+                }
+
+                if (ddlpropitemID == undefined || ddlpropitemID == null || ddlpropitemID == 0 || ddlpropitemID == "" || ddlpropitemID == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Property Item. <br>';
+                }
+
+                if (ddlprodline == undefined || ddlprodline == null || ddlprodline == 0 || ddlprodline == "" || ddlprodline == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Product Line. <br>';
+                }
+
+                if (ddlunit == undefined || ddlunit == null || ddlunit == 0 || ddlunit == "" || ddlunit == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Unit. <br>';
+                }
+
+                if (ddlindicator == undefined || ddlindicator == null || ddlindicator == 0 || ddlindicator == "" || ddlindicator == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Indicator. <br>';
+                }
+
+                if (txtrepeatNG == undefined || txtrepeatNG == null || txtrepeatNG == "" || txtrepeatNG == 0) {
+                    cont = false;
+                    message += 'Missing Max Count value. <br>';
+                }
+
+                if (txthorz == undefined || txthorz == null || txthorz == "" || txthorz == 0) {
+                    cont = false;
+                    message += 'Missing Horizontal Pass(%) value. <br>';
+                }
+
+                if (txtvert == undefined || txtvert == null || txtvert == "" || txtvert == 0) {
+                    cont = false;
+                    message += 'Missing Vertical Pass(%) value. <br>';
+                }
+
+                var shrinkdown = $('#yesShrinkRadio').is(':checked') ? "1" : ($('#noShrinkRadio').is(':checked') ? "0" : "");
+                //var readingtype = $('#avgRadio').is(':checked') ? "AVERAGE" : ($('#singleRadio').is(':checked') ? "SINGLE" : "");
+                //var txtreadingval = $("#txtreadingval").val();
+                var segregation = $('#yesSegrRadio').is(':checked') ? "1" : ($('#noSegrRadio').is(':checked') ? "0" : "");
+                //var txtbfrsegr = $("#txtbfrsegr").val();
+                //var txtaftersegr = $("#txtaftersegr").val();
+                var coq = $('#yesCOQRadio').is(':checked') ? "1" : ($('#noCOQRadio').is(':checked') ? "0" : "");
+                var txtafterCOQ = $("#txtafterCOQ").val();
+
+                if (cont) {
+
+                    if (ddlindicator == "Machine Input") {
+                        //check machine field
+
+                        //var hasItem = false;
+                        //var hasError = false;
+                        var hasfieldrequired = false;
+                        var hasDuplicate = false;
+                        var existedItem = [];
+
+                        $("#item2-table tbody tr").each(function () {
+                            var did = $(this).data("did");
+                            if (did != '' && did != null && did != undefined) {
+                                var item_stat = $('#item2_stat_' + did).val();
+                                var item_dbid = $('#item2_dbid_' + did).val();
+
+                                var item2_name_mix = $('#item2_name_mix_' + did).val();
+                                var item2_path_mix = $('#item2_path_mix_' + did).val();
+                                var item2_machineid_mix = $('#item2_machineid_mix_' + did).val();
+
+                                if (item_stat != '5') {
+                                    item_stat = "8";
+                                    if (item2_machineid_mix !== "") {
+                                        //hasItem = true;
+                                        if (existedItem.includes(item2_machineid_mix)) {
+                                            hasDuplicate = true;
+                                            return false;
+                                        } else {
+                                            if (item2_name_mix == '' || item2_path_mix == '') {
+                                                hasfieldrequired = true;
+                                                return false;
+                                            } else {
+                                                existedItem.push(item2_machineid_mix);
+                                            }
+                                        }
+                                    }
+                                    //else {
+                                    //    hasError = true;
+                                    //}
+                                }
+
+                                list.push({
+                                    'MM_IDS_D_ID': 0, //item_dbid,
+                                    'RECORD_TYP': 8, //item_stat,
+
+                                    'MACHINE_ID': item2_machineid_mix,
+                                    'MACHINE_NAME': item2_name_mix,
+                                    'MACHINE_PATH': item2_path_mix
+                                });
+                            }
+                        });
+
+                        //if (cont && !hasItem) {
+                        //    cont = false;
+                        //    message = "Please add at least one Machine.";
+                        //}
+
+                        //if (cont && hasError) {
+                        //    cont = false;
+                        //    message = "Please make sure required field in Machine are not empty.";
+                        //}
+
+                        if (cont && hasDuplicate) {
+                            cont = false;
+                            message = "Duplicate Machine Name with similar Machine Field.";
+                        }
+
+                        if (cont && hasfieldrequired) {
+                            cont = false;
+                            message = "Please make sure required fields in Machine are not empty.";
+                        }
+                    }
+
+                    if (shrinkdown == undefined || shrinkdown == null || shrinkdown == "") {
+                        cont = false;
+                        message += 'Please select Shrink Down. <br>';
+                    }
+
+                    if (ddlindicator != "Pass/Fail") {
+
+                        //if (readingtype == undefined || readingtype == null || readingtype == "") {
+                        //    cont = false;
+                        //    message += 'Please select Reading. <br>';
+                        //}
+                        //else {
+                        //    if (readingtype == "AVERAGE") {
+                        //        if (txtreadingval == undefined || txtreadingval == null || txtreadingval == "" || txtreadingval == 0) {
+                        //            cont = false;
+                        //            message += 'Missing Shrink Down value in Reading. <br>';
+                        //        }
+                        //    }
+                        //}
+
+                        if (segregation == undefined || segregation == null || segregation == "") {
+                            cont = false;
+                            message += 'Please select Segregation. <br>';
+                        }
+
+                        //if (txtbfrsegr == undefined || txtbfrsegr == null || txtbfrsegr == "" || txtbfrsegr == 0) {
+                        //    cont = false;
+                        //    message += 'Missing Segregation Set Before value. <br>';
+                        //}
+
+                        //if (txtaftersegr == undefined || txtaftersegr == null || txtaftersegr == "" || txtaftersegr == 0) {
+                        //    cont = false;
+                        //    message += 'Missing Segregation Set After value. <br>';
+                        //}
+
+                        if (coq == undefined || coq == null || coq == "") {
+                            cont = false;
+                            message += 'Please select COQ. <br>';
+                        }
+
+                        //if (txtafterCOQ == undefined || txtafterCOQ == null || txtafterCOQ == "" || txtafterCOQ == 0) {
+                        //    cont = false;
+                        //    message += 'Missing COQ Set After value. <br>';
+                        //}
+                    }
+                }
+
+                if (cont) {
+
+                    model = {
+                        'SAMPLING_TYPE': sampletype,
+                        'IDSMixModel.MM_IDS_H_ID': idh,
+                        'IDSMixModel.RECORD_TYP': '8',
+
+                        'IDSMixModel.SAMPLING_TYPE': sampletype,
+                        'IDSMixModel.MM_PRODGROUP_ID_H': ddlprodgroupID,
+                        'IDSMixModel.PROD_GROUP': ddlprodgroup,
+                        'IDSMixModel.PROPERTIES': ddlpropertymix,
+                        'IDSMixModel.MM_PROPERTIES_H_ID': ddlpropitemID,
+                        'IDSMixModel.PROP_ITEM': ddlpropitem,
+                        'IDSMixModel.PROD_LINE': ddlprodline,
+                        'IDSMixModel.UNIT': ddlunit,
+                        'IDSMixModel.INDICATOR': ddlindicator,
+                        'IDSMixModel.SHRINK_DOWN': shrinkdown,
+                        'IDSMixModel.READING_TYPE': 'AVERAGE', //readingtype,
+                        'IDSMixModel.READING_VALUE': 0, //txtreadingval,
+                        'IDSMixModel.REPEAT_VALUE': txtrepeatNG,
+                        'IDSMixModel.HORIZONTAL': txthorz,
+                        'IDSMixModel.VERTICAL': txtvert,
+                        'IDSMixModel.SEGREGATION': segregation,
+                        'IDSMixModel.BEFORESEGSET':0, //txtbfrsegr,
+                        'IDSMixModel.AFTERSEGSET': 0, //txtaftersegr,
+                        'IDSMixModel.COQ': coq,
+                        'IDSMixModel.AFTERCOQSET': txtafterCOQ,
+
+                        'IDSMixModel.IDSMixLstModel': list
+                    };
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            } else {
+                if (sampletype == "DIRECT") {
+                    //DRAFT FOR DIRECT
+
+                    var ddlsectionname = $("#ddlsectionname").val();
+
+                    if (ddlsectionname == undefined || ddlsectionname == null || ddlsectionname == 0 || ddlsectionname == "" || ddlsectionname == "Select an option..") {
+                        cont = false;
+                        message += 'Please select Section Name. <br>';
+                    }
+
+                    $('.required-field').each(function (e) {
+                        var input_val = $(this).val().trim();
+                        if (input_val == null || input_val == undefined || input_val === "") {
+                            cont = false;
+                            $(this).addClass('is-invalid');
+                            inputError(this);
+                        }
+                    });
+
+                    //var hasItem = false;
+                    //var hasError = false;
+                    var hasfieldrequired = false;
+                    var hasDuplicate = false;
+                    var existedItem = [];
+
+                    $("#item-table tbody tr").each(function () {
+                        var did = $(this).data("did");
+                        if (did != '' && did != null && did != undefined) {
+                            var item_stat = $('#item_stat_' + did).val();
+                            var item_dbid = $('#item_dbid_' + did).val();
+
+                            var item_field_direct = $('#item_field_direct_' + did).val();
+                            var item_properties_direct = $('#item_properties_direct_' + did).val();
+
+                            var namepath = item_field_direct + '*' + item_properties_direct;
+
+                            if (item_stat != '5') {
+                                item_stat = "8";
+                                if (namepath !== "") {
+                                    //hasItem = true;
+                                    if (existedItem.includes(namepath)) {
+                                        hasDuplicate = true;
+                                        return false;
+                                    } else {
+                                        if (item_field_direct == '' || item_properties_direct == '') {
+                                            hasfieldrequired = true;
+                                            return false;
+                                        } else {
+                                            existedItem.push(namepath);
+                                        }
+                                    }
+                                }
+                                //else {
+                                //    hasError = true;
+                                //}
+                            }
+
+                            list.push({
+                                'MM_IDSSECTION_D_ID': 0,//item_dbid,
+                                'RECORD_TYP': 8, //item_stat,
+
+                                'FIELD_NAME': item_field_direct,
+                                'PROPERTIES': item_properties_direct
+                            });
+                        }
+                    });
+
+                    //if (cont && !hasItem) {
+                    //    cont = false;
+                    //    message = "Please add at least one Main Property.";
+                    //}
+
+                    //if (cont && hasError) {
+                    //    cont = false;
+                    //    message = "Please make sure required field in Main Property are not empty.";
+                    //}
+
+                    if (cont && hasDuplicate) {
+                        cont = false;
+                        message = "Duplicate Field Name with similar Main Property.";
+                    }
+
+                    if (cont && hasfieldrequired) {
+                        cont = false;
+                        message = "Please make sure required fields in Main Property are not empty.";
+                    }
+
+                    if (cont) {
+
+                        model = {
+                            'SAMPLING_TYPE': sampletype,
+                            'IDSDirectModel.MM_IDSSECTION_H_ID': idh,
+                            'IDSDirectModel.RECORD_TYP': '8',
+
+                            'IDSDirectModel.SAMPLING_TYPE': sampletype,
+                            'IDSDirectModel.SECTION': ddlsectionname,
+                            'IDSDirectModel.IDSDirectLstModel': list
+                        };
+                    }
+
+                } else {
+                    cont = false;
+                    message += 'Please select Sampling Type. <br>';
+                    displayToast("error", message);
+                }
+            }
+
+
+            if (cont) {
+                console.log(model)
+
+                $.ajax({
+                    url: "/MM_IDS/DraftIDS",
+                    type: 'POST',
+                    data: {
+                        model: model
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data save as draft successfully");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+        });
+
+        //control ui based on sampling type
+        var type = $("#samplingTypeHidden").val();
+        if (type == "MIX") {
+            $('.DirectInfo').hide();
+            $('.MixInfo').show();
+        } else {
+            if (type == "DIRECT") {
+                $('.MixInfo').hide();
+                $('.DirectInfo').show();
+            } else {
+                $('.MixInfo').hide();
+                $('.DirectInfo').hide();
+            }
+        }
+
+        //control ui based on indicator
+        var ind = $("#indicatorHidden").val();
+        if (ind == "Machine Input") {
+            $('.machineItem').show();
+            $('.shrinkRadio').show();
+            $('.readingfield').show();
+            $('.othersfield').show();
+        } else {
+            if (ind == "Manual Input") {
+                $('.machineItem').hide();
+                $('.shrinkRadio').show();
+                $('.readingfield').show();
+                $('.othersfield').show();
+            } else {
+                if (ind == "Calculation") {
+                    $('.machineItem').hide();
+                    $('.shrinkRadio').show();
+                    $('.readingfield').show();
+                    $('.othersfield').show();
+                } else {
+                    if (ind == "Pass/Fail") {
+                        $('.machineItem').hide();
+                        $('.shrinkRadio').show();
+                        $('.readingfield').hide();
+                        $('.othersfield').hide();
+                    } else {
+                        $('.machineItem').hide();
+                        $('.shrinkRadio').show();
+                        $('.readingfield').hide();
+                        $('.othersfield').hide();
+                    }
+                }
+            }
+        }
+
+        //control ui based on reading type
+        //var readingTypeValue = $("#readingtypeHidden").val();
+        //if (readingTypeValue == "AVERAGE") {
+        //    $('.avgShrinkDown').show();
+        //} else {
+        //    $('.avgShrinkDown').hide();
+        //}
+
+        $("#ddlindicator").change(function () {
+            var ddlindicator = $("#ddlindicator").val();
+
+            $("#indicatorHidden").val(ddlindicator);
+
+            if (ddlindicator == "Machine Input") {
+                $('.machineItem').show();
+                $('.shrinkRadio').show();
+                $('.readingfield').show();
+                $('.othersfield').show();
+            } else {
+                if (ddlindicator == "Manual Input") {
+                    $('.machineItem').hide();
+                    $('.shrinkRadio').show();
+                    $('.readingfield').show();
+                    $('.othersfield').show();
+                } else {
+                    if (ddlindicator == "Calculation") {
+                        $('.machineItem').hide();
+                        $('.shrinkRadio').show();
+                        $('.readingfield').show();
+                        $('.othersfield').show();
+                    } else {
+                        if (ddlindicator == "Pass/Fail") {
+                            $('.machineItem').hide();
+                            $('.shrinkRadio').show();
+                            $('.readingfield').hide();
+                            $('.othersfield').hide();
+                        } else {
+                            $('.machineItem').hide();
+                            $('.shrinkRadio').show();
+                            $('.readingfield').hide();
+                            $('.othersfield').hide();
+                        }
+                    }
+                }
+            }
+        });
+
+        $('#btnConfirmBack').on('click', function () {
+            window.location.href = listingURL;
+        });
+    })
+
+        function handleCompRadioChange() {
+
+            var external = $('#compounderRadio').is(':checked');
+            var tpm = $('#tpmRadio').is(':checked');
+            var comp = "";
+
+            if (external) {
+                comp = "COMPOUNDER"
+            } else {
+                if (tpm) {
+                    comp = "TPM"
+                }
+            } 
+
+            if (comp === 'TPM') {
+                $('.tpmprodline').show();
+            } else {
+                $('.tpmprodline').hide();
+            }
+            
+            $("#compGroupHidden").val(comp);
+        }
+
+    function handleRadioChange() {
+
+        var mix = $('#mixRadio').is(':checked');
+        var direct = $('#directRadio').is(':checked');
+        var sample_type = "";
+
+        if (mix) {
+            sample_type = "MIX"
+        } else {
+            if (direct) {
+                sample_type = "DIRECT"
+            }
+        }
+
+        if (sample_type === 'MIX') {
+            $('.DirectInfo').hide();
+            $('.MixInfo').show();
+        } else {
+            if (sample_type === 'DIRECT') {
+                $('.MixInfo').hide();
+                $('.DirectInfo').show();
+            } else {
+                $('.MixInfo').hide();
+                $('.DirectInfo').hide();
+            }
+        }
+
+        $("#samplingTypeHidden").val(sample_type);
+    }
+
+    //function readingRadioChange() {
+
+    //    var average = $('#avgRadio').is(':checked');
+    //    var single = false;//$('#singleRadio').is(':checked');
+    //    var type = "";
+
+    //    if (average) {
+    //        type = "AVERAGE"
+    //    } else {
+    //        if (single) {
+    //            type = "SINGLE"
+    //        }
+    //    }
+
+    //    //if (type === 'AVERAGE') {
+    //    //    $('.avgShrinkDown').show();
+    //    //} else {
+    //    //    $('.avgShrinkDown').hide();
+    //    //}
+
+    //    $("#readingtypeHidden").val(type);
+    //}
+
+    function resetMachineDetails() {
+
+        $("#item2-table tbody").empty();
+    }
+
+    function popupcheckProperty() {
+        var cont = true;
+        var message = "";
+
+        var txtField = $("#txtField").val();
+
+        if (txtField == null || txtField == undefined || txtField === "") {
+            cont = false;
+            message = "Missing Field Name value.";
+        }
+
+        var rowCount = $('#item-table tbody tr').length;
+
+        if (rowCount >= 10) {
+            cont = false;
+            message = "Total Main Property items cannot be more than 10 items";
+        }
+
+        if (cont) {
+            $("#hiddenpropertybtn").click();
+        } else {
+            if (message != "") {
+                displayToast("error", message)
+            }
+        }
+    }
+
+    //ADD MACHINE LIST
+    function addMachineList(data) {
+        var cont = true;
+        var message = "";
+
+        for (var i = 0; i < data.length; i++) {
+
+            var rowIdx = $('#item2-count').val();
+
+            if (rowIdx != '0') {
+
+                var tlength = $('#item2-table tbody tr').length;
+
+                if (tlength != 0) {
+                    $("#item2-table tr").each(function () {
+                        var propid = data[i].MACHINE_ID;
+
+                        var did = $(this).data('did');
+                        if (did != '' && did != null && did != undefined) {
+                            var item2_stat = $('#item2_stat_' + did).val();
+                            var item2_machineid_mix = $('#item2_machineid_mix_' + did).val();
+
+                            if (data[i].INSERT != 'N') {
+                                if (item2_stat != '5' && item2_machineid_mix == propid) {
+                                    hasDuplicate = true;
+                                    data[i].INSERT = 'N';
+                                } else {
+                                    data[i].INSERT = 'Y';
+                                }
+                            }
+
+                        }
+                    });
+                } else {
+                    data[i].INSERT = 'Y';
+                }
+
+            } else {
+                data[i].INSERT = 'Y';
+            }
+
+        }
+
+        //if (cont && hasDuplicate) {
+        //    cont = false;
+        //    message = "Duplicate property type selected.";
+        //}
+
+        if (cont) {
+            var rowIdx = $('#item2-count').val();
+
+            for (var i = 0; i < data.length; i++) {
+
+                if (data[i].INSERT == 'Y') {
+                    rowIdx++;
+                    $('#item2-count').val(rowIdx);
+
+                    $("#item2-table tbody").append(`
+                    <tr id="R2_${rowIdx}" data-did="${rowIdx}">
+                        <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk2_${rowIdx}" onClick="handleCheckboxClick(this)"></td>
+                            <td><input type="text" class="form-control" value="${data[i].MACHINE_NAME}"  id="item2_name_mix_${rowIdx}" placeholder="" disabled></td>
+                            <td><input type="text" class="form-control" value="${data[i].MACHINE_FIELD}"  id="item2_path_mix_${rowIdx}" placeholder="" disabled></td>
+                        <td class="d-none">
+                            <input type="text" id="item2_stat_${rowIdx}" value="1">
+                            <input type="text" id="item2_dbid_${rowIdx}" value="0">
+                            <input type="text" id="item2_machineid_mix_${rowIdx}" value="${data[i].MACHINE_ID}">
+                        </td>
+                    </tr>`);
+
+                    checkbox2Checking();
+                }
+
+            }
+
+        } else {
+            if (message != "") {
+                displayToast("error", message)
+            }
+        }
+    }
+
+    //ADD PROPERTY LIST
+    function addPropertiesList(data) {
+        var cont = true;
+        var message = "";
+
+        var txtField = $("#txtField").val();
+
+        if (txtField == null || txtField == undefined || txtField === "") {
+            cont = false;
+            message = "Missing Field Name value.";
+        }
+
+        if (cont) {
+
+            for (var i = 0; i < data.length; i++) {
+
+                var rowIdx = $('#item-count').val();
+
+                if (rowIdx != '0') {
+
+                    var tlength = $('#item-table tbody tr').length;
+
+                    if (tlength != 0) {
+                        $("#item-table tr").each(function () {
+                            var namepath = txtField + "*" + data[i].PROPERTIES;
+
+                            var did = $(this).data('did');
+                            if (did != '' && did != null && did != undefined) {
+                                var item_stat = $('#item_stat_' + did).val();
+                                var item_field_direct = $('#item_field_direct_' + did).val();
+                                var item_properties_direct = $('#item_properties_direct_' + did).val();
+                                var fieldprop = item_field_direct + "*" + item_properties_direct;
+
+                                if (data[i].INSERT != 'N') {
+                                    if (item_stat != '5' && fieldprop == namepath) {
+                                        //hasDuplicate = true;
+                                        data[i].INSERT = 'N';
+                                    } else {
+                                        data[i].INSERT = 'Y';
+                                    }
+                                }
+
+                            }
+                        });
+                    } else {
+                        data[i].INSERT = 'Y';
+                    }
+
+                } else {
+                    data[i].INSERT = 'Y';
+                }
+
+            }
+
+            //if (cont && hasDuplicate) {
+            //    cont = false;
+            //    message = "Duplicate property type selected.";
+            //}
+
+            var rowCount = $('#item-table tbody tr').length;
+
+            var datarow = data.filter(item => item.INSERT === 'Y').length;
+            var totalrow = rowCount + datarow;
+
+            if (totalrow > 10) {
+                cont = false;
+                message = "Total Main Property items cannot be more than 10 items";
+            }
+
+            if (cont) {
+                var rowIdx = $('#item-count').val();
+
+                for (var i = 0; i < data.length; i++) {
+
+                    if (data[i].INSERT == 'Y') {
+                        rowIdx++;
+                        $('#item-count').val(rowIdx);
+
+                        $('#item-table tbody').append(`
+                        <tr id="R_${rowIdx}" data-did="${rowIdx}">
+                            <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_${rowIdx}" onClick="handleCheckboxClick(this)"></td>
+                            <td><input type="text" class="form-control required-field" value="${txtField}"  id="item_field_direct_${rowIdx}" placeholder="" disabled></td>
+                            <td><input type="text" class="form-control required-field" id="item_properties_direct_${rowIdx}" value="${data[i].PROPERTIES}" placeholder="" disabled></td>
+                            <td class="d-none">
+                                <input type="text" id="item_stat_${rowIdx}" value="1">
+                                <input type="text" id="item_dbid_${rowIdx}" value="0">
+                            </td>
+                        </tr>
+                        `);
+
+                        checkboxChecking();
+
+                    }
+                }
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+
+            
+
+        } else {
+            if (message != "") {
+                displayToast("error", message)
+            }
+        }
+    }
+
+    //POPUP MACHINE
+    function popupMachine() {
+
+        var id = idh;
+
+        var cont = true;
+        var message = "";
+
+        var ddlpropertymix = $("#ddlpropertymix option:selected").text();
+        var ddlpropitem = $("#ddlpropitem option:selected").text();
+
+        if (ddlpropertymix == undefined || ddlpropertymix == null || ddlpropertymix == 0 || ddlpropertymix == "" || ddlpropertymix == "Select an option..") {
+            cont = false;
+            message += 'Please select Main Property first. <br>';
+        }
+
+        if (ddlpropitem == undefined || ddlpropitem == null || ddlpropitem == 0 || ddlpropitem == "" || ddlpropitem == "Select an option..") {
+            cont = false;
+            message += 'Please select Property Item first. <br>';
+        }
+
+        if (cont) {
+            var popup;
+            var url = '@Url.Action("IDS_MACHINE_POPOUT", "MM_IDS")';
+
+            url = url + '?id=' + id + '&prop=' + ddlpropertymix + '&propitem=' + ddlpropitem;
+
+            popup = window.open(url, "Popup", "directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width=800,height=800");
+            popup.focus();
+        } else {
+            displayToast("error", message)
+        }
+
+    }
+
+    //POPUP PROPERTY
+    function popupProperty() {
+
+        var id = idh;
+        var popup;
+        var url = '@Url.Action("IDS_PROPERTY_POPOUT", "MM_IDS")';
+
+        url = url + '?id=' + id;
+        popup = window.open(url, "Popup", "directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width=800,height=800");
+        popup.focus();
+    }
+
+    </script>
+}

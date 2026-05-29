@@ -1,0 +1,241 @@
+﻿@using TPM_QAS.Models
+@model IEnumerable<AuditTrailModel>
+@{
+    ViewBag.Title = "CHECKING PLAN MM - Audit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row g-0 px-3 tr-listing-header">
+    <div class="col-sm-6 align-self-center">
+        <p class="text-muted m-0 tr-listing-header-title">
+            Audit Trail - Checking Plan
+            <button class="btn btn-link p-0 m-0 text-muted" style="margin-left: 10px !important; min-width: 15px;" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-html="true" data-bs-content="<div><div class='row px-3'>Simple Guide:</div><div class='row px-3'>[H] - Header Record</div><div class='row px-3'>[D] - Detail Record</div></div></div>">
+                <i class="fa-solid fa-info text-center" style="font-size:10px; border: 1.5px solid #6C757D; border-radius:30px; padding: 3px; width: 20px; vertical-align: top;"></i>
+            </button>
+        </p>
+    </div>
+</div>
+
+<hr class="p-0 m-0" />
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+        <div class="row mt-2">
+            <table id="tr-datatable" class="table table-hover dataTable display" style="width:100%; margin-top: 0px !important">
+                <thead>
+                    <tr style="background-color: #FCFCFC">
+                        <th>Field Name</th>
+                        <th>Old Value</th>
+                        <th>New Value</th>
+                        <th>User Name</th>
+                        <th>Date Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                    <tr>
+                        <td> @item.TABLE_COLUMN</td>
+                        <td> @item.OLD_VALUE </td>
+                        <td> @item.NEW_VALUE </td>
+                        <td> @item.CREATED_BY </td>
+                        <td> @item.CREATION_DATE.ToString("dd/MM/yyyy HH:mm:ss tt") </td>
+                    </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row tr-btm-btn-area">
+            <div class="col">
+                <div class="aud customDTButton py-2"></div>
+            </div>
+            <div class="col">
+                <div class="aud customDTButton2 py-2">
+                    <div class="dt-buttons btn-group flex-wrap">
+                        <a href="@Url.Action("MM_CHECK_PLAN_LST", "MM_CHECK_PLAN" )" class="btn btn-secondary btn-sm mx-1" tabindex="0" aria-controls="tr-datatable"><span>Back</span></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--ADV SEARCH MODAL-->
+<div class="modal fade" id="ASModal" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;">Advanced Search</h5>
+            </div>
+            <hr />
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 isLabel"><label>Field Name</label></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="FIELD_NAME" type="text" />
+                        </div>
+                    </div>
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel"><label>Old Value</label></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="B4UPDATE" type="text" />
+                        </div>
+                    </div>
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel"><label>New Value</label></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="AFUPDATE" type="text" />
+                        </div>
+                    </div>
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel"><label>User Name</label></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="UPDATED_BY" type="text" />
+                        </div>
+                    </div>
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel"><label>Date</label></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="UPDATED_DATE" type="date" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" id="btnReset" class="btn btn-sm btn-secondary" style="margin-right: auto;">Reset</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-sm btn-primary" onclick="as_search();" data-bs-dismiss="modal">Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script type="text/javascript">
+        //Datatable Control
+        var table;
+
+        $(document).ready(function () {
+
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl)
+            });
+
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            });
+
+            var urlid = '@TempData["SQ_ID"]';
+            table = $('#tr-datatable').DataTable({
+                pagingType: 'simple_numbers',
+                order: [[4, 'desc']],
+                dom: "<'row'<'col'<'d-flex justify-content-start py-2'<'toolbar row align-items-baseline'>>>>" +
+                    "<'card'<'card-body'" +
+                    "<'row'<'col'<'audit-info'>>>" +
+                    "<'row'<'col-sm-12'<'toolbar-row'l>>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    ">>" +
+                    "<'row mt-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'<'d-flex justify-content-end'p<'go-to align-self-center mx-2'>>>>",
+                initComplete: function () {
+                    $("div.audit-info").html('<h5 class="text-muted">History of ID: ' + urlid + '</h5>');
+                    $("div.toolbar").html(
+                        '<div class="col">' +
+                        '<div class="input-group input-group-sm">' +
+                        '<input type="text" id="txtSearch" class="form-control remove-right-border" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
+                        '<div class="input-group-text listing-search-icon">' +
+                        '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                        '</div>' +
+                        '<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#ASModal" id="btnAdvanceSearch" style="min-width: 30px; background-color: #057FE5;"><i class="fa-solid fa-sliders" style="transform: rotate(90deg);"></i></button>' +
+                        '</div>');
+                },
+                drawCallback: function (settings) {
+                    var api = this.api();
+                    $("#txtGoTo").val(api.page() + 1);
+                }
+            });
+
+            $("div.go-to").html('<div class="d-flex align-items-center p-0"><input class="form-control" type="text" id="txtGoTo" style="width:50px" value=1> &nbsp; <div class="page-info">of ' + table.page.info().pages + '</div></div>');
+            $("#txtGoTo").on('keyup', function (e) {
+                try {
+                    var page = e.target.value;
+                    if ($.isNumeric(page) && page > 0 && page <= table.page.info().pages) {
+                        table.page(page - 1).draw('page');
+                    } else if (e.target.value.trim() == '') {
+
+                    }
+                    else {
+                        e.target.value = table.page() + 1;
+                    }
+
+                } catch (ex) {
+                    console.warn(ex.toString());
+                    e.target.value = 1;
+                }
+            });
+            $("#txtGoTo").on('blur', function (e) {
+                try {
+                    var page = e.target.value;
+                    if (page.trim() == '') {
+                        $("#txtGoTo").val(1);
+                        table.page(0).draw('page');
+                        $("#txtGoTo").focus();
+                    }
+                } catch (ex) {
+                    console.warn(ex.toString());
+                    e.target.value = 1;
+                }
+            });
+            $(".dataTables_length .form-select").on('change', function () {
+                $("#txtGoTo").val(table.page() + 1);
+                $("div.page-info").html('of ' + table.page.info().pages + '</div>');
+            });
+
+        });
+
+        $(document).on('click', '#btnSearch', function (e) {
+            e.preventDefault();
+            as_exclude();
+            table.search($('#txtSearch').val()).draw();
+        });
+        $(document).on('keyup', '#txtSearch', function (e) {
+            as_exclude();
+            table.search($(this).val()).draw();
+        });
+
+        $(document).on('click', '#btnReset', function (e) {
+            e.preventDefault();
+            $('#FIELD_NAME').val('');
+            $('#B4UPDATE').val('');
+            $('#AFUPDATE').val('');
+            $('#UPDATED_BY').val('');
+            $('#UPDATED_DATE').val('');
+            as_search();
+        });
+        function as_search() {
+            table.search("");
+            var formattedDate = "";
+            if ($('#UPDATED_DATE').val().trim() != "") {
+                var date = new Date($('#UPDATED_DATE').val());
+                formattedDate = ("0" + date.getDate()).slice(-2) + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" + date.getFullYear();
+            }
+            table.columns(0).search($('#FIELD_NAME').val().trim());
+            table.columns(1).search($('#B4UPDATE').val().trim());
+            table.columns(2).search($('#AFUPDATE').val().trim());
+            table.columns(3).search($('#UPDATED_BY').val().trim());
+            table.columns(4).search(formattedDate);
+            table.draw();
+        }
+        function as_exclude() {
+            table.columns(0).search("");
+            table.columns(1).search("");
+            table.columns(2).search("");
+            table.columns(3).search("");
+            table.columns(4).search("");
+        }
+
+    </script>
+}

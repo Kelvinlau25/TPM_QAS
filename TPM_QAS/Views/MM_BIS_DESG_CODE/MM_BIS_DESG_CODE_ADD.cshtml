@@ -1,0 +1,353 @@
+﻿@using TPM_QAS.Models
+@model MM_BIS_DESG_CODE_VIEWMODEL
+
+@{
+    ViewBag.Title = "BIS Designation Code MM - Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("MM_BIS_DESG_CODE_ADD", "MM_BIS_DESG_CODE", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">New Form - BIS Designation Code</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">BIS Designation Code</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Category <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-5">
+                            @Html.TextBoxFor(Model => Model.BIS_DESG_CAT, new { @class = "form-control", id = "BIS_DESG_CAT" })
+                        </div>
+                    </div>
+                    <div id="desc-div"></div>
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Item Details <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-5" style="text-align:right;">
+                            <button id="btnRemove" type="button" class="btn btn-sm btn-danger m-1">Remove</button>
+                            <button id="add-item" type="button" class="btn btn-sm btn-primary m-1">Add</button>
+                        </div>
+                    </div>
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-8">
+                            <div class="row mt-2 mx-1">
+                                <table id="item-table" class="table detailTable" style="width:100%">
+                                    <thead>
+                                        <tr class="toolbar-row">
+                                            <th style='width:10%'></th>
+                                            <th style='width:30%; text-align:center'>Code Name</th>
+                                            <th style='width:30%; text-align:center'>Min Range</th>
+                                            <th style='width:30%; text-align:center'>Max Range</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody></tbody>
+                                </table>
+                                <input type="hidden" id="item-count" value="0" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary mx-1 my-button" data-bs-toggle="modal" data-bs-target="#back-confirmation-modal">Back</button></div>
+                <div class="col"><button hidden id="btnDraft" type="button" class="btn btn-sm btn-primary">Save As Draft</button></div>
+                <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+            </div>
+        </div>
+    </div>
+
+}
+
+
+@section scripts {
+    <script>
+        // For adding item to table
+        $(document).ready(function () {
+
+            // Add row
+            $("#add-item").off("click").on("click", function (e) {
+                e.preventDefault();
+                $('.navError').removeClass('navError');
+
+                var count = $('#item-count').val();
+                count++;
+                $('#item-count').val(count);
+
+                $("#item-table tbody").append(`
+                            <tr class="item-row" data-did="${count}">
+                                <td style="width:10%" class="text-center"><input type="checkbox" class="delete-check" value="${count}"/></td>
+                                <td style="width:30%" class="item-col"><input type="text" class="form-control item-input" data-did="${count}" id="item_code_${count}" value=""></td>
+                                <td style="width:30%" class="item-col"><input type="text" class="form-control item-input numericInput" data-did="${count}" id="item_min_${count}" value=""></td>
+                                <td style="width:30%" class="item-col"><input type="text" class="form-control item-input numericInput" data-did="${count}" id="item_max_${count}" value=""></td>
+                                <td class="d-none">
+                                    <input type="text" id="item_stat_${count}" value="1">
+                                    <input type="text" id="item_dbid_${count}" value="0">
+                                </td>
+                            </tr>
+                        `);
+            });
+
+            $(document).on('keyup', '#item-table .item-input', function (e) {
+                $('.navError').removeClass('navError');
+
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat = $('#item_stat_' + did).val();
+                    if (item_stat != '1') {
+                        $('#item_stat_' + did).val(3);
+                    }
+                }
+            });
+
+            $('#btnRemove').on('click', function (e) {
+                $('.navError').removeClass('navError');
+                var cont = true;
+                var message = "";
+
+                if ($('#item-table .delete-check:checked').length == 0) {
+                    cont = false;
+                    message += "No item has been checked.\n";
+                }
+
+                if (cont) {
+                    //Loop all checked
+                    $('#item-table .delete-check:checked').each(function () {
+                        var did = $(this).val();
+                        if (did != '' && did != null && did != undefined) {
+                            var item_stat = $('#item_stat_' + did).val();
+                            if (item_stat != '1') {
+                                $('#item-table .item-row[data-did="' + did + '"]').hide();
+                                $('#item_stat_' + did).val(5);
+                            } else {
+                                $('#item-table .item-row[data-did="' + did + '"]').remove();
+                            }
+                        }
+                    });
+                    $('#item-table .delete-check').prop("checked", false);
+                } else {
+                    if (message != "") {
+                        alert(message);
+                    }
+                }
+            });
+
+        });
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            var submit_url = '@Url.Action("MM_BIS_DESG_CODE_ADD", "MM_BIS_DESG_CODE")';
+            var success_url = '@Url.Action("MM_BIS_DESG_CODE_LST", "MM_BIS_DESG_CODE")'
+
+            $('#btnConfirmBack').on('click', function () {
+                window.location.href = success_url;
+            });
+
+            $('#btnConfirmSubmit').on('click', function () {
+
+                $('.navError').removeClass('navError');
+                var cont = true;
+                var message = "";
+
+                var category = $('#BIS_DESG_CAT').val();
+                if (category.trim() == "") {
+                    cont = false;
+                    message += "Category cannot be empty.\n";
+                }
+
+                var hasItem = false;
+                var invalidRow = [];
+                var invalidRange = [];
+                var duplicateRow = [];
+                var duplicateCodes = new Set();
+                var hasDuplicate = false;
+                var interceptedRow = [];
+                var hasIntercept = false;
+                var ItemDetails = [];
+                $("#item-table .item-row").each(function () {
+                    var did = $(this).data("did");
+                    if (did != '' && did != null && did != undefined) {
+                        var item_stat = $('#item_stat_' + did).val();
+                        var item_dbid = $('#item_dbid_' + did).val();
+                        var item_code = $('#item_code_' + did).val().trim();
+                        var item_min = $('#item_min_' + did).val().trim();
+                        var item_max = $('#item_max_' + did).val().trim();
+
+                        if (item_stat != '5' && (item_code !== "" && item_min !== "" && item_max !== "")) {
+                            hasItem = true;
+                        }
+                        //Record is not deleted, and at least 1 column is not empty, fully empty is ok, will skip it
+                        if (item_stat != '5' && (item_code !== "" || item_min !== "" || item_max !== "")) {
+                            if (item_code === "" || item_min === "" || item_max === "") {
+                                invalidRow.push(did);
+                            }
+                        }
+                        if (item_stat != '5' && (item_code !== "" || item_min !== "" || item_max !== "")) {
+                            if (parseFloat(item_min) > parseFloat(item_max)){
+                                invalidRange.push(did);
+                            }
+                        }
+
+                        if (!hasDuplicate && item_stat != '5' && (item_code !== "" && item_min !== "" && item_max !== "")) {
+                            // Check for duplicate codes
+                            if (duplicateCodes.has(item_code)) {
+                                hasDuplicate = true;
+                                duplicateRow.push(did);
+                            } else {
+                                duplicateCodes.add(item_code);
+                            }
+                        }
+                        if (!hasIntercept && item_stat != '5' && (item_code !== "" && item_min !== "" && item_max !== "")) {
+                            // Check for duplicate codes
+                            interceptedRow = checkRangeIntercept(did, item_min, item_max);
+                            if (interceptedRow.length > 0) {
+                                hasIntercept = true;
+                            }
+                        }
+
+                        var record_typ = item_stat;
+                        if (item_stat != '1' && (item_code === "" && item_min === "" && item_max === "")) { //If the record is not newly added, and input is empty, delete it
+                            record_typ = '5';
+                        }
+                        if (!(item_stat == '1' && (item_code === "" && item_min === "" && item_max === ""))) {
+                            ItemDetails.push({
+                                'ID_MM_BIS_DESG_CODE_D': item_dbid,
+                                'BIS_DESG_CODE': item_code,
+                                'BIS_MIN_RANGE': item_min,
+                                'BIS_MAX_RANGE': item_max,
+                                'RECORD_TYP': record_typ
+                            });
+                        }
+                    }
+                });
+                if (!hasItem) {
+                    cont = false;
+                    message += "Require at least one item details\n";
+                }
+                if (cont && invalidRow.length > 0) {
+                    cont = false;
+                    message += "Invalid row detected, some input are empty.\n";
+                    invalidRow.forEach(function (did) {
+                        $('#item-table .item-row[data-did="' + did + '"]').addClass('navError');
+                    });
+                }
+                if (cont && invalidRange.length > 0) {
+                    cont = false;
+                    message += "Invalid range detected, Min value is greater than Max value.\n";
+                    invalidRange.forEach(function (did) {
+                        $('#item-table .item-row[data-did="' + did + '"]').addClass('navError');
+                    });
+                }
+                if (cont && hasDuplicate) {
+                    cont = false;
+                    message += "Duplicate code detected\n";
+                    duplicateRow.forEach(function (did) {
+                        $('#item-table .item-row[data-did="'+did+'"]').addClass('navError');
+                    });
+                }
+                if (cont && hasIntercept) {
+                    cont = false;
+                    message += "Range interception detected\n";
+                    interceptedRow.forEach(function (did) {
+                        $('#item-table .item-row[data-did="' + did + '"]').addClass('navError');
+                    });
+                }
+
+                if (cont) {
+                    //console.log(ItemDetails);
+                    $.ajax({
+                        url: submit_url,
+                        type: 'POST',
+                        data: {
+                            category: category,
+                            item_dtl: ItemDetails
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                alert("Data save successfully");
+                                var url = success_url;
+                                window.location.href = url;
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function () {
+                            alert("Error occured");
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        alert(message);
+                    }
+                }
+
+            });
+        });
+
+        function checkRangeIntercept(current_did, min, max) {
+            min = parseFloat(min);
+            max = parseFloat(max);
+
+            var interceptRow = [];
+            $("#item-table .item-row").each(function () {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined && did != current_did) {
+                    var item_stat = $('#item_stat_' + did).val();
+                    var item_dbid = $('#item_dbid_' + did).val();
+                    var item_code = $('#item_code_' + did).val().trim();
+                    var item_min = parseFloat($('#item_min_' + did).val().trim());
+                    var item_max = parseFloat($('#item_max_' + did).val().trim());
+                    if (item_stat != '5' && (item_code !== "" && item_min !== "" && item_max !== "")) {
+                        if ((min <= item_max && max >= item_min) || (item_min <= max && item_max >= min)) {
+                            interceptRow.push(current_did);
+                            interceptRow.push(did);
+                        }
+                    }
+                }
+            });
+            return interceptRow;
+        }
+
+
+        function loadings(def) {
+            def = def || true;
+            if (def) {
+                $("div.spanner").addClass("show");
+                $("div.overlay").addClass("show");
+            } else {
+                $("div.spanner").removeClass("show");
+                $("div.overlay").removeClass("show");
+            }
+        }
+
+
+        
+
+    </script>
+}

@@ -1,0 +1,59 @@
+﻿@{
+    var postto = this.ViewData["SrcAct"].ToString();
+   
+}
+
+<style type="text/css">
+    .btntolink {
+        background-color: transparent;
+        border: none;
+    }
+
+    .searchbtn {
+        /*position: absolute;
+        right: 64%;
+        top: 26%;*/
+    }
+
+    .searchtxt {
+        width: 100%;
+        border-radius: 8px;
+        border: 2px solid #ccc;
+
+    }
+
+    .topleft {
+        position: relative;
+        width: 25%;
+        float: left;
+    }
+    .topright {
+        position: relative;
+        width: 75%;
+        float: left;
+    }
+</style>
+@{
+    using (Html.BeginForm(postto, @Html.ViewData["Ctrl"].ToString()))
+    {
+        <div>
+            <fieldset>
+                <div class="editor-field">
+                    <div class="topleft">
+                        <input type="text" id="SEARCH_VALUE" class="searchtxt" name=@Html.ViewData["SrcVal"].ToString() />
+                    </div>
+                    <div class="topright">
+                        <button id="btnsubmit" class="btntolink searchbtn"><i class="fa fa-search"></i></button>
+                    </div>
+                </div>
+            </fieldset>
+
+        </div>
+        <br/>
+    }
+    @*<div style="float:right;">       
+        @Html.ActionLink(" ", "AddNew", "Mstmain",
+       new { act=this.ViewData["Act"] ,ctrl= this.ViewData["Ctrl"] },
+       new { @class = "fa fa-plus-square fa-2x" })
+    </div>*@
+}

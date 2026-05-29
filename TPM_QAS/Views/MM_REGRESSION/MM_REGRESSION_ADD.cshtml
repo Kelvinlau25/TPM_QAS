@@ -1,0 +1,1368 @@
+﻿
+@using TPM_QAS.Models
+@model RegressionModel
+@{
+    ViewBag.Title = "REGRESSION MM - Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Html.BeginForm("MM_REGRESSION_ADD", "MM_REGRESSION", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">New Form - Regression</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">Regression</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+
+                    <hr />
+
+                    @Html.HiddenFor(model => model.MM_REGRESSION_H_ID)
+                    @Html.HiddenFor(model => model.COMP_GROUP, new { id = "compGroupHidden" })
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Company Group <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(m => m.COMP_GROUP, "COMPOUNDER", new { id = "compounderRadio", @class = "form-check-input", onchange = "handleRadioChange()" })
+                                <label class="form-check-label" for="compounderRadio">Compounder</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(m => m.COMP_GROUP, "TPM", new { id = "tpmRadio", @class = "form-check-input", onchange = "handleRadioChange()" })
+                                <label class="form-check-label" for="tpmRadio">TPM</label>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="compInfo" style="display:none">
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted"><span>Compounder </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(Model => Model.COMPOUNDER, Model.DropdownCompounder, "Select an option..", new { id = "ddlcompounder", @class = "ddloption form-control form-select", required = "required" })
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted"><span>Main Property </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(Model => Model.PROPERTIES_COMP, Model.DropdownProperty, "Select an option..", new { id = "ddlpropertycomp", @class = "ddloption form-control form-select", required = "required", onchange = "this.form.submit() + this.options['action'].value;" })
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted"><span>Property Item </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(Model => Model.PROP_ITEM_ID, Model.DropdownPropItem, "Select an option..", new { id = "ddlpropitemcomp", @class = "ddloption form-control form-select", required = "required" })
+                            </div>
+                        </div>
+
+                        <div class="row row-cols-2 mt-4">
+                            <div class="col align-self-center">
+                                <h6 class="text-muted" style="float: left">Details</h6>
+                            </div>
+                            <div class="col">
+                                <div class="row row-cols-auto justify-content-end g-1">
+                                    <div class="col">
+                                        <button class="btn btn-sm btn-md btn-danger" id="removeBtn2" type="button">
+                                            Remove
+                                        </button>
+                                    </div>
+                                    <div class="col">
+                                        <button class="btn btn-sm btn-md btn-primary" id="addBtn2" type="button">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2 mx-1">
+                            <table id="item2-table" class="detailTable" style="width:100%">
+                                <thead>
+                                    <tr class="toolbar-row">
+                                        <th style="width: 3%; text-align: center;">
+                                            <input id="trCheckbox2" type="checkbox" class="dt-checkboxes select2-all form-check-input" style="margin-top:5.5px; display:none">
+                                        </th>
+                                        <th>Product Group</th>
+                                        <th>Formula</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ var count2 = 0; }
+                                    @if (Model.RegressionLstModel != null && Model.RegressionLstModel.Count > 0)
+                                    {
+                                        foreach (var item in Model.RegressionLstModel)
+                                        {
+                                            count2++;
+                                            <tr id="R2_@count2" data-did="@count2">
+                                                <td class="text-center">
+                                                    <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk2_@count2" onClick="handleCheckbox2Click(this)">
+                                                </td>
+                                                <td class="text-left"><select id="item_prodgroupid_comp_@count2" multiple="multiple" class="multiselectpicker select-ddl-item form-control ddl_prodgroup" data-selected="@item.MM_PRODGROUP_H_ID_COMP_STRING"></select></td>
+                                                <td>
+                                                    <input type="text" class="required-field-comp form-control" id="item_formula_comp_@count2" value="@item.FORMULA_COMP" placeholder="" onclick="showModal(@count2, 'COMP')" readonly>
+                                                </td>
+                                                <td class="d-none">
+                                                    <input type="text" class="form-control" id="item2_stat_@count2" value="0">
+                                                    <input type="text" class="form-control" id="item2_dbid_@count2" value="0">
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                            <input type="hidden" id="item2-count" value="@count2" />
+                        </div>
+
+                    </div>
+
+                    <div class="tpmInfo" style="display:none">
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted">Production Line <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-check form-check-inline">
+                                    @Html.RadioButtonFor(m => m.PROD_LINE, "CE", new { id = "ceRadio", @class = "form-check-input" })
+                                    <label class="form-check-label" for="ceRadio">CE</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    @Html.RadioButtonFor(m => m.PROD_LINE, "CAP", new { id = "capRadio", @class = "form-check-input" })
+                                    <label class="form-check-label" for="capRadio">CAP</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    @Html.RadioButtonFor(m => m.PROD_LINE, "EXT_COMP", new { id = "extcompounderRadio", @class = "form-check-input" })
+                                    <label class="form-check-label" for="capRadio">EXT COMPOUNDER</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted"><span>Main Property </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(Model => Model.PROPERTIES_TPM, Model.DropdownProperty, "Select an option..", new { id = "ddlpropertytpm", @class = "ddloption form-control form-select", required = "required", onchange = "this.form.submit() + this.options['action'].value;" })
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted"><span>Property Item </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                @Html.DropDownListFor(Model => Model.PROP_ITEM_ID, Model.DropdownPropItem, "Select an option..", new { id = "ddlpropitemtpm", @class = "ddloption form-control form-select", required = "required", onchange = "resetTPMDetails()" })
+                            </div>
+                        </div>
+
+                        <div class="row row-cols-2 mt-4">
+                            <div class="col align-self-center">
+                                <h6 class="text-muted" style="float: left">Details</h6>
+                            </div>
+                            <div class="col">
+                                <div class="row row-cols-auto justify-content-end g-1">
+                                    <div class="col">
+                                        <button class="btn btn-sm btn-md btn-danger" id="removeBtn" type="button">
+                                            Remove
+                                        </button>
+                                    </div>
+                                    <div class="col">
+                                        <button class="btn btn-sm btn-md btn-primary" id="addBtn" type="button">
+                                            Add
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mt-2 mx-1">
+                            <table id="item-table" class="detailTable" style="width:100%">
+                                <thead>
+                                    <tr class="toolbar-row">
+                                        <th style="width: 3%; text-align: center;">
+                                            <input id="trCheckbox" type="checkbox" class="dt-checkboxes select-all form-check-input" style="margin-top:5.5px; display:none">
+                                        </th>
+                                        <th>Product Group</th>
+                                        <th>Machine Name</th>
+                                        <th>Formula</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ var count = 0; }
+                                    @if (Model.RegressionLstModel != null && Model.RegressionLstModel.Count > 0)
+                                    {
+                                        foreach (var item in Model.RegressionLstModel)
+                                        {
+                                            count++;
+                                            <tr id="R_@count" data-did="@count">
+                                                <td class="text-center">
+                                                    <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_@count" onClick="handleCheckboxClick(this)">
+                                                </td>
+                                                <td class="text-left"><select id="item_prodgroupid_tpm_@count" multiple="multiple" class="multiselectpicker select-ddl-item form-control ddl_prodgroup" data-selected="@item.MM_PRODGROUP_H_ID_TPM_STRING"></select></td>
+                                                <td class="text-left"><select id="item_machinenameid_tpm_@count" class="form-control ddl_machine"><option value="@item.MACHINE_NAME_ID" selected></option></select></td>
+                                                <td>
+                                                    <input type="text" class="required-field-tpm form-control" id="item_formula_tpm_@count" value="@item.FORMULA_TPM" placeholder="" onclick="showModal(@count, 'TPM')" readonly>
+                                                </td>
+                                                <td class="d-none">
+                                                    <input type="text" class="form-control" id="item_stat_@count" value="0">
+                                                    <input type="text" class="form-control" id="item_dbid_@count" value="0">
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                            <input type="hidden" id="item-count" value="@count" />
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary mx-1 my-button" data-bs-toggle="modal" data-bs-target="#back-confirmation-modal">Back</button></div>
+                <div class="col"><button hidden id="btnDraft" type="button" class="btn btn-sm btn-primary">Save As Draft</button></div>
+                <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@*formula modal*@
+<div class="modal fade" id="calmodalregression" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;">Formula</h5>
+            </div>
+            <hr />
+
+            <input type="hidden" id="current_count" />
+            <input type="hidden" id="current_type" />
+
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Variable <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-5">
+                            <button type="button" class="btn btn-outline-dark varian" id="btnvar1" value="var1" onclick='varClickVar("var1"); return false;'>var1</button>
+                            @*<button type="button" class="btn btn-outline-dark varinput" id="btnvar2" value="var2" onclick='varClickVar("var2"); return false;'>2</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnvar3" value="var3" onclick='varClickVar("var3"); return false;'>3</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnvar4" value="var4" onclick='varClickVar("var4"); return false;'>4</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnvar5" value="var5" onclick='varClickVar("var5"); return false;'>5</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnvar6" value="var6" onclick='varClickVar("var6"); return false;'>6</button>*@
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Symbol <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-5">
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnsym1" value="(" onclick='varClickSymbol("("); return false;'>(</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnsym2" value=")" onclick='varClickSymbol(")"); return false;'>)</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnsym3" value="+" onclick='varClickSymbol("+"); return false;'>+</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnsym4" value="-" onclick='varClickSymbol("-"); return false;'>-</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnsym5" value="*" onclick='varClickSymbol("*"); return false;'>*</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnsym6" value="/" onclick='varClickSymbol("/"); return false;'>/</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnsym7" value="." onclick='varClickNumber("."); return false;'>.</button>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Number <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-7">
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum1" value="1" onclick='varClickNumber("1"); return false;'>1</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum2" value="2" onclick='varClickNumber("2"); return false;'>2</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum3" value="3" onclick='varClickNumber("3"); return false;'>3</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum4" value="4" onclick='varClickNumber("4"); return false;'>4</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum5" value="5" onclick='varClickNumber("5"); return false;'>5</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum6" value="6" onclick='varClickNumber("6"); return false;'>6</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum7" value="7" onclick='varClickNumber("7"); return false;'>7</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum8" value="8" onclick='varClickNumber("8"); return false;'>8</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum9" value="9" onclick='varClickNumber("9"); return false;'>9</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum0" value="0" onclick='varClickNumber("0"); return false;'>0</button>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-center">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Formula <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            <input class="form-control modalform required-field-modal" id="txt_modal_1" type="text" disabled />
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="button" class="btn btn-outline-dark varerase" id="btnerase" value="Backspace" onclick='varClickErase(); return false;'>Backspace</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" id="btnResetModal" class="btn btn-sm btn-secondary" style="margin-right: auto;">Reset</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" id="btnsubmitcal" class="btn btn-sm btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts{
+
+    <script>
+
+        $(document).ready(function () {
+            checkboxChecking();
+            checkbox2Checking();
+            var listingURL = '/MM_REGRESSION/MM_REGRESSION_LST';
+
+            var idh = '@Model.MM_REGRESSION_H_ID' != 0 ? '@Model.MM_REGRESSION_H_ID' : 0;
+
+            fillProdGroup($(".ddl_prodgroup"));
+            fillMachine();
+
+            var type = $("#compGroupHidden").val();
+
+            //control ui based on sampling type
+            if (type == "COMPOUNDER") {
+                $('.tpmInfo').hide();
+                $('.compInfo').show();
+            } else {
+                if (type == "TPM") {
+                    $('.compInfo').hide();
+                    $('.tpmInfo').show();
+                } else {
+                    $('.compInfo').hide();
+                    $('.tpmInfo').hide();
+                }
+            }
+
+            //SUBMIT FOR MODAL
+            $("#btnsubmitcal").click(function () {
+
+                var cont = true;
+
+                $('.invalid-feedback').remove();
+                $('.is-invalid').removeClass('is-invalid');
+
+                $('.required-field-modal').each(function (e) {
+                    var input_val = $(this).val().trim();
+                    if (input_val == null || input_val == undefined || input_val === "") {
+                        cont = false;
+                        $(this).addClass('is-invalid');
+                        inputError(this);
+                    }
+                });
+
+                if (cont) {
+                    var comptype = $("#current_type").val();
+                    var count = $("#current_count").val();
+
+                    if (comptype == "TPM") {
+                        $("#item_formula_tpm_" + count).val($("#txt_modal_1").val());
+                    } else {
+                        if (comptype == "COMP") {
+                            $("#item_formula_comp_" + count).val($("#txt_modal_1").val());
+                        }
+                    }
+
+                    $("#calmodalregression").modal("hide");
+                }
+            });
+
+            //ADD TPM
+            $('#addBtn').on('click', function () {
+
+                var cont = true;
+                var message = "";
+
+                var ddlpropitemtpm = $("#ddlpropitemtpm").val();
+
+                if (ddlpropitemtpm == undefined || ddlpropitemtpm == null || ddlpropitemtpm == 0 || ddlpropitemtpm == "" || ddlpropitemtpm == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Property Item First. <br>';
+                }
+
+                if (cont) {
+                    var rowIdx = $('#item-count').val();
+                    rowIdx++;
+                    $('#item-count').val(rowIdx);
+
+
+                    $('#item-table tbody').append(`
+                        <tr id="R_${rowIdx}" data-did="${rowIdx}">
+                            <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_${rowIdx}" onClick="handleCheckboxClick(this)"></td>
+                            <td class="text-left"><select id="item_prodgroupid_tpm_${rowIdx}" multiple="multiple" class="multiselectpicker select-ddl-item form-control ddl_prodgroup"></select></td>
+                            <td class="text-left"><select id="item_machinenameid_tpm_${rowIdx}" class="form-control ddl_machine"><option value="0" selected></option></select></td>
+                            <td><input type="text" class="form-control required-field-tpm" id="item_formula_tpm_${rowIdx}" placeholder="" onclick="showModal(${rowIdx}, 'TPM')" readonly ></td>
+                            <td class="d-none">
+                                <input type="text" id="item_stat_${rowIdx}" value="1">
+                                <input type="text" id="item_dbid_${rowIdx}" value="0">
+
+                            </td>
+                        </tr>
+                        `);
+
+                    var newSelect = $('#item_prodgroupid_tpm_' + rowIdx);
+                    fillProdGroup(newSelect);
+                    reinitializeMultiselect();
+                    fillMachine();
+
+                    checkboxChecking();
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            });
+
+            //REMOVE TPM
+            $('#removeBtn').on('click', function () {
+                $('#item-table tbody input[type=checkbox][id^="chk_"]:checked').each(function (idx, ele) {
+                    var row = $(ele).closest('tr');
+                    var itemStatInput = row.find('input[id^="item_stat_"]');
+                    var item_stat = itemStatInput.val();
+
+                    //if (item_stat != '1') {
+                    //    itemStatInput.val('5');
+                    //    row.hide();
+                    //} else {
+                    //    row.remove();
+                    //}
+
+                    row.remove();
+                });
+
+                checkboxChecking();
+            });
+
+            //ADD COMPOUNDER
+            $('#addBtn2').on('click', function () {
+
+                var rowIdx = $('#item2-count').val();
+                rowIdx++;
+                $('#item2-count').val(rowIdx);
+
+                $('#item2-table tbody').append(`
+                        <tr id="R2_${rowIdx}" data-did="${rowIdx}">
+                            <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk2_${rowIdx}" onClick="handleCheckbox2Click(this)"></td>
+                            <td class="text-left"><select id="item_prodgroupid_comp_${rowIdx}" multiple="multiple" class="multiselectpicker select-ddl-item form-control ddl_prodgroup"></select></td>
+                            <td><input type="text" class="form-control required-field-comp" id="item_formula_comp_${rowIdx}" placeholder="" onclick="showModal(${rowIdx}, 'COMP')" readonly ></td>
+                            <td class="d-none">
+                                <input type="text" id="item2_stat_${rowIdx}" value="1">
+                                <input type="text" id="item2_dbid_${rowIdx}" value="0">
+
+                            </td>
+                        </tr>
+                        `);
+
+                var newSelect = $('#item_prodgroupid_comp_' + rowIdx);
+                fillProdGroup(newSelect);
+                reinitializeMultiselect();
+
+                checkbox2Checking();
+
+            });
+
+            //REMOVE COMPOUNDER
+            $('#removeBtn2').on('click', function () {
+                $('#item2-table tbody input[type=checkbox][id^="chk2_"]:checked').each(function (idx, ele) {
+                    var row = $(ele).closest('tr');
+                    var itemStatInput = row.find('input[id^="item2_stat_"]');
+                    var item2_stat = itemStatInput.val();
+
+                    //if (item2_stat != '1') {
+                    //    itemStatInput.val('5');
+                    //    row.hide();
+                    //} else {
+                    //    row.remove();
+                    //}
+
+                    row.remove();
+                });
+
+                checkbox2Checking();
+            });
+
+            //SUBMIT
+            $('#btnConfirmSubmit').on('click', function () {
+                $('.invalid-feedback').remove();
+                $('.is-invalid').removeClass('is-invalid');
+
+                var cont = true;
+                var message = "";
+
+                var model = {};
+                var list = [];
+                var comptype = $("#compGroupHidden").val();
+
+                var celine = $('#ceRadio').is(':checked');
+                var capline = $('#capRadio').is(':checked');
+                var extline = $('#extcompounderRadio').is(':checked');
+                var prod_line = "";
+
+                if (celine) {
+                    prod_line = "CE"
+                } else {
+                    if (capline) {
+                        prod_line = "CAP"
+                    } else {
+                        if (extline) {
+                            prod_line = "EXT_COMP"
+                        }
+                    }
+                }
+
+                if (comptype == "COMPOUNDER") {
+                    // SUBMIT FOR COMPOUNDER
+                    var ddlcompounder = $("#ddlcompounder").val();
+                    var ddlpropertycomp = $("#ddlpropertycomp").val();
+                    var ddlpropitemcompID = $("#ddlpropitemcomp").val();
+                    var ddlpropitemcomp = $("#ddlpropitemcomp option:selected").text();
+
+                    if (ddlcompounder == undefined || ddlcompounder == null || ddlcompounder == 0 || ddlcompounder == "" || ddlcompounder == "Select an option..") {
+                        cont = false;
+                        message += 'Please select Compounder. <br>';
+                    }
+
+                    if (ddlpropertycomp == undefined || ddlpropertycomp == null || ddlpropertycomp == 0 || ddlpropertycomp == "" || ddlpropertycomp == "Select an option..") {
+                        cont = false;
+                        message += 'Please select Main Property. <br>';
+                    }
+
+                    if (ddlpropitemcompID == undefined || ddlpropitemcompID == null || ddlpropitemcompID == 0 || ddlpropitemcompID == "" || ddlpropitemcompID == "Select an option..") {
+                        cont = false;
+                        message += 'Please select Property Item. <br>';
+                    }
+
+                    $('.required-field-comp').each(function (e) {
+                        var input_val = $(this).val().trim();
+                        if (input_val == null || input_val == undefined || input_val === "") {
+                            cont = false;
+                            $(this).addClass('is-invalid');
+                            inputError(this);
+                        }
+                    });
+
+                    var hasItem = false;
+                    var hasError = false;
+                    var hasfieldrequired = false;
+                    var hasDuplicate = false;
+                    var existedItem = [];
+
+                    $("#item2-table tbody tr").each(function () {
+                        var did = $(this).data("did");
+                        if (did != '' && did != null && did != undefined) {
+                            var item_stat = $('#item2_stat_' + did).val();
+                            var item_dbid = $('#item2_dbid_' + did).val();
+
+                            var prodgroupid_compArr = $('#item_prodgroupid_comp_' + did).val();
+                            var item_prodgroupid_comp = $("#item_prodgroupid_comp_" + did + " option:selected").map(function () {
+                                return $(this).text();
+                            }).get();
+
+                            var item_formula_comp = $('#item_formula_comp_' + did).val();
+
+                            var item_regressind_comp = '';
+
+                            if (item_formula_comp != '' && item_formula_comp != undefined && item_formula_comp != null) {
+                                item_regressind_comp = 'Y';
+                            }
+
+                            var namepath = item_formula_comp;
+
+                            if (item_stat != '5') {
+                                if (namepath !== "") {
+                                    hasItem = true;
+                                    if (existedItem.includes(namepath)) {
+                                        hasDuplicate = true;
+                                        return false;
+                                    } else {
+                                        if (item_prodgroupid_comp == '' || item_prodgroupid_comp == 'Select an option..' || item_formula_comp == '') {
+                                            hasfieldrequired = true;
+                                            return false;
+                                        } else {
+                                            existedItem.push(namepath);
+                                        }
+                                    }
+                                } else {
+                                    hasError = true;
+                                }
+                            }
+
+                            if (prodgroupid_compArr.length > 0) {
+                                var k = 0;
+                                for (let value of prodgroupid_compArr) {
+                                    list.push({
+                                        'MM_REGRESSION_D_ID': 0, //item_dbid,
+                                        'RECORD_TYP': 1, //item_stat,
+
+                                        'MM_PRODGROUP_H_ID_COMP': value,
+                                        'PROD_GROUP_COMP': item_prodgroupid_comp[k],
+                                        'FORMULA_COMP': item_formula_comp,
+                                        'REGRESSIND': item_regressind_comp
+
+                                    });
+                                    k++;
+                                }
+                            }
+                            
+                        }
+                    });
+
+                    if (cont && !hasItem) {
+                        cont = false;
+                        message = "Please add at least one Property Item.";
+                    }
+
+                    if (cont && hasError) {
+                        cont = false;
+                        message = "Please make sure required field in Property Item are not empty.";
+                    }
+                    if (cont && hasDuplicate) {
+                        cont = false;
+                        message = "Duplicate formula.";
+                    }
+
+                    if (cont && hasfieldrequired) {
+                        cont = false;
+                        message = "Please make sure required fields in Property Item are not empty.";
+                    }
+
+                    if (cont) {
+                        model.MM_REGRESSION_H_ID = idh;
+                        model.RECORD_TYP = '1';
+
+                        model.COMP_GROUP = comptype;
+                        model.COMPOUNDER = ddlcompounder;
+                        model.PROPERTIES_COMP = ddlpropertycomp;
+                        model.PROP_ITEM_ID = ddlpropitemcompID;
+                        model.PROPITEM = ddlpropitemcomp;
+
+                        model.RegressionLstModel = list;
+                    }
+
+                } else {
+                    if (comptype == "TPM") {
+                        // SUBMIT FOR TPM
+                        var ddlpropertytpm = $("#ddlpropertytpm").val();
+                        var ddlpropitemtpmID = $("#ddlpropitemtpm").val();
+                        var ddlpropitemtpm = $("#ddlpropitemtpm option:selected").text();
+
+                        if (prod_line == undefined || prod_line == null || prod_line == "") {
+                            cont = false;
+                            message += 'Please select Production Line. <br>';
+                        }
+
+                        if (ddlpropertytpm == undefined || ddlpropertytpm == null || ddlpropertytpm == 0 || ddlpropertytpm == "" || ddlpropertytpm == "Select an option..") {
+                            cont = false;
+                            message += 'Please select Main Property. <br>';
+                        }
+
+                        if (ddlpropitemtpmID == undefined || ddlpropitemtpmID == null || ddlpropitemtpmID == 0 || ddlpropitemtpmID == "" || ddlpropitemtpmID == "Select an option..") {
+                            cont = false;
+                            message += 'Please select Property Item. <br>';
+                        }
+
+                        $('.required-field-tpm').each(function (e) {
+                            var input_val = $(this).val().trim();
+                            if (input_val == null || input_val == undefined || input_val === "") {
+                                cont = false;
+                                $(this).addClass('is-invalid');
+                                inputError(this);
+                            }
+                        });
+
+                        var hasItem = false;
+                        var hasError = false;
+                        var hasfieldrequired = false;
+                        var hasDuplicate = false;
+                        var existedItem = [];
+
+                        $("#item-table tbody tr").each(function () {
+                            var did = $(this).data("did");
+                            if (did != '' && did != null && did != undefined) {
+                                var item_stat = $('#item_stat_' + did).val();
+                                var item_dbid = $('#item_dbid_' + did).val();
+
+                                var prodgroupid_tpmArr = $('#item_prodgroupid_tpm_' + did).val();
+                                var item_prodgroupid_tpm = $("#item_prodgroupid_tpm_" + did + " option:selected").map(function () {
+                                    return $(this).text();
+                                }).get();
+
+                                var item_machinenameid_tpmID = $('#item_machinenameid_tpm_' + did).val();
+                                var item_machinenameid_tpm = $("#item_machinenameid_tpm_" + did + " option:selected").text();
+
+                                var item_formula_tpm = $('#item_formula_tpm_' + did).val();
+
+                                var item_regressind_tpm = '';
+
+                                if (item_formula_tpm != '' && item_formula_tpm != undefined && item_formula_tpm != null) {
+                                    item_regressind_tpm = 'Y';
+                                }
+
+                                var namepath = item_machinenameid_tpmID + '*' + item_formula_tpm;
+
+                                if (item_stat != '5') {
+                                    if (namepath !== "") {
+                                        hasItem = true;
+                                        if (existedItem.includes(namepath)) {
+                                            hasDuplicate = true;
+                                            return false;
+                                        } else {
+                                            if (item_prodgroupid_tpm == '' || item_prodgroupid_tpm == 'Select an option..' || item_machinenameid_tpm == '' || item_machinenameid_tpm == 'Select an option..' || item_formula_tpm == '') {
+                                                hasfieldrequired = true;
+                                                return false;
+                                            } else {
+                                                existedItem.push(namepath);
+                                            }
+                                        }
+                                    } else {
+                                        hasError = true;
+                                    }
+                                }
+
+                                if (prodgroupid_tpmArr.length > 0) {
+                                    var k = 0;
+                                    for (let value of prodgroupid_tpmArr) {
+                                        list.push({
+                                            'MM_REGRESSION_D_ID': 0,//item_dbid,
+                                            'RECORD_TYP': 1,//item_stat,
+
+                                            'MM_PRODGROUP_H_ID_TPM': value,
+                                            'PROD_GROUP_TPM': item_prodgroupid_tpm[k],
+                                            'MACHINE_NAME_ID': item_machinenameid_tpmID,
+                                            'MACHINE_NAME': item_machinenameid_tpm,
+                                            'FORMULA_TPM': item_formula_tpm,
+                                            'REGRESSIND': item_regressind_tpm
+                                        });
+                                        k++;
+                                    }
+                                }
+                                
+                            }
+                        });
+
+                        //checking same machine same product group
+                        for (var k = 0; k < list.length; k++) {
+                            var findrow = list.filter(x =>
+                                x.MACHINE_NAME_ID === list[k].MACHINE_NAME_ID &&
+                                x.MM_PRODGROUP_H_ID_TPM === list[k].MM_PRODGROUP_H_ID_TPM
+                            );
+
+                            if (findrow.length > 1) {
+                                cont = false;
+                                message = "Duplicate";
+                                break; // Exit the loop as soon as a duplicate is found
+                            }
+                        }
+
+                        if (cont && !hasItem) {
+                            cont = false;
+                            message = "Please add at least one Details.";
+                        }
+
+                        if (cont && hasError) {
+                            cont = false;
+                            message = "Please make sure required field in Details are not empty.";
+                        }
+                        if (cont && hasDuplicate) {
+                            cont = false;
+                            message = "Duplicate Product Group with similar Machine Name and Formula.";
+                        }
+
+                        if (cont && hasfieldrequired) {
+                            cont = false;
+                            message = "Please make sure required fields in Details are not empty.";
+                        }
+
+                        if (cont) {
+                            model.MM_REGRESSION_H_ID = idh;
+                            model.RECORD_TYP = '1';
+
+                            model.COMP_GROUP = comptype;
+                            model.PROD_LINE = prod_line;
+                            model.PROPERTIES_TPM = ddlpropertytpm;
+                            model.PROP_ITEM_ID = ddlpropitemtpmID;
+                            model.PROPITEM = ddlpropitemtpm;
+
+                            model.RegressionLstModel = list;
+                        }
+
+                    } else {
+                        cont = false;
+                        message += 'Please select company group. <br>';
+                        displayToast("error", message);
+                    }
+                }
+
+                if (cont) {
+
+                    console.log(model)
+
+                    $.ajax({
+                        url: "/MM_REGRESSION/InsertUpdateRegression",
+                        type: 'POST',
+                        data: {
+                            model: model
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            });
+
+            //DRAFT
+            $('#btnDraft').on('click', function () {
+                $('.invalid-feedback').remove();
+                $('.is-invalid').removeClass('is-invalid');
+
+                var cont = true;
+                var message = "";
+
+                var model = {};
+                var list = [];
+                var comptype = $("#compGroupHidden").val();
+
+                var celine = $('#ceRadio').is(':checked');
+                var capline = $('#capRadio').is(':checked');
+                var extline = $('#extcompounderRadio').is(':checked');
+                var prod_line = "";
+
+                if (celine) {
+                    prod_line = "CE"
+                } else {
+                    if (capline) {
+                        prod_line = "CAP"
+                    } else {
+                        if (extline) {
+                            prod_line = "EXT_COMP"
+                        }
+                    }
+                }
+
+                if (comptype == 'COMPOUNDER') {
+                    // SUBMIT FOR COMPOUNDER
+                    var ddlcompounder = $("#ddlcompounder").val();
+                    var ddlpropertycomp = $("#ddlpropertycomp").val();
+
+                    if (ddlcompounder == undefined || ddlcompounder == null || ddlcompounder == 0 || ddlcompounder == "" || ddlcompounder == "Select an option..") {
+                        cont = false;
+                        message += 'Please select Compounder. <br>';
+                    }
+
+                    if (ddlpropertycomp == undefined || ddlpropertycomp == null || ddlpropertycomp == 0 || ddlpropertycomp == "" || ddlpropertycomp == "Select an option..") {
+                        cont = false;
+                        message += 'Please select Main Property. <br>';
+                    }
+
+                    $('.required-field-comp').each(function (e) {
+                        var input_val = $(this).val().trim();
+                        if (input_val == null || input_val == undefined || input_val === "") {
+                            cont = false;
+                            $(this).addClass('is-invalid');
+                            inputError(this);
+                        }
+                    });
+
+                    var hasItem = false;
+                    var hasError = false;
+                    var hasfieldrequired = false;
+                    var hasDuplicate = false;
+                    var existedItem = [];
+
+                    $("#item2-table tbody tr").each(function () {
+                        var did = $(this).data("did");
+                        if (did != '' && did != null && did != undefined) {
+                            var item_stat = $('#item2_stat_' + did).val();
+                            var item_dbid = $('#item2_dbid_' + did).val();
+
+                            var item_prodgroupid_compID = $('#item_prodgroupid_comp_' + did).val();
+                            var item_prodgroupid_comp = $("#item_prodgroupid_comp_" + did + " option:selected").text();
+
+                            var item_formula_comp = $('#item_formula_comp_' + did).val();
+
+                            var item_regressind_comp = '';
+
+                            if (item_formula_comp != '' && item_formula_comp != undefined && item_formula_comp != null) {
+                                item_regressind_comp = 'Y';
+                            }
+
+                            var namepath = item_prodgroupid_compID + '*' + item_formula_comp;
+
+                            if (item_stat != '5') {
+                                item_stat = "8";
+                                if (namepath !== "") {
+                                    //hasItem = true;
+                                    if (existedItem.includes(namepath)) {
+                                        hasDuplicate = true;
+                                        return false;
+                                    } else {
+                                        if (item_prodgroupid_comp == '' || item_prodgroupid_comp == 'Select an option..' || item_formula_comp == '') {
+                                            hasfieldrequired = true;
+                                            return false;
+                                        } else {
+                                            existedItem.push(namepath);
+                                        }
+
+                                    }
+                                }
+                                //else {
+                                //    hasError = true;
+                                //}
+                            }
+
+                            list.push({
+                                'MM_REGRESSION_D_ID': 0,//item_dbid,
+                                'RECORD_TYP': 8, //item_stat,
+
+                                'MM_PRODGROUP_H_ID_COMP': item_prodgroupid_compID,
+                                'PROD_GROUP_COMP': item_prodgroupid_comp,
+                                'FORMULA_COMP': item_formula_comp,
+                                'REGRESSIND': item_regressind_comp
+                            });
+                        }
+                    });
+
+                    //if (cont && !hasItem) {
+                    //    cont = false;
+                    //    message = "Please add at least one Property Item.";
+                    //}
+
+                    //if (cont && hasError) {
+                    //    cont = false;
+                    //    message = "Please make sure required field in Property Item are not empty.";
+                    //}
+
+                    if (cont && hasDuplicate) {
+                        cont = false;
+                        message = "Duplicate Product Group with similar Formula.";
+                    }
+
+                    if (cont && hasfieldrequired) {
+                        cont = false;
+                        message = "Please make sure required fields in Property Item are not empty.";
+                    }
+
+                    if (cont) {
+                        model.MM_REGRESSION_H_ID = idh;
+                        model.RECORD_TYP = '8';
+
+                        model.COMP_GROUP = comptype;
+                        model.COMPOUNDER = ddlcompounder;
+                        model.PROPERTIES_COMP = ddlpropertycomp;
+
+                        model.RegressionLstModel = list;
+                    }
+
+                } else {
+                    if (comptype == 'TPM') {
+                        // DRAFT FOR TPM
+                        var ddlpropertytpm = $("#ddlpropertytpm").val();
+                        var ddlpropitemtpmID = $("#ddlpropitemtpm").val();
+                        var ddlpropitemtpm = $("#ddlpropitemtpm option:selected").text();
+
+                        if (prod_line == undefined || prod_line == null || prod_line == "") {
+                            cont = false;
+                            message += 'Please select Production Line. <br>';
+                        }
+
+                        if (ddlpropertytpm == undefined || ddlpropertytpm == null || ddlpropertytpm == 0 || ddlpropertytpm == "" || ddlpropertytpm == "Select an option..") {
+                            cont = false;
+                            message += 'Please select Main Property. <br>';
+                        }
+
+                        if (ddlpropitemtpmID == undefined || ddlpropitemtpmID == null || ddlpropitemtpmID == 0 || ddlpropitemtpmID == "" || ddlpropitemtpmID == "Select an option..") {
+                            cont = false;
+                            message += 'Please select Property Item. <br>';
+                        }
+
+                        $('.required-field-tpm').each(function (e) {
+                            var input_val = $(this).val().trim();
+                            if (input_val == null || input_val == undefined || input_val === "") {
+                                cont = false;
+                                $(this).addClass('is-invalid');
+                                inputError(this);
+                            }
+                        });
+
+                        var hasItem = false;
+                        var hasError = false;
+                        var hasfieldrequired = false;
+                        var hasDuplicate = false;
+                        var existedItem = [];
+
+                        $("#item-table tbody tr").each(function () {
+                            var did = $(this).data("did");
+                            if (did != '' && did != null && did != undefined) {
+                                var item_stat = $('#item_stat_' + did).val();
+                                var item_dbid = $('#item_dbid_' + did).val();
+
+                                var item_prodgroupid_tpmID = $('#item_prodgroupid_tpm_' + did).val();
+                                var item_prodgroupid_tpm = $("#item_prodgroupid_tpm_" + did + " option:selected").text();
+
+                                var item_machinenameid_tpmID = $('#item_machinenameid_tpm_' + did).val();
+                                var item_machinenameid_tpm = $("#item_machinenameid_tpm_" + did + " option:selected").text();
+
+                                var item_formula_tpm = $('#item_formula_tpm_' + did).val();
+
+                                var item_regressind_tpm = '';
+
+                                if (item_formula_tpm != '' && item_formula_tpm != undefined && item_formula_tpm != null) {
+                                    item_regressind_tpm = 'Y';
+                                }
+
+                                var namepath = item_prodgroupid_tpmID + '*' + item_machinenameid_tpmID + '*' + item_formula_tpm;
+
+                                if (item_stat != '5') {
+                                    item_stat = "8";
+                                    if (namepath !== "") {
+                                        //hasItem = true;
+                                        if (existedItem.includes(namepath)) {
+                                            hasDuplicate = true;
+                                            return false;
+                                        } else {
+                                            if (item_prodgroupid_tpm == '' || item_prodgroupid_tpm == 'Select an option..' || item_machinenameid_tpm == '' || item_machinenameid_tpm == 'Select an option..' || item_formula_tpm == '') {
+
+                                                hasfieldrequired = true;
+                                                return false;
+                                            } else {
+                                                existedItem.push(namepath);
+                                            }
+
+                                        }
+                                    }
+                                    //else {
+                                    //    hasError = true;
+                                    //}
+                                }
+
+                                list.push({
+                                    'MM_REGRESSION_D_ID': 0,//item_dbid,
+                                    'RECORD_TYP': 8,//item_stat,
+
+                                    'MM_PRODGROUP_H_ID_TPM': item_prodgroupid_tpmID,
+                                    'PROD_GROUP_TPM': item_prodgroupid_tpm,
+                                    'MACHINE_NAME_ID': item_machinenameid_tpmID,
+                                    'MACHINE_NAME': item_machinenameid_tpm,
+                                    'FORMULA_TPM': item_formula_tpm,
+                                    'REGRESSIND': item_regressind_tpm
+                                });
+                            }
+                        });
+
+                        //if (cont && !hasItem) {
+                        //    cont = false;
+                        //    message = "Please add at least one Details.";
+                        //}
+
+                        //if (cont && hasError) {
+                        //    cont = false;
+                        //    message = "Please make sure required field in Details are not empty.";
+                        //}
+
+                        if (cont && hasDuplicate) {
+                            cont = false;
+                            message = "Duplicate Product Group with similar Machine Name and Formula.";
+                        }
+
+                        if (cont && hasfieldrequired) {
+                            cont = false;
+                            message = "Please make sure required fields in Details are not empty.";
+                        }
+
+                        if (cont) {
+                            model.MM_REGRESSION_H_ID = idh;
+                            model.RECORD_TYP = '8';
+
+                            model.COMP_GROUP = comptype;
+                            model.PROD_LINE = prod_line;
+                            model.PROPERTIES_TPM = ddlpropertytpm;
+                            model.PROP_ITEM_ID = ddlpropitemtpmID;
+                            model.PROPITEM = ddlpropitemtpm;
+
+                            model.RegressionLstModel = list;
+                        }
+                    } else {
+                        cont = false;
+                        message += 'Please select company group. <br>';
+                        displayToast("error", message);
+                    }
+                }
+
+
+                if (cont) {
+
+                    console.log(model)
+
+                    $.ajax({
+                        url: "/MM_REGRESSION/DraftRegression",
+                        type: 'POST',
+                        data: {
+                            model: model
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save as draft successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+            });
+
+            $('#btnConfirmBack').on('click', function () {
+                window.location.href = listingURL;
+            });
+        })
+
+        function handleRadioChange() {
+
+            var compounder = $('#compounderRadio').is(':checked');
+            var tpm = $('#tpmRadio').is(':checked');
+            var comp_group = "";
+
+            if (compounder) {
+                comp_group = "COMPOUNDER"
+            } else {
+                if (tpm) {
+                    comp_group = "TPM"
+                }
+            }
+
+            if (comp_group === 'COMPOUNDER') {
+                $('.tpmInfo').hide();
+                $('.compInfo').show();
+            } else {
+                if (comp_group === 'TPM') {
+                    $('.compInfo').hide();
+                    $('.tpmInfo').show();
+                } else {
+                    $('.compInfo').hide();
+                    $('.tpmInfo').hide();
+                }
+            }
+
+            $("#compGroupHidden").val(comp_group);
+            fillProdGroup($(".ddl_prodgroup"));
+            fillMachine();
+
+
+        }
+
+        // show formula modal
+        function showModal(count, type) {
+            $("#current_count").val(count);
+            $("#current_type").val(type);
+
+            //put value if already selected
+            if (type == "TPM") {
+                $("#txt_modal_1").val($("#item_formula_tpm_" + count).val());
+            } else {
+                if (type == "COMP") {
+                    $("#txt_modal_1").val($("#item_formula_comp_" + count).val());
+                }
+            }
+
+            $("#calmodalregression").modal("show");
+        }
+
+        //ddl_prodgroup
+        function fillProdGroup(selectElements) {
+
+            $.ajax({
+                type: 'POST',
+                url: '@Url.Action("fillProdGroup", "MM_REGRESSION")',
+                success: function (data) {
+
+                    selectElements.each(function () {
+                        var ddl_prodgroup = $(this);
+
+                        var selectedValues = [];
+                        var selectedData = ddl_prodgroup.data('selected');
+
+                        if (selectedData) {
+                            if (typeof selectedData === 'string' && selectedData.includes(',')) {
+                                selectedValues = selectedData.split(',');
+                            } else {
+                                selectedValues.push(String(selectedData));
+                            }
+                        }
+
+                        ddl_prodgroup.html("");
+                        for (var i = 0; i < data.length; i++) {
+                            var isSelected = selectedValues.includes(data[i].Value) ? 'selected' : '';
+                            var items = '<option value="' + data[i].Value + '" ' + isSelected + '>' + data[i].Text + '</option>';
+                            ddl_prodgroup.append(items);
+                        }
+                        ddl_prodgroup.multiselect("rebuild");
+                    });
+                    
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR.responseText);
+                }
+            });
+        }
+
+        //ddl_machine
+        function fillMachine() {
+            var ddlpropitemtpm = $("#ddlpropitemtpm").val();
+
+            $.getJSON('@Url.Action("fillMachine", "MM_REGRESSION")?propitemid=' + ddlpropitemtpm, function (data) {
+                if (data != null && !jQuery.isEmptyObject(data))
+                {
+                    $("#item-table tr").each(function () {
+                        var ddl_machine = $(this).find(".ddl_machine");
+
+                        if (ddl_machine != undefined) {
+                            var currentSelected = ddl_machine.val();
+                            ddl_machine.empty();
+                            $.each(data, function (index, datas) {
+                                ddl_machine.append($('<option/>', {
+                                    value: datas.Value,
+                                    text: datas.Text
+                                }));
+                            });
+                            ddl_machine.val(currentSelected);
+                        }
+                    });
+                };
+            });
+        }
+
+        function varClickVar(text) {
+            var txt = $('#txt_modal_1').val();
+            if (txt.indexOf(text) === -1) {
+                $('#txt_modal_1').focus();
+                var trimmedValue = $.trim(txt);
+                $('#txt_modal_1').val(trimmedValue + (trimmedValue.length > 0 ? " " : "") + text + " ");
+            }
+        }
+
+        function varClickSymbol(text) {
+            var txt = $('#txt_modal_1').val();
+            $('#txt_modal_1').focus();
+            var trimmedValue = $.trim(txt);
+            $('#txt_modal_1').val(trimmedValue + " " + text);
+        }
+
+        function varClickNumber(num) {
+            var txt = $('#txt_modal_1').val();
+            $('#txt_modal_1').focus();
+            var trimmedValue = $.trim(txt);
+
+            if (!isNaN(trimmedValue.slice(-1)) || trimmedValue.slice(-1) === '.') {
+                $('#txt_modal_1').val(trimmedValue + num);
+            } else {
+                $('#txt_modal_1').val(trimmedValue + ' ' + num);
+            }
+        }
+
+        function varClickErase() {
+            var txt = $('#txt_modal_1').val();
+            $('#txt_modal_1').focus();
+
+            if (txt.length > 0) {
+                var trimmedValue = $.trim(txt);
+                var parts = trimmedValue.split(" ");
+                var lastPart = parts[parts.length - 1];
+
+                if (/^var[1-6]$/.test(lastPart)) {
+                    // If the last part is a variable (e.g., var1, var2), remove the entire variable
+                    parts.pop();
+                    $('#txt_modal_1').val(parts.join(" "));
+                } else {
+                    // Otherwise, just remove the last character
+                    $('#txt_modal_1').val(trimmedValue.slice(0, -1));
+                }
+            }
+        }
+
+        function resetTPMDetails() {
+            //var row = $(this);
+            //var itemStat = row.find("[id^='item_stat_']").val();
+
+            //if (itemStat != 1) {
+            //    row.find("[id^='item_stat_']").val(5);
+            //    row.hide(); // Hide the row
+            //} else {
+            //    row.remove(); // Remove the row
+            //}
+
+            $("#item-table tbody").empty();
+            fillMachine();
+        }
+
+    </script>
+}

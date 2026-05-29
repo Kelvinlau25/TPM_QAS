@@ -1,0 +1,244 @@
+﻿@using TPM_QAS.Models
+@model COAGARAWMATABNORMModel
+
+@{
+    ViewBag.Title = "Raw Material Abnormality Detection - Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+</style>
+
+<div class="row g-0 px-3 tr-listing-header">
+    <div class="col-sm-6 align-self-center">
+        <p class="text-muted m-0 tr-listing-header-title main-title">TPM COA - Raw Material Abnormality Detection</p>
+    </div>
+    <div class="col-sm-6 text-end align-self-center">
+        <div class="d-flex justify-content-end">
+            <div id="customDTButton"></div>
+        </div>
+    </div>
+</div>
+
+<div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+        <div class="card mt-3 mb-2 card-height height-override">
+            <div class="card-body">
+                <div class="row align-items-baseline">
+                    <div class="col">
+                        <h6 class="text-muted">
+                            @ViewBag.Tittle
+                            @*Abnormality Detection Graph - @Model.SUPPLIER_NAME - @Model.MATERIAL_NAME - @Model.SUPP_ITEM_NAME*@
+                        </h6>
+                    </div>
+                </div>
+                <hr />
+                <div class="row align-items-baseline">
+                    <div class="col-sm-2">
+                        <p class="text-muted"><span>Date From </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                    </div>
+                    <div class="col-sm-3 flex-grow-1">
+                        <div class="input-group">
+                            @Html.TextBoxFor(m => m.DATE_FROM, new { @class = "form-control tr-date", id = "txtdatefrom", style = "border-right:none" })
+                            <div class="input-group-text" id="calendar-from" style="background: none; border-left:none">
+                                <a href="" class="dp"><i class="fa-solid fa-calendar-days tr-icon-blue" aria-hidden="true"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-1">
+                    </div>
+
+                    <div class="col-sm-2">
+                        <p class="text-muted"><span>Date To </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                    </div>
+                    <div class="col-sm-3 flex-grow-1">
+                        <div class="input-group">
+                            @Html.TextBoxFor(m => m.DATE_TO, new { @class = "form-control tr-date", id = "txtdateto", style = "border-right:none" })
+                            <div class="input-group-text" id="calendar-to" style="background: none; border-left:none">
+                                <a href="" class="dp"><i class="fa-solid fa-calendar-days tr-icon-blue" aria-hidden="true"></i></a>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <br />
+                <div class="row row-cols-auto justify-content-end g-1">
+                    <div class="col"><button id="btnReset" type="button" class="btn btn-sm btn-secondary mx-1 my-button">Reset</button></div>
+                    <div class="col"><button id="btnGenerate" type="button" class="btn btn-sm btn-primary">Generate</button></div>
+                </div>
+                <hr />
+                <h6>@ViewBag.Itemspec Abnormality Graph</h6>
+                <div style="text-align:center;">
+                    <div class="table-responsive">
+
+                        <div id="chartContainer" style="height: 370px; width: 100%;">
+
+                        </div>
+
+                        <br />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+
+<script>
+    var idh = '@Model.GA_ABNORMAL_H_ID';
+
+    $(document).ready(function () {
+        $(".tr-date").datepicker({
+            format: "dd-mm-yyyy",
+            autoclose: true,
+            orientation: "bottom auto",
+            endDate: new Date()
+        });
+
+        $("#calendar-from").click(function (e) {
+            e.preventDefault();
+            $("#txtdatefrom").focus();
+        });
+
+        $("#calendar-to").click(function (e) {
+            e.preventDefault();
+            $("#txtdateto").focus();
+        });
+    });
+
+    function parseDate(dateStr) {
+        if (!dateStr) return null;
+        let parts = dateStr.split('-');
+        return new Date(parts[2], parts[1] - 1, parts[0]);
+    }
+
+    $('#btnGenerate').on('click', function () {
+        var cont = true;
+        var message = "";
+
+        var txtdatefrom = $("#txtdatefrom").val();
+        var txtdateto = $("#txtdateto").val();
+
+        if (!txtdatefrom) {
+            cont = false;
+            message += 'Missing Date From value. <br>';
+        }
+        if (!txtdateto) {
+            cont = false;
+            message += 'Missing Date To value. <br>';
+        }
+
+        if (cont && parseDate(txtdatefrom) > parseDate(txtdateto)) {
+            cont = false;
+            message += 'Date From must be earlier than Date To. <br>';
+        }
+
+        $('.required-field').each(function () {
+            var input_val = $(this).val().trim();
+            if (!input_val) {
+                cont = false;
+                $(this).addClass('is-invalid');
+                inputError(this);
+            }
+        });
+
+        if (cont) {
+            var model = {
+                DATE_FROM: txtdatefrom,
+                DATE_TO: txtdateto,
+                GA_ABNORMAL_H_ID: '@Model.GA_ABNORMAL_H_ID'
+            };
+
+            $("#btnGenerate").prop("disabled", true);
+
+            $.ajax({
+                url: '@Url.Action("COA_GA_RAWMAT_ABNORM_DET", "COA_GA_RAWMAT_ABNORM")',
+                type: 'POST',
+                datatype: 'application/json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                beforeSend: function () {
+                    loadings();
+                },
+                success: function (data) {
+                    //console.log(data);
+
+                    var jsonData = typeof data === "string" ? JSON.parse(data) : data;
+                    console.log(jsonData.OcrResult);
+                    var jsonocr = JSON.parse(jsonData.OcrResult);
+                    jsonocr.forEach(item => {
+                        item.x = Number(item.x);
+                        item.y = Number(item.y);
+                    });
+                    generate(jsonData.Yaxis, jsonocr);
+                },
+                error: function (jqXHR) {
+                    console.log("Error: ", jqXHR.responseText);
+                    displayToast("error", jqXHR.responseText);
+                },
+                complete: function () {
+                    loadings(false);
+                    $("#btnGenerate").prop("disabled", false);
+                }
+            });
+        } else {
+            if (message != "") {
+                displayToast("error", message);
+            }
+        }
+    });
+
+    $('#btnReset').on('click', function () {
+        var listingURL = '/COA_GA_RAWMAT_ABNORM/COA_GA_RAWMAT_ABNORM_DET/' + '@Model.GA_ABNORMAL_H_ID';
+        window.location.href = listingURL;
+    });
+
+    window.onload = function () { generate(@Html.Raw(ViewBag.Yaxis), @Html.Raw(ViewBag.OcrResulData)); };
+
+        function generate(x, chartData) {
+            console.log('Regenerating chart...');
+            console.log(chartData);
+
+
+            $("#chartContainer").empty();
+
+            var chart = new CanvasJS.Chart("chartContainer", {
+                theme: "light1",
+                exportEnabled: false,
+                animationEnabled: true,
+                axisX: {
+                    title: "Lot No",
+                    labelAngle: -45,
+                    interval: 1,
+                    valueFormatString: " ",
+                    titleFontSize: 14, // Optional: Adjust font size
+                    labelFontSize: 12,  // Optional: Adjust label size
+                },
+                axisY: {
+                    title: x,
+                    titleFontSize: 13, // Optional: Adjust font size
+                    labelFontSize: 11,  // Optional: Adjust label size
+                },
+                data: [
+                    {
+                        type: "spline",
+                        startAngle: 180,
+                        toolTipContent: "<span class={classtxt}>{label2}</span><br>📦 Lot No: {LOTNO}<br>📅 Date: {DATEFULL}<br>📊 Result {y}",
+                        showInLegend: true,
+                        //legendText: " {itemspec}",
+                        showInLegend: false,
+                        indexLabel: "",
+                        dataPoints: chartData
+                    }
+                ]
+            });
+
+            chart.render();
+        }
+</script>
+
+
+}
+

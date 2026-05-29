@@ -1,0 +1,619 @@
+﻿
+@{
+    ViewBag.Title = "Audit Trail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="tr-btm-btn-margin">
+
+    <div class="row g-0 tr-listing-header">
+        <div class="col align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">
+                Audit Trail
+                <button class="btn btn-link p-0 m-0 text-muted" style="margin-left: 10px !important; min-width: 15px;" data-bs-container="body" data-bs-toggle="popover" data-bs-trigger="hover focus" data-bs-placement="bottom" data-bs-html="true" data-bs-content="<div><div class='row px-3'>Simple Guide:</div><div class='row px-3'>1. Example 1 - Description</div><div class='row px-3'>2. Example 2 - Description</div><div class='row px-3'>3. Example 3 - Description &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</div></div>">
+                    <i class="fa-solid fa-info text-center" style="font-size:10px; border: 1.5px solid #6C757D; border-radius:30px; padding: 3px; width: 20px; vertical-align: top;"></i>
+                </button>
+            </p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="row mt-2">
+        <table id="tr-datatable" class="table table-hover dataTable display" style="width:100%; margin-top: 0px !important">
+            <thead>
+                <tr style="background-color: #FCFCFC">
+                    <th>Field Name</th>
+                    <th>Old Value</th>
+                    <th>New Value</th>
+                    <th>User Name</th>
+                    <th>Date Time</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="row tr-btm-btn-area">
+        <div class="col">
+            <div class="aud customDTButton"></div>
+        </div>
+        <div class="col">
+            <div class="aud customDTButton2"></div>
+        </div>
+    </div>
+</div>
+
+
+    
+<div class="modal fade" id="advance-search-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Advanced Search</h5>
+            </div>
+
+            <hr />
+
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel">Text Box:</div>
+                        <div class="col-md-4"><input class="form-control" type="text" /></div>
+                        <div class="col-md-2 isLabel">Single Select</div>
+                        <div class="col-md-4">
+                            <select class="tr-select2" id="select-id1" data-placeholder="&nbsp;">
+                                <option>&nbsp;</option>
+                                <option>Sample 1</option>
+                                <option>Sample 2</option>
+                                <option>Sample 3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel">Single Select:</div>
+                        <div class="col-md-4">
+                            <select class="tr-select2" id="select-id2" data-placeholder="&nbsp;">
+                                <option>&nbsp;</option>
+                                <option>Sample 1</option>
+                                <option>Sample 2</option>
+                                <option>Sample 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 isLabel">Multiple Select</div>
+                        <div class="col-md-4">
+                            <select class="multiselectpicker form-control" multiple="multiple" data-placeholder="&nbsp;" id="multi1">
+                                <option value="sample1">Sample 1</option>
+                                <option value="sample2">Sample 2</option>
+                                <option value="sample3">Sample 3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel">Multiple Select:</div>
+                        <div class="col-md-4">
+                            <select class="multiselectpicker form-control" multiple="multiple" data-placeholder="&nbsp;">
+                                <option value="sample1">Sample 1</option>
+                                <option value="sample2">Sample 2</option>
+                                <option value="sample3">Sample 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 isLabel">Disabled Input:</div>
+                        <div class="col-md-4">
+                            <select class="multiselectpicker2 form-control" multiple="multiple" data-placeholder="&nbsp;" disabled>
+                                <option value="Disabled input example" selected>Disabled input example</option>
+                                <option value="sample2">Sample 2</option>
+                                <option value="sample3">Sample 3</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="reset" id="btnReset" class="btn btn-sm btn-secondary" style="margin-right: auto;">Reset</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-sm btn-primary" id="btnSearchAS" data-bs-dismiss="modal">Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        var table;
+
+        $(document).ready(function () {
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl)
+            })
+
+
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+
+            var abc = $('.tr-select2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+
+            //var def = $('.tr-select').select2({
+            //    theme: "bootstrap-5",
+            //    width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+            //    placeholder: $(this).data('placeholder'),
+            //    minimumResultsForSearch: Infinity,
+            //    templateSelection: function formatState(state) {
+            //        return 'Status : ' + state.element.value;
+            //    },
+            //    dropdownCssClass: 'tr-select2-container',
+            //    selectionCssClass: 'tr-no-border'
+            //});
+
+
+
+
+            $('.multiselectpicker').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                },
+            });
+            $('.multiselectpicker2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                },
+            });
+            $('.multiselect-native-select > .btn-group').addClass("w-100");
+            $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+            $('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-100");
+
+            loadDataTable();
+
+            $('#btnSearchAS').on('click', function () {
+                //$('#advance-search-modal').toggle();
+
+                $("div.spanner").addClass("show");
+                $("div.overlay").addClass("show");
+                console.log('here');
+                setTimeout(function () {
+                    $("div.spanner").removeClass("show");
+                    $("div.overlay").removeClass("show");
+                }, 2500);
+            });
+
+            $('#btnReset').on('click', function () {
+                $(':input').val('');
+                
+
+                $('.tr-select2').multiselect('rebuild');
+                $('.multiselectpicker').multiselect('rebuild');
+            });
+        });
+
+        function loadDataTable() {            
+            var data = [
+                {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }, {
+                    "field": "Quantity",
+                    "old-value": "80,000",
+                    "new-value": "Content 1",
+                    "user-name": "Any",
+                    "datetime": "15/7/2022"
+                }
+            ]
+            //var data = [
+            //    {
+            //        "field": "Quantity",
+            //        "old-value": "80,000",
+            //        "new-value": "Content 1",
+            //        "user-name": "Any",
+            //        "datetime": "15/7/2022"
+            //    }];
+
+            table = $('#tr-datatable').DataTable({
+                data: data,
+                pagingType: 'simple_numbers',
+                columns: [
+                    { data: 'field' },
+                    { data: 'old-value' },
+                    { data: 'new-value' },
+                    { data: 'user-name' },
+                    { data: 'datetime' }
+                ],
+                order: [[0, 'asc']],
+                dom: "<'row'<'col'<'d-flex justify-content-start py-2'<'toolbar row align-items-baseline'>>>>" +
+                    "<'card'<'card-body'" +
+                    "<'row'<'col'<'audit-info'>>>" +
+                    "<'row'<'col-sm-12'<'toolbar-row'l>>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    ">>" +
+                    "<'row mt-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'<'d-flex justify-content-end'p<'go-to align-self-center mx-2'>>>>", //+
+                    //"<'row sticky-btn'<'col'<'customDTButton py-2'>><'col'<'customDTButton2 py-2'>>>",
+                initComplete: function () {
+                    $("div.audit-info").html('<h5 class="text-muted">History of ID: 20000150</h5>');
+                    $("div.toolbar").html(
+                        '<div class="col">' +
+                        '<div class="input-group input-group-sm">' +
+                        '<input type="text" id="txtSearch" class="form-control remove-right-border" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
+                        '<div class="input-group-text listing-search-icon">' +
+                        '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                        '</div>' +
+                        '<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#advance-search-modal" id="btnAdvanceSearch" style="min-width: 30px; background-color: #057FE5;"><i class="fa-solid fa-sliders" style="transform: rotate(90deg);"></i></button>' +
+                        '</div>');
+                    //$("div.toolbar").html('<button type="button" data-bs-toggle="modal" data-bs-target="#advance-search-modal" id="btnAdvanceSearch" class="btn btn-outline-primary py-1 px-2"><i class="fa-solid fa-sliders"></i></button>');
+                    //$("div.toolbar").html('<div class="col-sm-4"><p>Search Criteria 1 : </p></div>' +
+                    //    '<div class="col-sm-8">' +
+                    //    '<div class="input-group input-group-sm">' +
+                    //    '<input type="text" id="txtSearch" class="form-control remove-right-border" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
+                    //    '<div class="input-group-text listing-search-icon">' +
+                    //    '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                    //    '</div>' +
+                    //    '<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#advance-search-modal" id="btnAdvanceSearch" style="min-width: 30px; background-color: #057FE5;"><i class="fa-solid fa-sliders" style="transform: rotate(90deg);"></i></button>' +
+                    //    '</div>' +
+                    //    '</div>');
+                },
+                drawCallback: function (settings) {
+                    var api = this.api();
+                    $("#txtGoTo").val(api.page() + 1);
+                }
+            });
+
+            $("div.go-to").html('<div class="d-flex align-items-center p-0"><input class="form-control" type="text" id="txtGoTo" style="width:50px" value=1> &nbsp; <div class="page-info">of ' + table.page.info().pages + '</div></div>');
+            $("#txtGoTo").on('keyup', function (e) {
+                try {
+                    var page = e.target.value;
+                    if ($.isNumeric(page) && page > 0 && page <= table.page.info().pages) {
+                        table.page(page - 1).draw('page');
+                    } else if (e.target.value.trim() == '') {
+
+                    } else {
+                        e.target.value = table.page() + 1;
+                    }
+
+                } catch (ex) {
+                    console.log(ex.toString());
+                    e.target.value = 1;
+                }
+            });
+            $("#txtGoTo").on('blur', function (e) {
+                try {
+                    var page = e.target.value;
+                    if (page.trim() == '') {
+                        $("#txtGoTo").val(1);
+                        table.page(0).draw('page');
+                        $("#txtGoTo").focus();
+                    }
+                } catch (ex) {
+                    console.warn(ex.toString());
+                    e.target.value = 1;
+                }
+            });
+            $('#txtSearch').on('keyup', function (e) {
+                table.search(e.target.value).draw();
+            });
+            $(".dataTables_length .form-select").on('change', function () {
+                $("#txtGoTo").val(table.page() + 1);
+                $("div.page-info").html('of ' + table.page.info().pages + '</div>');
+            });
+
+            table.on('select deselect', function (e, dt, type, indexes) {
+                var rowCnt = table.rows({ selected: true }).count();
+
+                // do something with the number of selected rows
+                if (rowCnt > 0) {
+                    $("#btnDelete").prop('disabled', false);
+                    $("#btnExport").prop('disabled', false);
+                } else {
+                    $("#btnDelete").prop('disabled', true);
+                    $("#btnExport").prop('disabled', true);
+                }
+            });
+
+            $("#btnExport").on("click", function () {
+                table.buttons.exportData({
+                    modifier: {
+                        selected: true
+                    }
+                });
+            });
+
+            addTableButtons();
+        }
+
+        function addTableButtons() {
+            new $.fn.dataTable.Buttons(table, {
+                name: "export",
+                buttons: [
+                    {
+                        text: 'Export to Excel',
+                        extend: 'excel',
+                        className: 'btn-sm btn-primary mx-1',
+                        init: function (api, node, config) {
+                            $(node).removeClass('btn-secondary')
+                        }
+                    }
+                ]
+            });
+
+            table.buttons("export", null).containers().appendTo('.customDTButton');
+
+            new $.fn.dataTable.Buttons(table, {
+                name: "back",
+                buttons: [
+                    {
+                        text: 'Back',
+                        className: 'btn-sm mx-1',
+                        init: function (api, node, config) {
+                            //$(node).removeClass('btn-secondary')
+                        },
+                        action: function (e, dt, node, config) {
+                            var url = '@Url.Action("List", "Home")';
+                            window.location.href = url;
+                        }
+                    }
+                ]
+            });
+
+            table.buttons("back", null).containers().appendTo('.customDTButton2');
+        }
+    </script>
+}

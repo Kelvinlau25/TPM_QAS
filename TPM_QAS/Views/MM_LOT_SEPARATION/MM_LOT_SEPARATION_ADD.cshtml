@@ -1,0 +1,618 @@
+﻿
+@using TPM_QAS.Models
+@model LotSeparationModel
+@{
+    ViewBag.Title = "LOT SEPARATION MM - Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("MM_LOT_SEPARATION_ADD", "MM_LOT_SEPARATION", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">New Form - Lot Separation</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">Lot Separation</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+
+                    <hr />
+
+                    @Html.HiddenFor(model => model.MM_LOTNO_H_ID)
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Section Name </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            @*@Html.TextBoxFor(Model => Model.SECTION_NAME, new { @class = "form-control required-field", id = "txtsectionname", @maxlength = "100" })*@
+                            @Html.DropDownListFor(Model => Model.SECTION_NAME, Model.DropdownSection, "Select an option..", new { id = "txtsectionname", @class = "ddloption form-control form-select", required = "required" })
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Product Line </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.DropDownListFor(Model => Model.PRODLINE, Model.DropdownProdLine, "Select an option..", new { id = "ddlProdLine", @class = "ddloption form-control form-select", required = "required", onchange = "loadPropItemPass();" })
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Product Line No </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.ListBoxFor(Model => Model.PRODLINENO_ID, Model.DropdownProdLineNo,  new { multiple = "multiple", id = "ddlLineNo", @class = "multiselectpicker ddloption form-control form-select", required = "required" })
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Packing Type </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.DropDownListFor(Model => Model.PACKINGTYPE_ID, Model.DropdownPackType, "Select an option..", new { id = "ddlPackType", @class = "ddloption form-control form-select", required = "required", onchange = "autofirsttag()" })
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>First Tag </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-1">
+                            @Html.TextBoxFor(Model => Model.FIRSTTAG, new { @class = "form-control", id = "txtfirsttag", onkeypress = "return isNumberKey(event)", oninput = "updateIntervalValues()" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Range <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-1 d-flex flex-column align-items-center">
+                            <label for="txtmin">Min</label>
+                            @Html.TextBoxFor(Model => Model.MIN_INTERVAL, new { @class = "form-control", id = "txtmin", oninput = "updateIntervalValues()", onkeypress = "return isNumberKey(event)" })
+                        </div>
+                        <div class="col-sm-1 d-flex flex-column align-items-center arrowinv">
+                            <label></label>
+                            <i class="fa fa-solid fa-arrow-right-long"></i>
+                        </div>
+                        <div class="col-sm-1 d-flex flex-column align-items-center">
+                            <label for="txtmax">Max</label>
+                            @Html.TextBoxFor(Model => Model.MAX_INTERVAL, new { @class = "form-control", id = "txtmax", onkeypress = "return isNumberKey(event)" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2"></div>
+                        <div class="slider col-sm-6 d-flex">
+                            <input type="range" min="0" max="99" value="@Model.MAX_INTERVAL" id="intervalslider" step="1" data-rangeslider>
+                        </div>
+                        <div class="col-auto">
+                            <p class="text-muted">Interval </p>
+                        </div>
+                        <div class="col-sm-1 d-flex">
+                            @Html.TextBoxFor(Model => Model.INTERVAL, new { @class = "form-control", id = "intervalVal", onkeypress = "return isNumberKey(event)", oninput = "updateIntervalValues()" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-6">
+                            <textarea id="intervalresult" rows="8" cols="70" style="resize: none; padding: 10px;" disabled></textarea>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Check Last Tag No. <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(m => m.CHECK_LAST_TAG, "1", new { id = "yesRadio", name = "checklasttag" })
+                                <label class="form-check-label" for="yesRadio">Yes</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(m => m.CHECK_LAST_TAG, "0", new { id = "noRadio", name = "checklasttag" })
+                                <label class="form-check-label" for="noRadio">No</label>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary mx-1 my-button" data-bs-toggle="modal" data-bs-target="#back-confirmation-modal">Back</button></div>
+                <div class="col"><button hidden id="btnDraft" type="button" class="btn btn-sm btn-primary">Save As Draft</button></div>
+                <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+
+
+@section scripts{
+
+    <script>
+
+        $(document).ready(function () {
+
+            var idh = '@Model.MM_LOTNO_H_ID' != 0 ? '@Model.MM_LOTNO_H_ID' : 0;
+            var listingURL = '/MM_LOT_SEPARATION/MM_LOT_SEPARATION_LST';
+
+            $("#intervalslider").on("input", function () {
+                var value = $(this).val();
+                $("#txtmax").val(value);
+                updateIntervalValues();
+            });
+
+            //$('#intervalVal').on('input', function () {
+            //    var value = $(this).val();
+            //    if (value === "") {
+            //        $("#intervalslider").val(0);
+            //    } else {
+            //        $("#intervalslider").val(value);
+            //    }
+
+            //    updateIntervalValues();
+            //});
+
+            $('#txtmax').on('input', function () {
+                var value = $(this).val();
+                if (value === "") {
+                    $("#intervalslider").val(0);
+                } else {
+                    $("#intervalslider").val(value);
+                }
+
+                updateIntervalValues();
+            });
+
+            updateIntervalValues();
+
+            //SUBMIT
+            $('#btnConfirmSubmit').on('click', function () {
+                $('.invalid-feedback').remove();
+                $('.is-invalid').removeClass('is-invalid');
+
+                var cont = true;
+                var message = "";
+                var list = [];
+
+                var txtsectionname = $("#txtsectionname option:selected").text();
+                var prodline = $("#ddlProdLine").val();
+
+                var linenoID = $("#ddlLineNo").val().join(',');
+                var lineno = $("#ddlLineNo option:selected").map(function () {
+                    return $(this).text();
+                }).get().join(',');
+
+                var packtypeID = $("#ddlPackType").val();
+                var packtype = $("#ddlPackType option:selected").text();
+
+                var txtmin = $("#txtmin").val();
+                var txtmax = $("#txtmax").val();
+                var intervalVal = $("#intervalVal").val();
+                var firstTag = $("#txtfirsttag").val();
+
+                var intervalresult = $("#intervalresult").val();
+
+                //if (txtsectionname == undefined || txtsectionname == null || txtsectionname == "") {
+                //    cont = false;
+                //    message += 'Missing Section Name value. <br>';
+                //}
+
+                if (txtsectionname == undefined || txtsectionname == null || txtsectionname == 0 || txtsectionname == "" || txtsectionname == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Section Name. <br>';
+                }
+
+                if (prodline == undefined || prodline == null || prodline == 0 || prodline == "" || prodline == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Product Line. <br>';
+                }
+
+                if (linenoID == undefined || linenoID == null || linenoID == 0 || linenoID == "" || linenoID == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Product Line No. <br>';
+                }
+
+                if (packtypeID == undefined || packtypeID == null || packtypeID == 0 || packtypeID == "" || packtypeID == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Packing Type. <br>';
+                }
+
+                if (firstTag == undefined || firstTag == null || firstTag == "") {
+                    cont = false;
+                    message += 'Missing First Tag. <br>';
+                }
+
+                if (txtmin == undefined || txtmin == null || txtmin == "") {
+                    cont = false;
+                    message += 'Missing Min value. <br>';
+                }
+
+                if (txtmax == undefined || txtmax == null || txtmax == "") {
+                    cont = false;
+                    message += 'Missing Max value. <br>';
+                }
+
+                if (intervalVal == undefined || intervalVal == null || intervalVal == "") {
+                    cont = false;
+                    message += 'Missing Interval value. <br>';
+                }
+
+                if (intervalresult.includes("Invalid")) {
+                    cont = false;
+                    message += 'Please make sure the range result is not invalid. <br>';
+                }
+
+                var yes = $('#yesRadio').is(':checked');
+                var no = $('#noRadio').is(':checked');
+                var checklasttag = "";
+
+                if (yes == false && no == false) {
+                    cont = false;
+                    message += 'Please select Check Last Tag No. <br>';
+                } else {
+                    if (yes) {
+                        checklasttag = "1"
+                    } else {
+                        if (no) {
+                            checklasttag = "0"
+                        }
+                    }
+                }
+
+                $('.required-field').each(function (e) {
+                    var input_val = $(this).val().trim();
+                    if (input_val == null || input_val == undefined || input_val === "") {
+                        cont = false;
+                        $(this).addClass('is-invalid');
+                        inputError(this);
+                    }
+                });
+
+                if (cont) {
+                    var lotnoarray = intervalresult.split(', ');
+
+                    for (var i = 0; i < lotnoarray.length; i++) {
+                        list.push({
+                            'MM_LOTNO_D_ID': 0,
+                            'RECORD_TYP': 1,
+                            'LOT_NO': lotnoarray[i]
+                        });
+                    }
+                }
+
+                if (cont) {
+
+                    var model = {
+                        MM_LOTNO_H_ID: idh,
+                        RECORD_TYP: '1',
+
+                        SECTION_NAME: txtsectionname,
+                        PRODLINE: prodline,
+                        PRODLINE_ID_STRING: linenoID,
+                        PRODLINENO: lineno,
+                        PACKINGTYPE_ID: packtypeID,
+                        PACKINGTYPE: packtype,
+                        CHECK_LAST_TAG: checklasttag,
+                        MIN_INTERVAL: txtmin,
+                        MAX_INTERVAL: txtmax,
+                        INTERVAL: intervalVal,
+                        FIRSTTAG: firstTag,
+
+                        IntervalLstModel: list
+                    };
+
+                    console.log(model)
+
+                    $.ajax({
+                        url: "/MM_LOT_SEPARATION/InsertUpdateLotSeparation",
+                        type: 'POST',
+                        data: {
+                            model: model
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            });
+
+            //DRAFT
+            $('#btnDraft').on('click', function () {
+                var cont = true;
+                var message = "";
+                var list = [];
+
+                //allow to draft if fill in section name and packing type only
+
+                var txtsectionname = $("#txtsectionname option:selected").text();
+                var prodline = $("#ddlProdLine").val();
+
+                var linenoID = $("#ddlLineNo").val().join(',');
+                var lineno = $("#ddlLineNo option:selected").map(function () {
+                    return $(this).text();
+                }).get().join(',');
+
+                var packtypeID = $("#ddlPackType").val();
+                var packtype = $("#ddlPackType option:selected").text();
+
+                var txtmin = $("#txtmin").val();
+                var txtmax = $("#txtmax").val();
+                var intervalVal = $("#intervalVal").val();
+                var firstTag = $("#txtfirsttag").val();
+
+                var intervalresult = $("#intervalresult").val();
+
+                //if (txtsectionname == undefined || txtsectionname == null || txtsectionname == "") {
+                //    cont = false;
+                //    message += 'Missing Section Name value. <br>';
+                //}
+
+                if (txtsectionname == undefined || txtsectionname == null || txtsectionname == 0 || txtsectionname == "" || txtsectionname == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Section Name. <br>';
+                }
+
+                //if (prodline == undefined || prodline == null || prodline == 0 || prodline == "" || prodline == "Select an option..") {
+                //    cont = false;
+                //    message += 'Please select Product Line. <br>';
+                //}
+
+                //if (linenoID == undefined || linenoID == null || linenoID == 0 || linenoID == "" || linenoID == "Select an option..") {
+                //    cont = false;
+                //    message += 'Please select Product Line No. <br>';
+                //}
+
+                if (packtypeID == undefined || packtypeID == null || packtypeID == 0 || packtypeID == "" || packtypeID == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Packing Type. <br>';
+                }
+
+                if (firstTag == undefined || firstTag == null || firstTag == "") {
+                    cont = false;
+                    message += 'Missing First Tag. <br>';
+                }
+
+                //if (txtmin == undefined || txtmin == null || txtmin == "") {
+                //    cont = false;
+                //    message += 'Missing Min value. <br>';
+                //}
+
+                //if (txtmax == undefined || txtmax == null || txtmax == "") {
+                //    cont = false;
+                //    message += 'Missing Max value. <br>';
+                //}
+
+                //if (intervalVal == undefined || intervalVal == null || intervalVal == "") {
+                //    cont = false;
+                //    message += 'Missing Interval value. <br>';
+                //}
+
+                //if (intervalresult.includes("Invalid")) {
+                //    cont = false;
+                //    message += 'Please make sure the range result is not invalid. <br>';
+                //}
+
+                var yes = $('#yesRadio').is(':checked');
+                var no = $('#noRadio').is(':checked');
+                var checklasttag = "";
+
+                if (yes == false && no == false) {
+                    checklasttag = "1"
+                    //cont = false;
+                    //message += 'Please select Check Last Tag No. <br>';
+                } else {
+                    if (yes) {
+                        checklasttag = "1"
+                    } else {
+                        if (no) {
+                            checklasttag = "0"
+                        }
+                    }
+                }
+
+                if (!intervalresult.includes("Invalid")) {
+                    var lotnoarray = intervalresult.split(', ');
+
+                    for (var i = 0; i < lotnoarray.length; i++) {
+                        list.push({
+                            'MM_LOTNO_D_ID': 0,
+                            'RECORD_TYP': 1,
+                            'LOT_NO': lotnoarray[i]
+                        });
+                    }
+                }
+
+                if (cont) {
+
+                    var model = {
+                        MM_LOTNO_H_ID: idh,
+
+                        SECTION_NAME: txtsectionname,
+                        PRODLINE: prodline,
+                        PRODLINE_ID_STRING: linenoID,
+                        PRODLINENO: lineno,
+                        PACKINGTYPE_ID: packtypeID,
+                        PACKINGTYPE: packtype,
+                        CHECK_LAST_TAG: checklasttag,
+                        MIN_INTERVAL: txtmin,
+                        MAX_INTERVAL: txtmax,
+                        INTERVAL: intervalVal,
+                        FIRSTTAG: firstTag,
+
+                        RECORD_TYP: '8',
+                        IntervalLstModel: list
+                    };
+
+                    console.log(model)
+
+                    $.ajax({
+                        url: "/MM_LOT_SEPARATION/DraftLotSeparation",
+                        type: 'POST',
+                        data: {
+                            model: model
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save as draft successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+            });
+
+            $('#btnConfirmBack').on('click', function () {
+                window.location.href = listingURL;
+            });
+
+        });
+
+        function autofirsttag() {
+            var packtype = $("#ddlPackType option:selected").text();
+
+            if (packtype.toLowerCase().includes('flexicon')) {
+                $("#txtfirsttag").val('1');
+            } else if (packtype.toLowerCase().includes('normal')) {
+                $("#txtfirsttag").val('5');
+            }
+
+            updateIntervalValues();
+        }
+
+        function updateIntervalValues() {
+
+            var min = parseInt($('#txtmin').val());
+            var max = parseInt($('#txtmax').val());
+            var firsttagint = parseInt($("#txtfirsttag").val());
+
+            var interval = parseInt($('#intervalVal').val());
+
+            $('#intervaltbl tbody').empty();
+
+            // Validate the inputs
+            if (isNaN(min) || isNaN(max) || isNaN(interval) || min >= max || interval <= 0) {
+                var message = 'Invalid input. Please make sure min < max and interval > 0.';
+
+                $("#intervalresult").val(message);
+
+                return;
+            }
+
+            if (isNaN(firsttagint) || min <= firsttagint) {
+                var message = 'Invalid input. Please make sure min value is more than first tag value.';
+
+                $("#intervalresult").val(message);
+
+                return;
+            }
+
+            var result = "";
+            var firsttag = $("#txtfirsttag").val();
+
+            // Generate the list of values
+            for (var i = min; i <= max; i += interval) {
+
+                if (result == "") {
+                    result = i;
+                } else {
+                    result = result + ", " + i;
+                }
+
+                if (firsttag == "") {
+                    $("#intervalresult").val(result);
+                } else {
+                    $("#intervalresult").val(firsttag + ', ' + result);
+                }
+
+            }
+        }
+
+        function loadPropItemPass() {
+        var ddlProdLine = $("#ddlProdLine").val();
+
+        $.ajax({
+                type: 'POST',
+                url: '@Url.Action("fillLineNo", "MM_LOT_SEPARATION")',
+                data: {
+                    lineno: ddlProdLine
+                },
+                success: function (data) {
+                    var items = "";
+                    var defaultValue = 0;
+                    $('#ddlLineNo').html("");
+                    for (var i = 0; i < data.length; i++) {
+                        var isSelected = data[i].Value == defaultValue ? 'selected' : '';
+                        items = '<option value="' + data[i].Value + '" ' + isSelected + '>' + data[i].Text + '</option>';
+                        $('#ddlLineNo').append(items);
+                    }
+                    $("#ddlLineNo").multiselect("rebuild");
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR.responseText);
+                }
+            });
+
+    }
+
+    </script>
+}

@@ -1,0 +1,9 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/.vs/TPM_QAS/v15/Server/sqlite3
+/TPM_QAS/IDS_INT_REPORT.pdf
+/TPM_QAS/Splitpath
+/TPM_QAS/COATempFiles
+/TPM_QAS/COA_DE_OCR/FirstOCRFiles

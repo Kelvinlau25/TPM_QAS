@@ -1,0 +1,315 @@
+﻿@model HomeModel.AuthenticatorModel
+@{
+    ViewBag.Title = "System Design UI/UX Standardization";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html class="h-100">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>@System.Configuration.ConfigurationManager.AppSettings["SystemName"]</title>
+    @Styles.Render("~/Content/css-login")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/jquery-3.3.1.min.js")
+    @Scripts.Render("~/Scripts/jquery-ui-1.12.1.min.js")
+
+    <script src="~/Scripts/jquery-3.3.1.js"></script>
+    <script src="~/Plugins/loading-spinner-plugin/waitMe.min.js"></script>
+    <link href="~/Plugins/SpinThatShit-master/examples/style.css" rel="stylesheet" />
+
+    <style>
+        .toasts {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body class="h-100 test">
+    <div class="container-fluid h-100 p-0" style="overflow-x:hidden">
+        <div class="row tr-body">
+            <div class="col-md-8 col-sm-12 h-100">
+                <img style="object-fit:cover" class="img-fluid h-100 w-100" src="~/Images/CompanyPhoto.png" alt="Company Photo">
+            </div>
+            <div class="col-md-4 col-sm-12 h-100 p-0 m-0">
+                <div class="row pt-2">
+                    <div class="col col-2 align-self-center">
+                        <img class="img-fluid tr-logo" src="~/Images/Toray Logo 2.png" alt="Toray Logo" />
+                    </div>
+                    <div class="col col-10 tr-company" style="border-left: 1px solid gray">
+                        <p class="h6 text-black-50 p-0 m-0">TORAY MALAYSIA SYSTEMS SOLUTION</p>
+                    </div>
+                </div>
+                <div class="row align-items-center tr-system-title">
+                    <p class="text-center tr-system-title-text">
+                        @System.Configuration.ConfigurationManager.AppSettings["SystemName"]
+                    </p>
+                </div>
+                <div class="row form-group-margin">
+                    <hr />
+                </div>
+                <div class="row">
+                    @using (Html.BeginForm("Login", "Home", FormMethod.Post, new { @class = "box" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <fieldset>
+                            <div class="form-group form-group-margin">
+                                <label for="exampleInputEmail1" class="form-label mt-4">Username</label>
+                                <div class="form-group">
+                                    <div class="input-group">
+                                        <span class="input-group-text icon-border-container input-group-addon" style="position: relative">
+                                            <i class="fa-solid fa-user"></i>
+                                            <span class="icon-border-right"></span>
+                                        </span>
+                                        @Html.TextBoxFor(a => a.LOGIN_ID, new { placeholder = "Username", @class = "form-control remove-left-border login-txt textbox keyboard", @value = "Muhammad_Azham" })
+                                        @*@Html.TextBoxFor(a => a.RETURN_URL, new { placeholder = "ReturnUrl", @class = "textbox", @style = "display:none" })*@
+                                        <div class="errMsg">@Html.ValidationMessageFor(a => a.LOGIN_ID, "", new { @class = "red", @style = "color:red" })</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group form-group-margin">
+                                <label for="exampleInputEmail1" class="form-label mt-4">Password</label>
+                                <div class="form-group">
+                                    <div class="input-group" id="show_hide_password">
+                                        <span class="input-group-text icon-border-container input-group-addon">
+                                            <i class="fa-solid fa-lock"></i>
+                                            <span class="icon-border-right"></span>
+                                        </span>
+                                        @Html.PasswordFor(a => a.PASSWORD, new { placeholder = "Enter your Password", @class = "form-control password-txt login-txt textbox" })
+                                        <div class="errMsg">@Html.ValidationMessageFor(a => a.PASSWORD, "", new { @class = "red", @style = "color:red" })</div>
+                                        <div class="input-group-text icon-border-container remove-left-border">
+                                            <a href="" class="text-reset"><i class="fa-solid fa-eye-slash showPass" aria-hidden="true"></i></a>
+                                            <span class="icon-border-left"></span>
+                                        </div>
+                                    </div>
+                                    <br />
+                                </div>
+                            </div>
+                            <div class="form-group form-group-margin d-grid gap-2 mt-4">
+                                <button class="btn btn-primary tr-login-btn" type="submit" id="Submit" style="border-radius: 2px"><b>LOGIN</b></button>
+                            </div>
+                        </fieldset>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="tr-footer d-flex flex-row" style="z-index:999;">
+            <div class="flex-column px-1 text-black-50 tr-footer-text" style="margin:auto">
+                <span>@System.Configuration.ConfigurationManager.AppSettings["VersionText"]</span>
+            </div>
+            <div class="flex-column flex-grow-1 text-center text-black-50 tr-footer-text" style="margin:auto; margin-left: -80px">
+                @TPM_QAS.Helpers.Copyright.GetCopyrightText()
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Indicator -->
+    <div class="overlay align-self-center"></div>
+    <div class="spanner align-self-center">
+        <img src="~/assets/loading12.gif" alt="Loading" style="width: 85px; height: auto" />
+    </div>
+    <!-- Toast -->
+    <div class="toast-container toasts" style=" padding-bottom:2%;">
+        <div id="liveToast" class="toast bg-primary-tr" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header bg-primary-tr">
+                <strong class="me-auto">Success Message</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Login Successful
+            </div>
+        </div>
+    </div>
+    <div class="toast-container toasts" style=" padding-bottom:2%;">
+        <div id="failBtn" class="toast bg-danger text-white" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+            <div class="toast-header bg-danger text-white">
+                <strong class="me-auto">Error Message</strong>
+                <button type="button" class="btn-close" data-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body">
+                Invalid Username & Password
+            </div>
+        </div>
+    </div>
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Reset Password</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <form>
+                            <fieldset>
+                                <div class="form-group">
+                                    <label>Enter your email to reset your password</label>
+                                </div>
+                                <div class="form-group">
+                                    <label for="exampleInputEmail1" class="form-label mt-4">Username <span class="text-danger">*</span></label>
+                                    <div class="form-group">
+                                        <div class="input-group mb-3">
+                                            <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                                            <input type="text" class="form-control" id="exampleInput1" placeholder="Enter your Username">
+                                        </div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-dark" data-bs-dismiss="modal">Cancel</button>
+                    <button class="btn btn-primary" type="button">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        $(document).ready(function () {
+
+            $("#show_hide_password a").on('click', function (event) {
+                event.preventDefault();
+                if ($('#show_hide_password input').attr("type") == "text") {
+                    $('#show_hide_password input').attr('type', 'password');
+                    $('.showPass').addClass("fa-eye-slash");
+                    $('.showPass').removeClass("fa-eye");
+                } else if ($('#show_hide_password input').attr("type") == "password") {
+                    $('#show_hide_password input').attr('type', 'text');
+                    $('.showPass').removeClass("fa-eye-slash");
+                    $('.showPass').addClass("fa-eye");
+                }
+            });
+
+            $("#Submit").click(function () {
+                $("div.spanner").addClass("show");
+                $("div.overlay").addClass("show");
+
+                setTimeout(function () {
+                    $("div.spanner").removeClass("show");
+                    $("div.overlay").removeClass("show");
+
+                    //$('#liveToast').toast("show");
+                    new bootstrap.Toast(document.getElementById('liveToast')).show();
+                    //const toastLiveExample = document.getElementById('liveToast');
+                    //console.log(toastLiveExample);
+                    //const toast = new bootstrap.Toast(toastLiveExample);
+
+                    //toast.show();
+
+                    //setTimeout(function () {
+                    //}, 1000);
+                }, 2500);
+
+                //sleep(2000);
+
+                sleep(1000);
+                //loading_overlay('roundBounce');
+            });
+
+            function loading_overlay(effect) {
+                $('.test').waitMe({
+
+                    //none, rotateplane, stretch, orbit, roundBounce, win8,
+                    //win8_linear, ios, facebook, rotation, timer, pulse,
+                    //progressBar, bouncePulse or img
+                    effect: effect,
+
+                    //place text under the effect (string).
+                    text: 'Loading',
+
+                    //background for container (string).
+                    bg: 'rgba(255,255,255,0.7)',
+
+                    //color for background animation and text (string).
+                    color: '#004098',
+
+                    //max size
+                    maxSize: '',
+
+                    //wait time im ms to close
+                    waitTime: 2000,
+
+                    //url to image
+                    source: '',
+
+                    //or 'horizontal'
+                    textPos: 'vertical',
+
+                    //font size
+                    fontSize: '',
+
+                    // callback
+                    onClose: function () {
+
+                        //new bootstrap.Toast(document.getElementById('liveToast')).show();
+                        //const toastLiveExample = document.getElementById('liveToast');
+                        //const toast = new bootstrap.Toast(toastLiveExample);
+
+                        //toast.show();
+
+                        //setTimeout(function () {
+                        //}, 1000);
+                    }
+
+                });
+            }
+        });
+
+        $(document).addEventListener("DOMContentReady", function () {
+
+            $('#liveToast').toast();
+
+        });
+    </script>
+
+    <script type="text/javascript">
+    function redirect(color) {
+        if (color == "green") {
+            var url = '@Url.Action("List", "Home")';
+            window.location.href = url;
+        }
+        if (color == "red") {
+            var url = '@Url.Action("Login", "Home")';
+            window.location.href = url;
+        }
+    }
+
+    function keyboardOn(id)
+    {
+        $("#" + id).keyboard({
+            autoAccept: true,
+            accepted: function () {
+
+            }
+        }).addTyping();
+
+        $("#" + id).focus();
+    }
+    </script>
+    @{
+        if (ViewBag.Validate == true)
+        {
+            <script type="text/javascript">
+            var url = '@Url.Action("List", "Home")';
+            window.location.href = url;
+            </script>
+        }
+        else if (ViewBag.Validate == false)
+        {
+            <script>
+                new bootstrap.Toast(document.getElementById('failBtn')).show();
+            </script>
+        }
+    }
+</body>
+</html>

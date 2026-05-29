@@ -1,0 +1,94 @@
+﻿@model HomeModel.AuthenticatorModel
+@{
+    /**/
+
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<head>
+    @Styles.Render("~/Content/Loading.css")
+    @Styles.Render("~/Content/Alert.css")
+    @Scripts.Render("~/Scripts/Alert.js")
+
+    <style>
+        #successBtn, #failBtn {
+            display: none;
+        }
+
+        .test {
+            color: #191a1a;
+        }
+    </style>
+
+</head>
+<h1>
+    <span class="let1">A</span>
+    <span class="let2">u</span>
+    <span class="let3">t</span>
+    <span class="let4">h</span>
+    <span class="let5">e</span>
+    <span class="let6">n</span>
+    <span class="let7">t</span>
+    <span class="let8">i</span>
+    <span class="let9">c</span>
+    <span class="let10">a</span>
+    <span class="let11">t</span>
+    <span class="let12">i</span>
+    <span class="let13">n</span>
+    <span class="let14">g</span>
+</h1>
+@using (Html.BeginForm("Loading", "Home"))
+{
+<div class="test">
+    @ViewBag.Validate
+</div>
+<div class="test">
+    @ViewBag.userAD
+</div>
+<div class="test">
+    @ViewBag.userAD2
+</div>
+<div>
+    <input type="button" id="successBtn" value="Success" onclick="alert('&#10003; Success','Authentication Success. <br> Redirect to Main Page.','green');" />
+    <input type="button" id="failBtn" value="Fail" onclick="alert('&#10006; Failed. Please login again','Authentication Failed. <br> Please Login to Continue.','red');" />
+</div>
+}
+<script type="text/javascript">
+
+    function redirect(color) {
+        if (color == "green") {
+            var url = '@Url.Action("Menu", "Home")';
+            window.location.href = url;
+        }
+        if (color == "red") {
+            var url = '@Url.Action("Login", "Home")';
+            window.location.href = url;
+        }
+    }
+</script>
+
+@{
+    if (ViewBag.Validate == true)
+    {
+<script type="text/javascript">
+    var elem = document.getElementById("successBtn");
+    if (typeof elem.onclick == "function") {
+        elem.onclick.apply(elem);
+        var url = '@Url.Action("Menu", "Home")';
+        window.location.href = url;
+    }
+</script>
+    }
+    else
+    {
+<script type="text/javascript">
+    var elem = document.getElementById("failBtn");
+    if (typeof elem.onclick == "function") {
+        elem.onclick.apply(elem);
+        var url = '@Url.Action("Login", "Home")';
+        window.location.href = url;
+    }
+</script>
+        }
+    }

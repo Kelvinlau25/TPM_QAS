@@ -1,0 +1,1336 @@
+﻿
+@using TPM_QAS.Models
+@model COAOCRModel
+@{
+    ViewBag.Title = "COA OCR Data Entry - Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Html.BeginForm("COA_DE_OCR_ADD", "COA_DE_OCR", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">New Form - Supplier Raw Material Specifications (OCR)</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <input type="text" id="fileNameHidden" hidden>
+    <input type="text" id="temp_supp" hidden>
+    <input type="text" id="no_of_tab" hidden>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">Supplier Raw Material Specifications (OCR)</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+                    <hr />
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-3">
+                            <p class="text-muted">OCR Indicator (Per Page) <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="form-check form-check-inline">
+                                <input class="secupl form-check-input" type="radio" name="ocrindicator" id="indi1" value="1"      
+                                 @(string.IsNullOrEmpty(Model.OCR_INDICATOR?.ToString()) || Model.OCR_INDICATOR.ToString() == "1" ? "checked" : "")>
+                                <label class="form-check-label" for="indi1">Single Lot no</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="secupl form-check-input" type="radio" name="ocrindicator" id="indi2" value="2"
+                                       @(Model.OCR_INDICATOR != null && Model.OCR_INDICATOR.ToString() == "2" ? "checked" : "")>
+                                <label class="form-check-label" for="indi2">Multiple Lot No and Multiple Result</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="secupl form-check-input" type="radio" name="ocrindicator" id="indi3" value="3"
+                                       @(Model.OCR_INDICATOR != null && Model.OCR_INDICATOR.ToString() == "3" ? "checked" : "")>
+                                <label class="form-check-label" for="indi3">Multiple Lot No and Single Result</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-3">
+                            <p class="text-muted">COA Language <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-7">
+                            <div class="form-check form-check-inline">
+                                <input class="secupl form-check-input" type="radio" name="coalang" id="ENGMALAYRadio" value="english"
+                                       @(string.IsNullOrEmpty(Model.SUPPLIER_LANG?.ToString()) || Model.SUPPLIER_LANG.ToString() == "english" ? "checked" : "")>
+                                <label class="form-check-label" for="ENGMALAYRadio">English/Malay</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="secupl form-check-input" type="radio" name="coalang" id="CHNRadio" value="chinese"
+                                       @(Model.SUPPLIER_LANG != null && Model.SUPPLIER_LANG.ToString() == "chinese" ? "checked" : "")>
+                                <label class="form-check-label" for="CHNRadio">Chinese</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="secupl form-check-input" type="radio" name="coalang" id="JPNRadio" value="japanese"
+                                       @(Model.SUPPLIER_LANG != null && Model.SUPPLIER_LANG.ToString() == "japanese" ? "checked" : "")>
+                                <label class="form-check-label" for="JPNRadio">Japanese</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="secupl form-check-input" type="radio" name="coalang" id="KORRadio" value="korean"
+                                       @(Model.SUPPLIER_LANG != null && Model.SUPPLIER_LANG.ToString() == "korean" ? "checked" : "")>
+                                <label class="form-check-label" for="KORRadio">Korean</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="secupl form-check-input" type="radio" name="coalang" id="THAIRadio" value="thai"
+                                       @(Model.SUPPLIER_LANG != null && Model.SUPPLIER_LANG.ToString() == "thai" ? "checked" : "")>
+                                <label class="form-check-label" for="THAIRadio">Thai</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="firstupl row mt-2 align-items-baseline">
+                        <div class="col-sm-3">
+                            <p class="text-muted"><span>Upload PDF </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.TextBoxFor(Model => Model.DataUploadFile, new { type = "file", @class = "form-control file-upload tt", id = "fileInput", accept = ".pdf" })
+                            <small id="imageText" class="form-text text-muted">Maximum upload file size is 5MB</small>
+                            <br />
+                        </div>
+                    </div>
+
+                    <div class="secupl row align-items-baseline" style="display:none">
+                        <div class="col-sm-3">
+                            <p class="text-muted">Upload PDF <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="input-group">
+                                @Html.TextBoxFor(model => model.VIEW_FILE, new { @class = "isItemDisabled form-control ", @maxlength = "100", id = "sec_ocr_fname", disabled = "disabled" })
+                                <span class="input-group-text">
+                                    <i class="fa fa-eye text-muted" id="viewFileIcon" onclick="ViewFile()" style="cursor: pointer;"></i>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    @Html.TextBoxFor(Model => Model.FILE_NAME, new { @class = "hidden form-control", id = "txtfname" })
+
+                    <div class="ocrresult" style="display:none">
+                        <hr />
+                        <div class="col align-self-center">
+                            <h6 class="text-muted" style="float: left;font-weight:bold">OCR Results</h6>
+                        </div>
+                        <br />
+                        <br />
+
+                        <nav class="tr-tab">
+                            <div class="nav nav-tabs" id="nav-tab" role="tablist"></div>
+                        </nav>
+                        <div class="tab-content p-2" id="nav-tabContent" style="border: 4px solid #EBF3FF;"></div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary mx-1 my-button" data-bs-toggle="modal" data-bs-target="#back-confirmation-modal">Back</button></div>
+                <div class="col"><button id="btnSubmitFile" type="button" class="btn btn-sm btn-primary">Submit File</button></div>
+                <div class="col ocrresult" style="display:none"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+            </div>
+        </div>
+    </div>
+
+}
+
+<div id="overlay" style="display:none">
+    <div class="d-flex flex-column align-items-center justify-content-center">
+        <img src="~/Images/AILoading.gif" alt="Loading..." />
+        <div class="text-center mt-2">AI is processing your request, please do not leave or close this tab!</div>
+    </div>
+</div>
+
+<div class="modal fade" id="firstOCRmodal" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-xl-ocr modal-dialog-scrollable" style="max-height : 90vh" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h6 class="modal-title">OCR Result - Supplier Confirmation</h6>
+            </div>
+            <div style="padding: 25px 0px 15px 0px">
+                <a class="viewfilecss" href="#" onclick="ViewFile()" style="text-decoration: underline;">View Uploaded PDF</a>
+            </div>
+
+            <div id="mulinfodiv" style="padding-left: 25px; display:none">
+                <small class="form-text text-muted" id="mulinfo"></small>
+            </div>
+
+            <div class="modal-body" style="overflow-y:auto; max-height: 60vh;flex-grow:1" id="searchSourceBody">
+                <div class="container-fluid">
+
+                    <div class="col" style="padding-bottom:5px">
+                        <div class="row row-cols-auto justify-content-end g-1">
+                            <div class="col">
+                                <button class="btn btn-sm btn-md btn-danger" id="removeBtn" type="button">
+                                    Remove
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <table id="firstOCRtable" class="table table-bordered compacted" style="width:100%;">
+                        <thead>
+                            <tr class="toolbar-row ocrmodalth">
+                                <th style="width: 1%; text-align: center;">
+                                    <input id="trCheckbox" type="checkbox" class="dt-checkboxes select-all form-check-input" style="margin-top:5.5px; display:none">
+                                </th>
+                                <th style="width: 1%;">Page</th>
+                                <th style="width: 10%;">Detected Lot No</th>
+                                <th style="width: 23%;">Confirmed Lot No</th>
+                                <th style="width: 10%;">Detected Supplier</th>
+                                <th style="width: 22%;">Confirmed Supplier</th>
+                                <th style="width: 10%;">Detected Material</th>
+                                <th style="width: 22%;">Confirmed Material</th>
+                        </thead>
+                        <tbody id="firstOCR-table-body"></tbody>
+                    </table>
+                    <input type="hidden" id="item-count" value="0" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-primary" id="btnConfirmMatSup">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts{
+
+    <script>
+        $(document).ready(function () {
+            var listingURL = '/COA_DE_OCR/COA_DE_OCR_LST';
+            var idh = '@Model.DE_OCR_H_ID' != 0 ? '@Model.DE_OCR_H_ID' : 0;
+
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+            $('#removeBtn').on('click', function () {
+                $('#firstOCRtable tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                    var row = $(ele).closest('tr');
+                    var itemStatInput = row.find('input[id^="item_stat_"]');
+                    var item_stat = itemStatInput.val();
+
+                    itemStatInput.val('5');
+                    row.hide();
+                });
+
+                checkboxCheckingModal();
+            });
+
+            //SUBMIT FILE
+            $('#btnSubmitFile').on('click', function () {
+                let $navTab = $("#nav-tab");
+                let $tabContent = $("#nav-tabContent");
+
+                $navTab.empty();
+                $tabContent.empty();
+
+                $('.invalid-feedback').remove();
+                $('.is-invalid').removeClass('is-invalid');
+
+                var cont = true;
+                var message = "";
+
+                var ocrindicator = $("input[name='ocrindicator']:checked").val();
+                if (ocrindicator == undefined || ocrindicator == null || ocrindicator == "") {
+                    cont = false;
+                    message += 'Please select OCR Indicator. <br>';
+                }
+
+                var coalang = $("input[name='coalang']:checked").val();
+                if (coalang == undefined || coalang == null || coalang == "") {
+                    cont = false;
+                    message += 'Please select COA Language. <br>';
+                }
+
+                var fileInput = $("#fileInput")[0].files[0];
+                if (!fileInput) {
+                    cont = false;
+                    message += "Please select a file to upload. <br>";
+                } else {
+                    var maxSize = 5 * 1024 * 1024; // 5MB in bytes
+                    if (fileInput.size > maxSize) {
+                        cont = false;
+                        message += "File size exceeds 5MB. Please select a smaller file.";
+                    }
+                }
+
+                if (cont) {
+                    var formData = new FormData();
+                    formData.append("DataUploadFile", fileInput);
+                    formData.append("ocrindicator", ocrindicator);
+                    formData.append("coalang", coalang);
+
+                    $.ajax({
+                        url: "/COA_DE_OCR/UploadOCRFile",
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        beforeSend: function () {
+                            $('#overlay').show();
+                        },
+                        success: function (response) {
+                            $("#overlay").hide();
+                            if (response.success) {
+                                $("#fileNameHidden").val(response.filename);
+                                ocrindicator = response.ocrindicator;
+                                var d1 = response.firstOCRresult;
+
+                                $("#firstOCRtable tbody").empty();
+                                var rowIdx = 0;
+
+                                //Single Lot no
+                                if (ocrindicator == 1) {
+                                    for (var i = 0; i < d1.length; i++) {
+                                        rowIdx++;
+                                        $('#item-count').val(rowIdx);
+                                        $('#firstOCRtable tbody').append(`
+                                           <tr id="R_${rowIdx}" data-did="${rowIdx}">
+                                               <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_${rowIdx}" onClick="handleCheckboxClickModal(this)"></td>
+                                               <td style="text-align:center;">${rowIdx}</td>
+                                               <td style="color: ${d1[i].lot_no === 'Not captured by OCR' ? "#B1003C" : "inherit"}">${d1[i].lot_no}</td>
+                                               <td><input type="text" class="form-control" id="item_conf_lotno_${rowIdx}" value="${d1[i].lot_no === 'Not captured by OCR' ? '' : d1[i].lot_no}"></td>
+                                               <td style="color: ${d1[i].supplier_name === 'Not captured by OCR' ? "#B1003C" : "inherit"}">${d1[i].supplier_name}</td>
+                                                <td class="text-left">
+                                                   <select id="item_conf_supp_${rowIdx}" class="form-control ddl_conf_supplier" onchange="loadmat(${rowIdx})" style="min-width:160px;" data-selected="${d1[i].supplier_name}" data-row="${rowIdx}">
+                                                       <option value="${d1[i].supplier_name}" selected>${d1[i].supplier_name}</option>
+                                                   </select>
+                                               </td>
+                                               <td style="color: ${d1[i].material_name === 'Not captured by OCR' ? "#B1003C" : "inherit"}">${d1[i].material_name}</td>
+                                                <td class="text-left">
+                                                    <select id="item_conf_mat_${rowIdx}" class="form-control ddl_conf_mat" data-selected="${d1[i].material_name}" style="min-width:160px;">
+                                                        <option value="0" selected></option>
+                                                    </select>
+                                                </td>
+                                                <td class="d-none">
+                                                    <input type="text" id="item_stat_${rowIdx}" value="1">
+                                                </td>
+                                           </tr>`);
+                                    }
+                                } else {
+                                    //Multiple Lot No and Single Result
+                                    if (ocrindicator == 3 || ocrindicator == 2) {
+                                        for (var i = 0; i < d1.length; i++) {
+                                            rowIdx++;
+                                            $('#item-count').val(rowIdx);
+                                            $('#firstOCRtable tbody').append(`
+                                              <tr id="R_${rowIdx}" data-did="${rowIdx}">
+                                                  <td class="text-center">
+                                                    <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_${rowIdx}" onClick="handleCheckboxClickModal(this)">
+                                                  </td>
+                                                  <td style="text-align:center;">${rowIdx}</td>
+                                                  <td style="color: ${d1[i].lot_no === 'Not captured by OCR' ? "#B1003C" : "inherit"}">${d1[i].lot_no}</td>
+                                                   <td style="height: 100px;">
+                                                      <textarea class="form-control"
+                                                                id="item_conf_lotno_${rowIdx}"
+                                                                style="width: 100%; height: 100% !important;">
+                                                      </textarea>
+                                                    </td>
+                                                   <td style="color: ${d1[i].supplier_name === 'Not captured by OCR' ? "#B1003C" : "inherit"}">${d1[i].supplier_name}</td>
+                                                   <td class="text-left">
+                                                      <select id="item_conf_supp_${rowIdx}" class="form-control ddl_conf_supplier" onchange="loadmat(${rowIdx})" style="min-width:160px;" data-selected="${d1[i].supplier_name}" data-row="${rowIdx}">
+                                                          <option value="${d1[i].supplier_name}" selected>${d1[i].supplier_name}</option>
+                                                      </select>
+                                                  </td>
+                                                  <td style="color: ${d1[i].material_name === 'Not captured by OCR' ? "#B1003C" : "inherit"}">${d1[i].material_name}</td>
+                                                   <td class="text-left">
+                                                       <select id="item_conf_mat_${rowIdx}" class="form-control ddl_conf_mat" data-selected="${d1[i].material_name}" style="min-width:160px;">
+                                                           <option value="0" selected></option>
+                                                       </select>
+                                                   </td>
+                                                   <td class="d-none">
+                                                       <input type="text" id="item_stat_${rowIdx}" value="1">
+                                                   </td>
+                                               </tr>`);
+
+                                            if (d1[i].lot_no.trim() != "Not captured by OCR") {
+                                                $("#item_conf_lotno_" + rowIdx).val(d1[i].lot_no.trim());
+                                            } else {
+                                                $("#item_conf_lotno_" + rowIdx).val("");
+                                            }
+                                            
+                                        }
+                                    }
+                                }
+
+                                checkboxCheckingModal();
+
+                                fillSupplier();
+
+                                if (ocrindicator != 1) {
+                                    $('#mulinfo').html(
+                                        'For entries containing <span style="color: red;">multiple lot no</span> in each page, please separate each lot number with a comma or place each on a new line. ' +
+                                        'For example:<br>' +
+                                        'LOT123,<br>' +
+                                        'LOT456'
+                                    );
+
+                                    $('#mulinfodiv').show();
+                                } else {
+                                    $('#mulinfodiv').hide();
+                                    $('#mulinfo').html(
+                                        ''
+                                    );
+                                }
+
+
+                                $('#firstOCRmodal').modal('show');
+
+                            } else {
+                                $("#overlay").hide();
+                                displayToast("error", response.message);
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            $("#overlay").hide();
+
+                            try {
+                                var jsonError = JSON.parse(jqXHR.responseText);
+                                console.log("Parsed Error:", jsonError);
+                                displayToast("error", "Error uploading data");
+                            } catch (e) {
+                                // If response is not JSON, show raw error
+                                displayToast("error", "Error uploading data");
+                            }
+                        }
+                    });
+                } else {
+                    if (message !== "") {
+                        displayToast("error", message);
+                    }
+                }
+            });
+
+            //TO CALL SECOND OCR
+            $("#btnConfirmMatSup").off("click").on("click", function (e) {
+                $('.invalid-feedback').remove();
+                $('.is-invalid').removeClass('is-invalid');
+
+                var cont = true;
+                var message = "";
+
+                $('.required-field').each(function (e) {
+                    var input_val = $(this).val().trim();
+                    if (input_val == null || input_val == undefined || input_val === "") {
+                        cont = false;
+                        $(this).addClass('is-invalid');
+                        inputError(this);
+                    }
+                });
+
+                var ocrindicator = $("input[name='ocrindicator']:checked").val();
+                if (ocrindicator == undefined || ocrindicator == null || ocrindicator == "") {
+                    cont = false;
+                    message += 'Please select OCR Indicator. <br>';
+                }
+
+                var coalang = $("input[name='coalang']:checked").val();
+                if (coalang == undefined || coalang == null || coalang == "") {
+                    cont = false;
+                    message += 'Please select COA Language. <br>';
+                }
+
+                var fileInput = $("#fileInput")[0].files[0];
+                if (!fileInput) {
+                    cont = false;
+                    message += "Please select a file to upload. <br>";
+                }
+
+                var hasItem = false;
+                var hasError = false;
+                var list1 = [];
+
+                var lastSuppId = null;
+                var lastSuppText = null;
+                var lastMatId = null;
+                var lastMatText = null;
+
+                $("#firstOCRtable tbody tr").each(function () {
+                    var did = $(this).data("did");
+                    if (did != '' && did != null && did != undefined) {
+                        var item_stat = $('#item_stat_' + did).val();
+                        var item_conf_lotno = $('#item_conf_lotno_' + did).val();
+                        var item_conf_supp = $('#item_conf_supp_' + did).val();
+                        var item_conf_supp_text = $("#item_conf_supp_" + did + " option:selected").text().trim();
+                        var item_conf_mat = $('#item_conf_mat_' + did).val();
+                        var item_conf_mat_text = $("#item_conf_mat_" + did + " option:selected").text().trim();
+
+                        if (item_stat != '5') {
+                            if (item_conf_lotno != '' && item_conf_supp != '0' && item_conf_supp !== undefined && item_conf_mat != '0' && item_conf_mat !== undefined) {
+
+                                if (item_conf_lotno.includes(",")) {
+                                    item_conf_lotno = item_conf_lotno.trim().replace(/\n/g, "");
+                                    item_conf_lotno = item_conf_lotno.trim().replace(/,/g, "*");
+                                } else {
+                                    item_conf_lotno = item_conf_lotno.trim().replace(/\n/g, "*");
+                                }
+
+                                hasItem = true;
+                            } else {
+                                hasError = true;
+                            }
+                        }
+
+                        list1.push({
+                            'record_typ': item_stat,
+                            'lot_no': item_conf_lotno,
+                            'supplier_id': item_conf_supp,
+                            'supplier_name': item_conf_supp_text,
+                            'material_id': item_conf_mat,
+                            'material_name': item_conf_mat_text
+                        });
+                        
+                    }
+                });
+
+                if (cont && hasError) {
+                    cont = false;
+                    message = "Please make sure all lot no, confirmed supplier and material is not empty.";
+                }
+
+                if (cont && !hasItem) {
+                    cont = false;
+                    message = "Must have atleast one supplier and one material";
+                }
+                
+
+                if (cont) {
+
+                    var model = {
+                        FirstOCRLstModel: list1
+                    };
+
+
+                    //console.log(model);
+                    var formData = new FormData();
+                    formData.append("DataUploadFile", fileInput);
+                    formData.append("ocrindicator", ocrindicator);
+                    formData.append("coalang", coalang);
+                    formData.append("modelObj", JSON.stringify(model));
+
+                    console.log("model", fileInput)
+                    console.log("model", model)
+
+                    $('#firstOCRmodal').modal('hide');
+
+                    $.ajax({
+                        url: "/COA_DE_OCR/getOCRFileData",
+                        type: "POST",
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        beforeSend: function () {
+                            $('#overlay').show();
+                        },
+                        success: function (response) {
+                            $('#overlay').hide();
+                            if (response.success) {
+                                var d1 = response.d1;
+                                //console.log(d1);
+                                $("#sec_ocr_fname").val(response.filename);
+                                generateTabs(d1);
+
+                            } else {
+                                alert("Error : " + response.message);
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            $("#overlay").hide();
+
+                            try {
+                                var jsonError = JSON.parse(jqXHR.responseText);
+                                console.log("Parsed Error:", jsonError);
+                                displayToast("error", "Error uploading data");
+                            } catch (e) {
+                                // If response is not JSON, show raw error
+                                displayToast("error", "Error uploading data");
+                            }
+                        }
+
+                    });
+                } else {
+                    if (message !== "") {
+                        alert(message);
+                    }
+                }
+            });
+
+            //FINAL SUBMIT
+            $('#btnConfirmSubmit').on('click', function () {
+                var cont = true;
+                var message = "";
+                var list1 = [];
+
+                var hasItem = false;
+                var hasError = false;
+                var hasReject = false;
+                var hasInvResult = false;
+
+                var ocrindicator = $("input[name='ocrindicator']:checked").val();
+                if (ocrindicator == undefined || ocrindicator == null || ocrindicator == "") {
+                    cont = false;
+                    message += 'Please select OCR Indicator. <br>';
+                }
+
+                fileNameHidden = $("#fileNameHidden").val();
+
+                if (fileNameHidden == undefined || fileNameHidden == null || fileNameHidden == "") {
+                    cont = false;
+                    message += 'Error in getting file name. <br>';
+                }
+
+                var existedlot = [];
+
+                $(".detailTable").each(function () {
+                    var tableId = $(this).attr("id"); //itemtable5
+                    var newtableid = tableId.replace("itemtable", "");  //5
+
+                    if ($("#itemcount" + newtableid).val() != "0") {
+                        $(this).find("tbody tr").each(function () {
+                            var did = $(this).data("did");
+
+                            if (did != '' && did != null && did != undefined) {
+
+                                var txtsuppid = $("#txtsuppid_" + newtableid).val();
+                                var itemmatid = $("#itemmatid_" + newtableid).val();
+                                var txtreallot = $("#txtreallot_" + newtableid).val();
+
+                                if (txtreallot.includes(",")) {
+                                    txtreallot = txtreallot.trim().replace(/\n/g, "");
+                                } else {
+                                    txtreallot = txtreallot.trim().replace(/\n/g, ",");
+                                }
+
+                                //txtreallot = txtreallot.trim().replace(/\n/g, ",");
+                                let checklot = txtreallot.split(",").map(item => item.trim());
+
+
+                                //for file name need lot no
+                                if (ocrindicator == "3") {
+                                    checklot.forEach(eachlot => {
+                                        if (!existedlot.includes(eachlot)) {
+                                            existedlot.push(eachlot);
+                                        }
+                                    });
+
+                                } else {
+                                    if (!existedlot.includes(txtreallot)) {
+                                        existedlot.push(txtreallot);
+                                    }
+                                }
+
+                                var item_d2id = $("#item_d2id_" + newtableid + "-" + did).val().trim();
+                                var item_mm_spec = $("#item_mm_spec_" + newtableid + "-" + did).text().trim();
+                                var item_mm_spec_val = $("#item_mm_spec_val_" + newtableid + "-" + did).text().trim();
+                                var item_ocr_spec = $("#item_ocr_spec_" + newtableid + "-" + did).val().trim();
+                                var item_cfs_ocr_spec = $("#item_cfs_ocr_spec_" + newtableid + "-" + did).text().trim();
+                                var item_ocr_spec_value = $("#item_ocr_spec_value_" + newtableid + "-" + did).val().trim();
+                                var item_cfs_ocr_spec_value = $("#item_cfs_ocr_spec_value_" + newtableid + "-" + did).text().trim();
+                                var item_comp_result = $("#item_comp_result_" + newtableid + "-" + did).text().trim();
+
+                                if (item_comp_result != 'APPROVED' && item_comp_result != 'REJECTED') {
+                                    hasInvResult = true;
+                                }
+
+                                if (item_ocr_spec != "Not captured by OCR" && item_ocr_spec != "" && item_ocr_spec != undefined && item_ocr_spec_value != "" && item_ocr_spec_value != undefined
+                                    && item_mm_spec != "" && item_mm_spec != undefined && item_mm_spec_val != "" && item_mm_spec_val != undefined) {
+                                    hasItem = true;
+
+                                    if (item_comp_result != 'APPROVED') {
+                                        hasReject = true;
+                                    }
+
+                                    if (ocrindicator == "3") {
+                                        checklot.forEach(eachlot => {
+                                            txtreallot = eachlot;
+
+                                            list1.push({
+                                                'supplier_id': txtsuppid,
+                                                'MATERIAL_ID': itemmatid,
+                                                'lot_no': txtreallot,
+                                                'RECORD_TYP': 1,
+
+                                                'MM_MATERIAL_D2_ID': item_d2id,
+                                                'ocr_spec': item_ocr_spec,
+                                                'cfs_ocr_spec': item_cfs_ocr_spec,
+                                                'ocr_spec_value': item_ocr_spec_value,
+                                                'cfs_ocr_spec_value': item_cfs_ocr_spec_value,
+                                                'compare_result': item_comp_result
+                                            });
+                                        });
+                                    } else {
+                                        list1.push({
+                                            'supplier_id': txtsuppid,
+                                            'MATERIAL_ID': itemmatid,
+                                            'lot_no': txtreallot,
+                                            'RECORD_TYP': 1,
+
+                                            'MM_MATERIAL_D2_ID': item_d2id,
+                                            'ocr_spec': item_ocr_spec,
+                                            'cfs_ocr_spec': item_cfs_ocr_spec,
+                                            'ocr_spec_value': item_ocr_spec_value,
+                                            'cfs_ocr_spec_value': item_cfs_ocr_spec_value,
+                                            'compare_result': item_comp_result
+                                        });
+                                    }
+
+
+                                } else {
+                                    hasError = true;
+                                }
+
+                            }
+                        });
+                    }
+
+                });
+
+                if (cont && hasError) {
+                    cont = false;
+                    message = "Please make sure all OCR Supplier Specification and Result (including Not captured by OCR field) are not empty.";
+                }
+
+                if (cont && hasInvResult) {
+                    cont = false;
+                    message = "Please make sure Result for each row is either APPROVED or REJECTED only.";
+                }
+
+                if (cont && !hasItem) {
+                    cont = false;
+                    message = "Please fill in at least one data in each tab.";
+                }
+
+
+                var final_result = 'APPROVED';
+                if (hasReject) {
+                    final_result = 'REJECTED'
+                }
+
+                if (cont) {
+
+                    var tabcount = parseInt($("#no_of_tab").val(), 10) || 0;
+                    var finalname = 'COA_OCR_';
+
+                    if (tabcount <= 5) {
+                        if (existedlot.length > 0) {
+                            var combinedLots = existedlot.join(",");
+                            if (combinedLots.length < 100) {
+                                finalname = finalname + combinedLots;
+                            } else {
+                                finalname = finalname + 'MULTIPLE_LOT';
+                            }
+                        }
+                    } else {
+                        finalname = finalname + 'MULTIPLE_LOT';
+                    }
+
+                    var model = {
+                        DE_OCR_H_ID: 0,
+                        RECORD_TYP: '1',
+
+                        ENTRY_TYPE: 'OCR',
+                        OCR_INDICATOR: ocrindicator,
+                        FINAL_FILE_NAME: finalname,
+                        FILE_NAME: fileNameHidden,
+                        FINAL_RESULT: final_result,
+                        MMOCRDataLst: list1
+                    };
+
+                    console.log(model);
+
+                    $.ajax({
+                        url: "/COA_DE_OCR/InsertUpdateDEOCR",
+                        type: 'POST',
+                        data: {
+                            model: model,
+                            loc : 'add'
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                loadings(false);
+                                if (response.type == "EF") {
+                                    displayToast("error", response.message);
+                                    setTimeout(function () {
+                                        window.location.href = listingURL;
+                                    }, 2000);
+                                } else {
+                                    displayToast("error", response.message);
+                                }
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                                console.log(jqXHR.responseText);
+                                displayToast("error", jqXHR.responseText || "An error occurred");
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message);
+                    }
+                }
+            });
+
+            $('#btnConfirmBack').on('click', function () {
+                window.location.href = listingURL;
+            });
+
+            // Attach debounced event listener
+            $(document).on("input", ".item_ocr_spec_value", debounce(handleInput, 300));
+
+            $('.select-all').on('change', function () {
+                var isChecked = $(this).prop('checked');
+                $('#firstOCRtable .dt-checkboxes').prop('checked', isChecked);
+            });
+
+        });
+
+        function generateTabs(data) {
+            var headerData = data.HeaderMMOCRData;
+            var detailData = data.MMOCRData;
+            var ocrindicator = data.ocrindicator;
+            //console.log(detailData);
+            let $navTab = $("#nav-tab");
+            let $tabContent = $("#nav-tabContent");
+
+            $navTab.empty();
+            $tabContent.empty();
+
+            let tabcount = 1;
+            let countno = 0;
+
+            $.each(headerData, function (key, items) {
+
+                let tabId = tabcount;//items.supplier_id;
+                let shortTabName = items.tabname.length > 25 ? items.tabname.substring(0, 25) + "..." : items.tabname;
+
+                let tabButton = `
+                <button class="nav-link ${tabcount === 1 ? 'active' : ''}"
+                        id="nav${tabId}tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#nav${tabId}"
+                        type="button"
+                        role="tab"
+                        aria-controls="nav${tabId}"
+                        aria-selected="${tabcount === 1 ? 'true' : 'false'}"
+                        title="${items.tabname}" data-bs-toggle="tooltip" data-bs-placement="top">
+                    ${shortTabName}
+                </button>`;
+
+                $navTab.append(tabButton);
+
+                let tabPane = `
+                    <div class="tab-pane fade ${tabcount === 1 ? 'show active' : ''}"
+                            id="nav${tabId}" role="tabpanel"
+                            aria-labelledby="nav${tabId}tab">
+
+                        <div class="row align-items-center">
+                            <div class="col-sm-2">
+                                <p class="text-muted" style="padding-top:13px">Supplier Name <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                <input type="text" id="txtrealsupp_${tabId}" value="${items.supplier_name}" class="required-field form-control" disabled>
+                            </div>
+                            <div class="col-sm-2">
+                                <p class="text-muted" style="padding-top:13px">Lot Number <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-3">
+                            ${ocrindicator == '3' ? `
+                                    <textarea id="txtreallot_${tabId}" class="required-field form-control" disabled>${items.lot_no}</textarea>
+                                ` : `
+                                    <input type="text" id="txtreallot_${tabId}" value="${items.lot_no}" class="required-field form-control" disabled>
+                                `}
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center">
+                            <div class="col-sm-2">
+                                <p class="text-muted" style="padding-top:13px">Material Name <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                <input type="text" id="txtrealmat_${tabId}" value="${items.material_name}" class="required-field form-control" disabled>
+                            </div>
+                            <div class="col-sm-2">
+                                 <p class="text-muted" style="padding-top:13px">TPM Code <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-3">
+                                 <input type="text" id="txttpmcode_${tabId}" value="${items.tpm_code}" class="required-field form-control" disabled>
+                            </div>
+                        </div>
+
+                        ${items.has_rejectedID && items.has_rejectedID.trim() !== "" ? `
+                        <div class="row align-items-center">
+                            <div class="col-sm-12">
+                                <p class="text-muted" style="padding-top:13px">
+                                    This lot number already exists but <span style="color: #B1003C;">rejected</span>.
+                                    <a href="/${items.has_rejectedID}" target="_blank" style="color: blue; text-decoration: underline;">
+                                        Click here to view.
+                                    </a>
+                                </p>
+                            </div>
+                        </div>` : ''}
+
+                        ${items.is_lot_exist && items.is_lot_exist.trim() !== "N" ? `
+                        <div class="row align-items-center">
+                            <div class="col-sm-12">
+                                <p class="text-muted" style="padding-top:13px">
+                                   This lot number already exists and <span style="color: #00A251;">approved</span>.
+                                    <a href="/${items.is_lot_exist}" target="_blank" style="color: blue; text-decoration: underline;">
+                                        Click here to view.
+                                    </a>
+                                </p>
+                            </div>
+                        </div>` : ''}
+
+                        <input type="hidden" id="txtsuppid_${tabId}" value="${items.supplier_id}" />
+                        <input type="hidden" id="itemmatid_${tabId}" value="${items.material_id}" />
+
+                        <div class="row mt-2 mx-1">
+                            <table id="itemtable${tabId}" class="detailTable" style="width:100%">
+                                <thead>
+                                    <tr class="toolbar-row">
+                                        <th hidden></th>
+                                        <th hidden></th>
+                                        <th style="width: 20%; text-align: left;">Supplier Specification</th>
+                                        <th style="width: 12%; text-align: left;">Set Value</th>
+                                        <th style="width: 20%; text-align: left;">Supplier Specification (OCR)</th>
+                                        <th style="width: 10.5%; text-align: left;">Supplier Spec Accuracy</th>
+                                        <th style="width: 12%; text-align: left;">Result</th>
+                                        <th style="width: 10.5%; text-align: left;">Result Accuracy</th>
+                                        <th style="width: 12%; text-align: left;">Comparison Result</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+
+                let rowIdx = 0;
+                let pageData = detailData[countno];
+
+                //if (items.is_lot_exist == 'N') {
+                    var parsedOcrData = JSON.parse(items.resultOCR);
+                    console.log("OCR result for lot no : " + items.lot_no, parsedOcrData)
+                //}
+
+                for (var j = 0; j < pageData.length; j++) {
+                    if (pageData[j].mm_spec != 'No MM Spec Registered') {
+                        rowIdx++;
+                        tabPane += `
+                                <tr id="R${tabId}_${rowIdx}" data-did="${rowIdx}">
+                                    <td hidden><input type="text" class="form-control" id="item_d2id_${tabId}-${rowIdx}" value="${pageData[j].MM_MATERIAL_D2_ID}"></td>
+                                    <td hidden><input type="text" class="form-control" id="item_mm_spec_type_${tabId}-${rowIdx}" value="${pageData[j].mm_spec_type}"></td>
+                                    <td id="item_mm_spec_${tabId}-${rowIdx}">${pageData[j].mm_spec}</td>
+                                    <td id="item_mm_spec_val_${tabId}-${rowIdx}" >${pageData[j].mm_spec_val}</td>
+                                    <td>
+                                        <input type="text" class="form-control"
+                                            id="item_ocr_spec_${tabId}-${rowIdx}"
+                                            value="${pageData[j].ocr_spec === 'Not captured by OCR' ? pageData[j].mm_spec : pageData[j].ocr_spec}"
+                                            placeholder="${pageData[j].ocr_spec === 'Not captured by OCR' ? 'Not captured by OCR' : ''}"
+                                            style="border: ${pageData[j].ocr_spec === 'Not captured by OCR' ? '2px solid #B1003C' : '1px solid #ced4da'};">
+                                    </td>
+                                    <td id="item_cfs_ocr_spec_${tabId}-${rowIdx}"
+                                        style="color: ${parseFloat(pageData[j].cfs_ocr_spec) < 0.9 ? '#B1003C' : 'inherit'};">
+                                        ${(parseFloat(pageData[j].cfs_ocr_spec) || 0).toFixed(4)}
+                                    </td>
+                                    <td>
+                                        <input type="text" class="form-control item_ocr_spec_value"
+                                            id="item_ocr_spec_value_${tabId}-${rowIdx}"
+                                            value="${pageData[j].ocr_spec_value === 'Not captured by OCR' ? '' : pageData[j].ocr_spec_value}"
+                                            placeholder="${pageData[j].ocr_spec_value === 'Not captured by OCR' ? 'Not captured by OCR' : ''}"
+                                            style="border: ${pageData[j].ocr_spec_value === 'Not captured by OCR' ? '2px solid #B1003C' : '1px solid #ced4da'};">
+                                    </td>
+                                    <td id="item_cfs_ocr_spec_value_${tabId}-${rowIdx}"
+                                        style="color: ${parseFloat(pageData[j].cfs_ocr_spec_value) < 0.9 ? '#B1003C' : 'inherit'};">
+                                        ${(parseFloat(pageData[j].cfs_ocr_spec_value) || 0).toFixed(4)}
+                                    </td>
+                                    <td id="item_comp_result_${tabId}-${rowIdx}"
+                                        style="color: ${pageData[j].compare_result === 'APPROVED' ? '#00A251' :
+                                                                        pageData[j].compare_result === 'TO BE CONFIRMED' ? '#FF850A' : '#B1003C'};">
+                                        ${pageData[j].compare_result}
+                                    </td>
+
+                                </tr>`;
+                    }
+                }
+
+
+
+                tabPane += `
+                            </tbody>
+                        </table>
+                        <input type="hidden" id="itemcount${tabId}" value="${rowIdx}" />
+                    </div>
+                </div>`;
+
+                $tabContent.append(tabPane);
+                $("#no_of_tab").val(tabcount);
+                tabcount++;
+                countno++;
+            });
+
+            $('#btnSubmitFile').hide();
+            $('.firstupl').hide();
+            $('.secupl').show();
+            $('.secupl').attr("disabled", "disabled");
+            $('.ocrresult').show();
+        }
+
+        function compareResult(type, mm_spec_val, ocr_val) {
+            let result = "APPROVED";
+
+            if (type === "Text") {
+                if (ocr_val.toLowerCase().trim() !== mm_spec_val.toLowerCase().trim()) {
+                    result = "REJECTED";
+                }
+            } else if (type === "Range") {
+                if (!mm_spec_val.includes("~")) {
+                    return "Invalid range format";
+                }
+
+                let parts = mm_spec_val.split("~").map(s => s.trim());
+                if (parts.length === 2) {
+
+                    let minVal = parseFloat(parts[0].trim());
+                    let maxVal = parseFloat(parts[1].trim());
+
+                    if (!/^\d+(\.\d+)?$/.test(ocr_val.trim())) {
+                        return "Invalid numeric values";
+                    }
+
+                    let ocrValue = parseFloat(ocr_val);
+
+                    if (!isNaN(minVal) && !isNaN(maxVal) && !isNaN(ocrValue)) {
+                        if (ocrValue < minVal || ocrValue > maxVal) {
+                            result = "REJECTED";
+                        }
+                    } else {
+                        result = "Invalid numeric values";
+                    }
+                } else {
+                    result = "Invalid range format";
+                }
+            } else if (type === "Numeric") {
+                if (!/^[-]?\d+(\.\d+)?$/.test(ocr_val.trim())) {
+                    return "Invalid numeric values";
+                }
+
+                let match = mm_spec_val.trim().match(/^(<=|>=|<|>|=)?\s*(-?\s*\d+(\.\d+)?)$/);
+
+                if (match) {
+                    let operatorSymbol = match[1] || "=";
+                    let numberStr = match[2].replace(/\s+/g, "");
+                    let specValue = parseFloat(numberStr);
+                    let ocrValue = parseFloat(ocr_val);
+
+                    if (!isNaN(specValue) && !isNaN(ocrValue)) {
+                        switch (operatorSymbol) {
+                            case "<=":
+                                if (!(ocrValue <= specValue)) result = "REJECTED";
+                                break;
+                            case ">=":
+                                if (!(ocrValue >= specValue)) result = "REJECTED";
+                                break;
+                            case "<":
+                                if (!(ocrValue < specValue)) result = "REJECTED";
+                                break;
+                            case ">":
+                                if (!(ocrValue > specValue)) result = "REJECTED";
+                                break;
+                            case "=":
+                                if (!(ocrValue === specValue)) result = "REJECTED";
+                                break;
+                        }
+                    } else {
+                        result = "Invalid numeric values";
+                    }
+                } else {
+                    result = "Invalid numeric values";
+                }
+            } else {
+                result = "Invalid Spec Type";
+            }
+
+            return result;
+        }
+
+        function handleInput(event) {
+            let row = $(event.target).closest("tr");
+            let tabId = row.closest(".tab-pane").attr("id").replace("nav", "");
+            let rowIdx = row.data("did");
+
+            let type = $(`#item_mm_spec_type_${tabId}-${rowIdx}`).val();
+            let mm_spec_val = $(`#item_mm_spec_val_${tabId}-${rowIdx}`).text();
+            let ocr_val = $(event.target).val();
+
+            let result = compareResult(type, mm_spec_val, ocr_val);
+
+            let resultElement = $(`#item_comp_result_${tabId}-${rowIdx}`);
+            resultElement.text(result);
+            resultElement.css("color",
+                result === "APPROVED" ? "#00A251" :
+                    result === "TO BE CONFIRMED" ? "#FF850A" : "#B1003C");
+        }
+
+        function debounce(func, delay) {
+            let timer;
+            return function (...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+        function ViewFile() {
+            var name = $('#fileNameHidden').val();
+            if (name != "") {
+                window.open("FirstOCRFiles/" + name, "width=500,height=500,top=100,left=500")
+            }
+        }
+
+        function fillSupplier() {
+            $.getJSON('@Url.Action("fillSupplier", "COA_DE_OCR")', function (data) {
+                if (data != null && !jQuery.isEmptyObject(data)) {
+                    $(".ddl_conf_supplier").each(function () {
+                        var ddl_conf_supplier = $(this);
+                        var currentSelected = ddl_conf_supplier.attr("data-selected") || "";
+                        
+                        var rowcount = ddl_conf_supplier.attr("data-row");
+
+                        ddl_conf_supplier.empty();
+
+                        var closestMatchExact = null;
+                        var closestMatchTwenty = null;
+                        var closestMatchTen = null;
+                        var closestMatchFive = null;
+                        var closestMatchThree = null;
+
+                        var normalizedAPI = trimSymbol(currentSelected);
+                        var firstTwentyAPI = currentSelected.substring(0, 20).toLowerCase();
+                        var firstTenAPI = currentSelected.substring(0, 10).toLowerCase();
+                        var firstFiveAPI = currentSelected.substring(0, 5).toLowerCase();
+                        var firstThreeAPI = currentSelected.substring(0, 3).toLowerCase();
+
+                        $.each(data, function (index, datas) {
+                            ddl_conf_supplier.append($('<option/>', {
+                                value: datas.Value,
+                                text: datas.Text
+                            }));
+
+                            var normalizedDB = trimSymbol(datas.Text);
+                            if (normalizedAPI === normalizedDB) {
+                                closestMatchExact = datas.Value;
+                            }
+                        });
+
+                        if (closestMatchExact) {
+                            ddl_conf_supplier.val(closestMatchExact);
+                        } else {
+                            $.each(data, function (index, datas) {
+                                var firstTwentyDB = datas.Text.substring(0, 20).toLowerCase();
+                                if (firstTwentyAPI === firstTwentyDB) {
+                                    closestMatchTwenty = datas.Value;
+                                }
+                            });
+
+                            if (closestMatchTwenty) {
+                                ddl_conf_supplier.val(closestMatchTwenty);
+                            } else {
+                                $.each(data, function (index, datas) {
+                                    var firstTenDB = datas.Text.substring(0, 10).toLowerCase();
+                                    if (firstTenAPI === firstTenDB) {
+                                        closestMatchTen = datas.Value;
+                                        return false;
+                                    }
+                                });
+
+                                if (closestMatchTen) {
+                                    ddl_conf_supplier.val(closestMatchTen);
+                                } else {
+                                    $.each(data, function (index, datas) {
+                                        var firstFiveDB = datas.Text.substring(0, 5).toLowerCase();
+                                        if (firstFiveAPI === firstFiveDB) {
+                                            closestMatchFive = datas.Value;
+                                            return false;
+                                        }
+                                    });
+
+                                    if (closestMatchFive) {
+                                        ddl_conf_supplier.val(closestMatchFive);
+                                    } else {
+                                        $.each(data, function (index, datas) {
+                                            var firstThreeDB = datas.Text.substring(0, 3).toLowerCase();
+                                            if (firstThreeAPI === firstThreeDB) {
+                                                closestMatchThree = datas.Value;
+                                                return false;
+                                            }
+                                        });
+
+                                        if (closestMatchThree) {
+                                            ddl_conf_supplier.val(closestMatchThree);
+                                        } else {
+                                            ddl_conf_supplier.val("0");
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        loadmat(rowcount);
+                    });
+                }
+            });
+}
+        // Keep only letters and numbers
+        function trimSymbol(text) {
+            return text.toLowerCase().replace(/[^a-z0-9]/g, "");
+        }
+
+        function loadmat(count) {
+            var confsup = $("#item_conf_supp_" + count).val();
+            $("#temp_supp").val(confsup);
+
+            var ddl_conf_mat = $("#firstOCRtable tr#R_" + count + " .ddl_conf_mat");
+            fillMaterial(count, ddl_conf_mat);
+        }
+
+        function fillMaterial(count, ddl_conf_mat) {
+            var temp_supp = $("#temp_supp").val();
+
+            $.getJSON('@Url.Action("fillMaterial", "COA_DE_OCR")?supp=' + temp_supp, function (data) {
+                if (data != null && !jQuery.isEmptyObject(data)) {
+
+                    var currentSelected = ddl_conf_mat.attr("data-selected") || "";
+                    ddl_conf_mat.empty();
+
+                    var closestMatchExact = null;
+                    var closestMatchTwenty = null;
+                    var closestMatchTen = null;
+                    var closestMatchFive = null;
+                    var closestMatchThree = null;
+
+                    // Normalize currentSelected (remove spaces & symbols)
+                    var normalizedAPI = trimSymbol(currentSelected);
+                    var firstTwentyAPI = currentSelected.substring(0, 20).toLowerCase();
+                    var firstTenAPI = currentSelected.substring(0, 10).toLowerCase();
+                    var firstFiveAPI = currentSelected.substring(0, 5).toLowerCase();
+                    var firstThreeAPI = currentSelected.substring(0, 3).toLowerCase();
+
+                    $.each(data, function (index, datas) {
+                        ddl_conf_mat.append($('<option/>', {
+                            value: datas.Value,
+                            text: datas.Text
+                        }));
+
+                        var normalizedDB = trimSymbol(datas.Text);
+                        if (normalizedAPI === normalizedDB) {
+                            closestMatchExact = datas.Value;
+                        }
+                    });
+
+                    if (closestMatchExact) {
+                        ddl_conf_mat.val(closestMatchExact);
+                    } else {
+                        $.each(data, function (index, datas) {
+                            var firstTwentyDB = trimSymbol(datas.Text).substring(0, 20).toLowerCase();
+                            if (firstTwentyAPI === firstTwentyDB) {
+                                closestMatchTwenty = datas.Value;
+                            }
+                        });
+
+                        if (closestMatchTwenty) {
+                            ddl_conf_mat.val(closestMatchTwenty);
+                        } else {
+                            $.each(data, function (index, datas) {
+                                var firstTenDB = trimSymbol(datas.Text).substring(0, 10).toLowerCase();
+                                if (firstTenAPI === firstTenDB) {
+                                    closestMatchTen = datas.Value;
+                                    return false;
+                                }
+                            });
+
+                            if (closestMatchTen) {
+                                ddl_conf_mat.val(closestMatchTen);
+                            } else {
+                                $.each(data, function (index, datas) {
+                                    var firstFiveDB = trimSymbol(datas.Text).substring(0, 5).toLowerCase();
+                                    if (firstFiveAPI === firstFiveDB) {
+                                        closestMatchFive = datas.Value;
+                                        return false;
+                                    }
+                                });
+
+                                if (closestMatchFive) {
+                                    ddl_conf_mat.val(closestMatchFive);
+                                } else {                            
+                                    $.each(data, function (index, datas) {
+                                        var firstThreeDB = trimSymbol(datas.Text).substring(0, 3).toLowerCase();
+                                        if (firstThreeAPI === firstThreeDB) {
+                                            closestMatchThree = datas.Value;
+                                            return false;
+                                        }
+                                    });
+
+                                    if (closestMatchThree) {
+                                        ddl_conf_mat.val(closestMatchThree);
+                                    } else {
+                                        ddl_conf_mat.val("0");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function handleCheckboxClickModal(checkbox) {
+            checkboxCheckingModal();
+        }
+
+        function checkboxCheckingModal() {
+            var rowCount = $('#firstOCRtable tbody tr').length;
+            if (rowCount > 0) {
+                $('#trCheckbox').show();
+            } else {
+                $('#trCheckbox').hide();
+            }
+
+            if (areAllCheckboxesCheckedModal()) {
+                $('#trCheckbox').prop('checked', true);
+            } else {
+                $('#trCheckbox').prop('checked', false);
+            }
+        }
+
+        function areAllCheckboxesCheckedModal() {
+            var allCheckboxes = $('#firstOCRtable tbody input[type="checkbox"]');
+            for (var i = 0; i < allCheckboxes.length; i++) {
+                if (!allCheckboxes[i].checked) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+    </script>
+}

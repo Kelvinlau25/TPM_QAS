@@ -1,0 +1,390 @@
+﻿@using TPM_QAS.Models
+@model DataIntModel
+
+@{
+    ViewBag.Title = "MANUAL INTEGRATION";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row g-0 px-3 tr-listing-header">
+    <div class="col-sm-6 align-self-center">
+        <p class="text-muted m-0 tr-listing-header-title">Manual Integration</p>
+    </div>
+    
+</div>
+
+<div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+
+        <hr class="p-0 my-0" style="margin-left: -17px; margin-right: -40px; color: #D6D4D4" />
+        <div class="row mt-2 mx-1">
+            <table id="tr-datatableFF" class="table table-bordered detailTable" style="width:40%">
+                <thead>
+                    <tr class="toolbar-row">
+                        <th></th>
+                        <th>Data Integration</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+
+                    @if (Model.DataIntLstModel.Count > 0)
+                    {
+                        foreach (var item in Model.DataIntLstModel)
+                        {
+                            <tr>
+                                <td class="text-center">
+                                    <input class="form-check-input" type="checkbox" name="integration" id="@item.ID_INTEGRATION" intname="@item.INT_TYPE">
+                                    
+
+                                </td>
+                                <td>
+                                    <label>@item.DISPLAY_NAME</label>
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row align-items-baseline">
+            <div><button class="btn btn-sm btn-primary" id="btnRun" type="button" data-behaviour="toggle">Run Integration</button></div>
+        </div>
+
+        <div class="row mt-3 pb-2">
+            <div class="col-12 col-sm-8">
+                <div class="accordion" id="accordionExample">
+                    <div class="accordion-item" style="border-radius: 0px !important">
+                        <div class="row align-items-center">
+                            @if (TempData["STATUS_DDL"] != null)
+                            {
+                                List<SelectListItem> statusList = TempData["STATUS_DDL"] as List<SelectListItem>;
+                                @Html.DropDownList("select-id", statusList, new { @class = "tr-select", style = "color: #FCFCFC; border: 0px" })
+                            }
+                        </div>
+                        <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="border-top: 1px solid #F0F0F0">
+                            <div class="accordion-body text-center">
+                                @if (Model.DataIntLogModel.Count() > 1)
+                                {
+                                    <p class="h6 m-0 p-2 tr-rec" style="color: #00A251">@Model.DataIntLogModel.Count() entries</p>
+                                }
+                                else
+                                {
+                                    <p class="h6 m-0 p-2 tr-rec" style="color: #00A251">@Model.DataIntLogModel.Count() entry</p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="row">
+            <table id="tr-datatable" class="table table-hover table-bordered compact" style="width:100%; margin-top: 0px !important">
+                <thead>
+                    <tr style="background-color:#FCFCFC">
+                        <th>Data to Integrate</th>
+                        <th>Process Status</th>
+                        <th>Process By</th>
+                        <th>Process Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.DataIntLogModel)
+                    {
+                        <tr>
+                            <td> @item.INT_TYPE </td>
+                            <td> @item.STATUS </td>
+                            <td> @item.UPDATED_BY </td>
+                            <td> @item.UPDATED_DATE </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="row tr-btm-btn-area">
+            <div class="col">
+                <div class="aud export-section py-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    @section scripts {
+        <script type="text/javascript">
+            var table;
+            var data = [], dataAll = [];
+
+            $(document).ready(function () {
+                //loadDataTable
+
+
+                table = $('#tr-datatable').DataTable({
+                    pagingType: 'simple_numbers',
+                    columns: [
+                        { data: 'INT_TYPE' },
+                        { data: 'STATUS' },
+                        { data: 'UPDATED_BY' },
+                        { data: 'UPDATED_DATE' },
+                    ],
+                    columnDefs: [{
+                        targets: 3,
+                        orderable: true
+                    }],
+                    select: {
+                        style: 'multi',
+                        info: false,
+                        selector: 'td:nth-child(1)'
+                    },
+                    order: [],
+                    dom: "<'row toolbar-row g-0'<'col-sm-12 col-md-6 align-self-center'l><'col-sm-12 col-md-6'<'d-flex justify-content-end'<'toolbar'>>>>" +
+                        "<'row'<'col-sm-12'tr>>" +
+                        "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'<'d-flex justify-content-end'p<'go-to align-self-center mx-2'>>>>",
+                    initComplete: function () {
+                        $("div.toolbar").html(
+                            '<div class="input-group input-group-sm">' +
+                            '<input type="text" id="txtSearch" class="form-control remove-right-border" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
+                            '<div class="input-group-text listing-search-icon">' +
+                            '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>'
+
+                        );
+
+                        data = this.api().data().toArray();
+                        if (!dataAll.length) {
+                            dataAll = data;
+                        }
+                    },
+                    drawCallback: function (settings) {
+                        var api = this.api();
+                        $("#txtGoTo").val(api.page() + 1);
+                    }
+
+
+
+                });
+
+                console.log(data)
+
+                $("div.go-to").html('<div class="d-flex align-items-center p-0"><input class="form-control" type="text" id="txtGoTo" style="width:50px" value=1> &nbsp; <div class="page-info">of ' + table.page.info().pages + '</div></div>');
+                $("#txtGoTo").on('keyup', function (e) {
+                    try {
+                        var page = e.target.value;
+                        if ($.isNumeric(page) && page > 0 && page <= table.page.info().pages) {
+                            table.page(page - 1).draw('page');
+                        } else if (e.target.value.trim() == '') {
+
+                        }
+                        else {
+                            e.target.value = table.page() + 1;
+                        }
+
+                    } catch (ex) {
+                        console.warn(ex.toString());
+                        e.target.value = 1;
+                    }
+                });
+                $("#txtGoTo").on('blur', function (e) {
+                    try {
+                        var page = e.target.value;
+                        if (page.trim() == '') {
+                            $("#txtGoTo").val(1);
+                            table.page(0).draw('page');
+                            $("#txtGoTo").focus();
+                        }
+                    } catch (ex) {
+                        console.warn(ex.toString());
+                        e.target.value = 1;
+                    }
+                });
+                $(".dataTables_length .form-select").on('change', function () {
+                    $("#txtGoTo").val(table.page() + 1);
+                    $("div.page-info").html('of ' + table.page.info().pages + '</div>');
+                });
+                table.on('select deselect', function (e, dt, type, indexes) {
+                    var rowCnt = table.rows({ selected: true }).count();
+                    console.log('count', rowCnt);
+                    if (rowCnt > 0) {
+                        $(".tr-trash").removeClass('isHide');
+                        //$(".tr-audit").removeClass('isHide');
+                        $("#btnExport").prop('disabled', false);
+                    } else {
+                        $(".tr-trash").addClass('isHide');
+                        //$(".tr-audit").addClass('isHide');
+                        $("#btnExport").prop('disabled', true);
+                    }
+                });
+
+
+                //Multi Select
+                var abc = $('.tr-select2').multiselect({
+                    buttonClass: 'form-select form-control text-start',
+                    templates: {
+                        button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                    }
+                });
+                $('.tr-select2:input').val('');
+                $('.tr-select2').multiselect('rebuild');
+
+                var def = $('.tr-select').select2({
+                    theme: "bootstrap-5",
+                    width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+                    placeholder: $(this).data('placeholder'),
+                    minimumResultsForSearch: Infinity,
+                    templateSelection: function formatState(state) {
+                        return 'Status : ' + state.element.value;
+                    },
+                    dropdownCssClass: 'tr-select2-container',
+                    selectionCssClass: 'tr-no-border'
+                });
+
+                $('.multiselectpicker').multiselect({
+                    buttonClass: 'form-select form-control text-start',
+                    templates: {
+                        button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                    }
+                });
+                $('.multiselectpicker2').multiselect({
+                    buttonClass: 'form-select form-control text-start',
+                    templates: {
+                        button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                    }
+                });
+                $('.multiselect-native-select > .btn-group').addClass("w-100");
+                $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+                $('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-100");
+
+                $('.tr-select').on('change', function (e) {
+                    var target = e.target.value
+                    if (e.target.value == "All") {
+                        data = dataAll;
+                    } else {
+                        data = dataAll.filter(x => x.STATUS.toString().toUpperCase() == target.toUpperCase());
+                    }
+
+
+                    $('.tr-rec').text(data.length);
+                    table.clear().rows.add(data).draw();
+                });
+
+            });
+
+            $(document).on('click', '#btnSearch', function (e) {
+                e.preventDefault();
+                as_exclude();
+                table.search($('#txtSearch').val()).draw();
+            });
+            $(document).on('keyup', '#txtSearch', function (e) {
+                as_exclude();
+                table.search($(this).val()).draw();
+            });
+
+            $(document).on('click', '#btnReset', function (e) {
+                e.preventDefault();
+                $('#AS_FIELD1').val('');
+                $('#AS_FIELD2').val('');
+                as_search();
+            });
+            function as_search() {
+                table.search("");
+                table.columns(1).search($('#AS_FIELD1').val().trim());
+                table.columns(2).search($('#AS_FIELD2').val().trim());
+                table.draw();
+            }
+            function as_exclude() {
+                table.columns(1).search("");
+                table.columns(2).search("");
+            }
+
+        </script>
+
+        <script>
+
+            $(document).ready(function () {
+
+                $('#btnRun').on('click', function () {
+
+                    var cont = true;
+                    var message = "";
+                    var emptyint = true;
+                    var listid = [];
+
+
+                    $("input[type='checkbox']").each(function () {
+                        var id = $(this).attr('id'); // grab id of original
+                        var name = $(this).attr('name'); // grab name of original
+                        var intname = $(this).attr('intname'); // grab name of original
+
+                        var ischecked = $(this).is(":checked"); //check if checked
+                        if (ischecked && name == 'integration') {
+                            emptyint = false;
+
+                            listid.push({
+                                'ID_INTEGRATION': id,
+                                'INT_TYPE': intname
+
+                            });
+                        }
+                    });
+
+                    if (emptyint) {
+                        cont = false;
+                        message += "Please tick atleast one type of Integration.";
+                    }
+
+                    if (cont) {
+
+                        var model = {
+                            DataIntLstModel: listid
+                        };
+
+                        $.ajax({
+                            url: "/DATA_INT/RunIntegration",
+                            type: 'POST',
+                            data: {
+                                model: model
+                            },
+                            beforeSend: function () {
+                                loadings();
+                            },
+                            success: function (response) {
+                                loadings(false);
+                                if (response.success) {
+
+                                    if (response.prodlinemsg != "") {  // has failed prodline
+                                        displayToast("s", response.prodlinemsg);
+                                        setTimeout(function () {
+                                            window.location.href = '/DATA_INT/DATA_INT';
+                                        }, 6000);
+
+                                    } else {
+                                        displayToast("s", "Data has been successfully integrated");
+                                        setTimeout(function () {
+                                            window.location.href = '/DATA_INT/DATA_INT';
+                                        }, 2000);
+                                    }
+
+                                } else {
+                                    displayToast("error", response.message)
+                                }
+                            },
+                            error: function () {
+                                displayToast("error", response.responseText)
+                            }
+                        });
+
+                    } else {
+                        if (message != "") {
+                            displayToast("error", message)
+                        }
+                    }
+                });
+            });
+
+        </script>
+    }
+

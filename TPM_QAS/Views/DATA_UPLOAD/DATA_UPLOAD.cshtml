@@ -1,0 +1,330 @@
+﻿@using TPM_QAS.Models
+@model DataUploadModel
+
+@{
+    ViewBag.Title = "MANUAL INTEGRATION";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row g-0 px-3 tr-listing-header">
+    <div class="col-sm-6 align-self-center">
+        <p class="text-muted m-0 tr-listing-header-title">Manual Integration</p>
+    </div>
+
+</div>
+
+<div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+        <label>Viewbag : </label>
+        <label>@ViewBag.Pathexist</label>
+        <hr class="p-0 my-0" style="margin-left: -17px; margin-right: -40px; color: #D6D4D4" />
+        <div class="row mt-2 mx-1 hidden">
+            <table id="tr-datatableFF" class="table table-bordered detailTable" style="width:40%">
+                <thead>
+                    <tr class="toolbar-row">
+                        <th>Supplier Name</th>
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    @if (Model.SupplierList.Count > 0)
+                    {
+                        foreach (var item in Model.SupplierList)
+                        {
+                            <tr>
+                                <td>
+                                    <label>@item.SUPPLIER_NAME</label>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <br />
+
+        <div class="row mt-2 mx-1">
+            <table id="tr-datatablemat" class="table table-bordered detailTable" style="width:40%">
+                <thead>
+                    <tr class="toolbar-row">
+                        @if (Model.MaterialList.Count > 0)
+                        {
+                            int columnCount = typeof(MaterialList).GetProperties().Length;
+
+                            for (int i = 0; i < columnCount; i++)
+                            {
+                                <th>
+                                    @typeof(MaterialList).GetProperties()[i].Name
+                                </th>
+                            }
+                        }
+                    </tr>
+                </thead>
+                <tbody id="tbody">
+                    @if (Model.MaterialList.Count > 0)
+                    {
+                        foreach (var item in Model.MaterialList)
+                        {
+                            <tr>
+                                <td>@item.EXCEL_ID</td>
+                                <td>@item.EXCEL_MATERIAL_NAME</td>
+                                <td>@item.EXCEL_MATERIAL_ABBR</td>
+                                <td>@item.FILENAME</td>
+                                <td>
+                                    <input type="text" id="matname_@item.EXCEL_ID" class="ORAMATNAME" />
+                                    <button type="button" class="btn-info input-group-text tr-input-group fa-solid fa-ellipsis" data-bs-toggle="modal" data-bs-target="#MaterialPopup" title="Choose Material" style="margin: 0;"></button>
+
+                                </td>
+                                <td>
+                                    <input type="text" id="matabbr_@item.EXCEL_ID" class="ORAMATABBR" />
+                                </td>
+                                <td>
+                                    <input type="text" id="matcode_@item.EXCEL_ID" class="ORAMATCODE" />
+                                </td>
+                                <td>
+                                    <input type="text" id="tpmcode_@item.EXCEL_ID" class="ORATPMCODE" />
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+        <<button id="btnSubmit">Submit</button>
+
+
+
+        <div class="row tr-btm-btn-area">
+            <div class="col">
+                <div class="aud export-section py-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*Oracle Material Modal*@
+<div class="modal fade" id="MaterialPopup" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;">Material Name Listing</h5>
+            </div>
+            <hr />
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+                    <table id="tr-oramaterial" class="table table-hover table-bordered compacted" style="width:100%;">
+                        <thead>
+                            <tr class="toolbar-row">
+                                <th>Material Name</th>
+                                <th>Material Code</th>
+                                <th>TPM Code</th>
+                                <th>Abbr</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+
+    <script>
+
+        var ListOraMaterial = @Html.Raw(ViewBag.SerializedOraMaterial);
+
+        $(document).ready(function () {
+            loadDataTableOraMaterial(ListOraMaterial);
+        });
+
+        function populateOraDet(MatName, MatCode, MatAbbr, TPMCode) {
+            $('#MaterialPopup').modal('hide');
+            $('#txtMatName').val(MatName);
+            $('#txtMatCode').val(MatCode);
+            $('#txtMatAbbr').val(MatAbbr);
+            $('#txtTPMCode').val(TPMCode);
+
+            $('.txtSuppMatName').each(function (value, x) {
+                var eid = $(x).attr("id");
+                var suppmatname = $("#" + eid).val();
+                //if (suppmatname == "") {
+                $("#" + eid).val(MatName);
+                //}
+            });
+        }
+
+    </script>
+    <script>
+            $('#btnSubmit').on('click', function () {
+                var cont = true;
+                var message = "";
+
+                if (cont) {
+
+                    var materialModel = new Array();
+
+                    $("#tr-datatablemat tbody tr").each(function (row, tr) {
+
+                        var excelid = $(tr).find("td:eq(0)").text().trim();
+                        var excelmatname = $(tr).find("td:eq(1)").text().trim();
+                        var excelmatabbr = $(tr).find("td:eq(2)").text().trim();
+                        var filename = $(tr).find("td:eq(3)").text().trim();
+                        var oramatname = $(tr).find("td:eq(4) input[type='text']").val().trim();
+                        var oramatabbr = $(tr).find("td:eq(5) input[type='text']").val().trim();
+                        var oramatcode = $(tr).find("td:eq(6) input[type='text']").val().trim();
+                        var oratpmcode = $(tr).find("td:eq(7) input[type='text']").val().trim();
+
+                        materialModel.push({
+                            EXCEL_ID: excelid,
+                            EXCEL_MATERIAL_NAME: excelmatname,
+                            EXCEL_MATERIAL_ABBR: excelmatabbr,
+                            FILENAME: filename,
+                            ORA_MATERIAL_NAME: oramatname,
+                            ORA_MATERIAL_ABBR: oramatabbr,
+                            ORA_MATERIAL_CODE: oramatcode,
+                            ORA_TPM_CODE: oratpmcode
+                        });
+                    });
+
+                    console.log(materialModel)
+
+                    if (cont) {
+                        $.ajax({
+                            url: '@Url.Action("SaveMaterial", "DATA_UPLOAD")',
+                            type: 'POST',
+                            datatype: 'application/json',
+                            contentType: 'application/json',
+                            //data: JSON.stringify({ m: model, allbagandprop: allbagandprop, bagnoappcolmodel: bagnoappcolmodel, bagnoapprowmodel: bagnoapprowmodel, action: action }),
+                            data: JSON.stringify({ materialModel: materialModel }),
+                            success: function (response) {
+                                loadings(false);
+                                if (response.success) {
+                                    displayToast("s", "Data save successfully");
+
+                                    setTimeout(function () {
+                                        window.location.href = listingURL;
+                                    }, 2000);
+
+                                } else {
+                                    displayToast("error", response.message)
+                                }
+                            },
+                            error: function () {
+                                displayToast("error", response.responseText)
+                            },
+                            complete: function () {
+                                $("#loading").fadeOut();
+                            }
+                        });
+                    }
+                }
+            });
+    </script>
+
+    @*Popup Material from Oracle*@
+    <script>
+        function loadDataTableOraMaterial(data) {
+            table = $('#tr-oramaterial').DataTable({
+                data: data,
+                pagingType: 'simple_numbers',
+                columns: [
+                    { data: 'MATERIAL_NAME' },
+                    { data: 'MATERIAL_CODE' },
+                    { data: 'TPM_CODE' },
+                    { data: 'MATERIAL_ABBR' }
+                ],
+                columnDefs: [{
+                    targets: 0,
+                    render: function (data, type, row, meta) {
+                        var _MATERIALNAME = row.MATERIAL_NAME;
+                        var _MATERIALCODE = row.MATERIAL_CODE;
+                        var _TPMCODE = row.TPM_CODE;
+                        var _MATERIALABBR = row.MATERIAL_ABBR;
+
+                        data = `<a style="cursor:pointer; color:blue;" onclick="populateOraDet('` + _MATERIALNAME + `','` + _MATERIALCODE + `','` + _MATERIALABBR + `','` + _TPMCODE + `');">` + _MATERIALNAME + `</a>`;
+                        return data;
+                    }
+                }],
+                select: {
+                    style: 'multi',
+                    info: false,
+                    selector: 'td:nth-child(1)'
+                },
+                //order: [3, 'desc'],
+                dom: "<'row toolbar-row g-0'<'col-sm-12 col-md-6 align-self-center'l><'col-sm-12 col-md-6'<'d-flex justify-content-end'<'toolbar'>>>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'<'d-flex justify-content-end'p<'go-to align-self-center mx-2'>>>>",
+                initComplete: function () {
+                    $("div.toolbar").html(
+                        '<div class="input-group input-group-sm">' +
+                        '<input type="text" id="txtSearch" class="form-control remove-right-border" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
+                        '<div class="input-group-text listing-search-icon">' +
+                        '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                        '</div>' +
+                        '<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#ASModal" id="btnAS" style="min-width: 30px; background-color: #057FE5;"><i class="fa-solid fa-sliders" style="transform: rotate(90deg);"></i></button>' +
+                        '</div>'
+                    );
+                },
+                drawCallback: function (settings) {
+                    var api = this.api();
+                    $("#txtGoTo").val(api.page() + 1);
+                }
+            });
+        }
+
+        $(document).on('click', '#btnSearch', function (e) {
+            e.preventDefault();
+            as_exclude();
+            table.search($('#txtSearch').val()).draw();
+        });
+
+        $(document).on('keyup', '#txtSearch', function (e) {
+            as_exclude();
+            table.search($(this).val()).draw();
+        });
+
+        $(document).on('click', '#btnReset', function (e) {
+            e.preventDefault();
+            $('#AS_FIELD1').val('');
+            $('#AS_FIELD2').val('');
+            as_search();
+        });
+
+        function as_search() {
+            table.search("");
+            table.columns(1).search($('#AS_FIELD1').val().trim());
+            table.columns(2).search($('#AS_FIELD2').val().trim());
+            table.draw();
+        }
+
+        function as_exclude() {
+            table.columns(1).search("");
+            table.columns(2).search("");
+        }
+
+        function populateOraDet(MatName, MatCode, MatAbbr, TPMCode) {
+            $('#MaterialPopup').modal('hide');
+            $('#txtMatName').val(MatName);
+            $('#txtMatCode').val(MatCode);
+            $('#txtMatAbbr').val(MatAbbr);
+            $('#txtTPMCode').val(TPMCode);
+
+            $('.txtSuppMatName').each(function (value, x) {
+                var eid = $(x).attr("id");
+                var suppmatname = $("#" + eid).val();
+                //if (suppmatname == "") {
+                $("#" + eid).val(MatName);
+                //}
+            });
+        }
+    </script>
+}
+

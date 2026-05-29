@@ -1,0 +1,348 @@
+﻿@using TPM_QAS.Models
+@model PropertiesModel
+
+
+@{
+    ViewBag.Title = "IDS REPORT SEQUENCE - Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row g-0 px-3 tr-listing-header">
+    <div class="col-sm-6 align-self-center">
+        <p class="text-muted m-0 tr-listing-header-title main-title">View Form - IDS Report Sequence</p>
+    </div>
+    <div class="col-sm-6 text-end align-self-center">
+        <div class="d-flex justify-content-end">
+            <div id="customDTButton"></div>
+        </div>
+    </div>
+</div>
+
+<div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+        <div class="card mt-3 mb-2 card-height">
+            <div class="card-body">
+                <div class="row align-items-baseline">
+                    <div class="col"><h6 class="card-title text-muted">Properties</h6></div>
+                    <div class="col text-end"><button class="btn btn-sm btn-primary" id="btnEdit" type="button" data-behaviour="toggle">Edit</button></div>
+                </div>
+
+                <hr />
+                <nav class="tr-tab">
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-tpm-tab" data-bs-toggle="tab" data-bs-target="#nav-tpm" type="button" role="tab" aria-controls="nav-tpm" aria-selected="true">TPM</button>
+                        <button class="nav-link" id="nav-ext-tab" data-bs-toggle="tab" data-bs-target="#nav-ext" type="button" role="tab" aria-controls="nav-ext" aria-selected="false">COMPOUNDER</button>
+                    </div>
+
+                </nav>
+
+                <div class="tab-content p-2" id="nav-tabContent" style="border: 4px solid #EBF3FF;">
+
+                    @*TAB 1*@
+                    <div class="tab-pane fade show active" id="nav-tpm" role="tabpanel" aria-labelledby="nav-tpm-tab" tabindex="0">
+                        <div class="row row-cols-2 mt-4">
+                            <div class="col align-self-center">
+                                <h6 class="text-muted" style="float: left">Properties Listing</h6>
+                            </div>
+                        </div>
+                        <div class="row mt-2 mx-1">
+                            <table id="item-table" class="detailTable" style="width:100%">
+                                <thead>
+                                    <tr class="toolbar-row">
+                                        <th style="width: 3%; text-align: center;">
+                                            <input id="trCheckbox" type="checkbox" class="isEditable dt-checkboxes select-all form-check-input" style="margin-top:5.5px; display:none">
+                                        </th>
+                                        <th class="d-none isEditable"></th>
+                                        <th>Main Property</th>
+                                        <th>Property Item</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ var count = 0; }
+                                    @if (Model.TPMSeqLstModel != null && Model.TPMSeqLstModel.Count > 0)
+                                    {
+                                        foreach (var item in Model.TPMSeqLstModel)
+                                        {
+                                            count++;
+                                            <tr id="R_@count" data-did="@count">
+                                                <td class="text-center">
+                                                    <input class="isEditable dt-checkboxes form-check-input" type="checkbox" value="" id="chk_@count" onClick="handleCheckboxClick(this)" @(item.TPM_SEQUENCE != 0 ? "checked" : "") disabled>
+                                                </td>
+                                                <td class="d-none sort-handle isEditable">
+                                                    <div style="display: inline-flex">
+                                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                                    </div>
+                                                </td>
+                                                <td><input type="text" class="isItemDisabled form-control" id="item_prop_@count" value="@item.PROPERTIES" style="border:none; box-shadow: none;" readonly></td>
+                                                <td><input type="text" class="isItemDisabled form-control" id="item_prop_item_@count" value="@item.PROP_ITEM" style="border:none; box-shadow: none;" readonly></td>
+                                                <td class="d-none">
+                                                    <input type="text" class="form-control" id="item_prop_id_@count" value="@item.MM_PROPERTIES_H_ID">
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                            <input type="hidden" id="item-count" value="@count" />
+                        </div>
+
+                    </div>
+
+                    @*TAB 2*@
+                    <div class="tab-pane fade" id="nav-ext" role="tabpanel" aria-labelledby="nav-ext-tab" tabindex="0">
+
+                        <div class="row row-cols-2 mt-4">
+                            <div class="col align-self-center">
+                                <h6 class="text-muted" style="float: left">Properties Listing</h6>
+                            </div>
+                        </div>
+                        <div class="row mt-2 mx-1">
+                            <table id="item2-table" class="detailTable" style="width:100%">
+                                <thead>
+                                    <tr class="toolbar-row">
+                                        <th style="width: 3%; text-align: center;">
+                                            <input id="trCheckbox2" type="checkbox" class="isEditable dt-checkboxes select2-all form-check-input" style="margin-top:5.5px; display:none">
+                                        </th>
+                                        <th class="d-none isEditable"></th>
+                                        <th>Main Property</th>
+                                        <th>Property Item</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ var count2 = 0; }
+                                    @if (Model.CompSeqLstModel != null && Model.CompSeqLstModel.Count > 0)
+                                    {
+                                        foreach (var item in Model.CompSeqLstModel)
+                                        {
+                                            count2++;
+                                            <tr id="R2_@count2" data-did="@count2">
+                                                <td class="text-center">
+                                                    <input class="isEditable dt-checkboxes form-check-input" type="checkbox" value="" id="chk2_@count2" onClick="handleCheckboxClick(this)" @(item.COMP_SEQUENCE != 0 ? "checked" : "") disabled>
+                                                </td>
+
+                                                <td class="d-none sort-handle isEditable">
+                                                    <div style="display: inline-flex">
+                                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                                    </div>
+                                                </td>
+                                                <td><input type="text" class="isItemDisabled form-control" id="item2_prop_@count2" value="@item.PROPERTIES" style="border:none; box-shadow: none;" readonly></td>
+                                                <td><input type="text" class="isItemDisabled form-control" id="item2_prop_item_@count2" value="@item.PROP_ITEM" style="border:none; box-shadow: none;" readonly></td>
+                                                <td class="d-none">
+                                                    <input type="text" class="form-control" id="item2_prop_id_@count2" value="@item.MM_PROPERTIES_H_ID">
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                            <input type="hidden" id="item2-count" value="@count2" />
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="row tr-btm-btn-area">
+            <div class="col">
+                <div class="row row-cols-auto justify-content-end isNotEditable" style="padding-right: 20px">
+                    <div class="col"><button id="btnCancelView" type="button" class="btn btn-sm btn-secondary">Back</button></div>
+                </div>
+
+                <div class="row row-cols-auto justify-content-end isEditable g-1 normsub d-none" style="padding-right: 20px">
+                    <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-back-confirmation-modal">Back</button></div>
+                    <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts {
+    <script>
+
+        var listFieldValue = []
+        $(document).ready(function () {
+            var listingURL = '/MM_PROPERTIES/MM_PROPERTIES_LST';
+
+            $("#item-table tbody").sortable({
+                handle: ".sort-handle",
+                axis: "y" // Enable vertical sorting only if needed
+            }).disableSelection();
+
+            $("#item2-table tbody").sortable({
+                handle: ".sort-handle",
+                axis: "y" // Enable vertical sorting only if needed
+            }).disableSelection();
+
+            //SUBMIT
+            $('#btnConfirmSubmit').on('click', function () {
+
+                var cont = true;
+                var message = "";
+
+                var list1 = [];
+                var list2 = [];
+
+                var sequence = 0;
+                var real_sequence = 0;
+                var hasError = false;
+                var hasError2 = false;
+                var existedItem = [];
+                var existedItem2 = [];
+
+                $("#item-table tbody tr").each(function () {
+                    var did = $(this).data("did");
+                    if (did != '' && did != null && did != undefined) {
+
+                        if ($('#chk_' + did).prop('checked')) {
+                            sequence++;
+                            real_sequence = sequence;
+                        } else {
+                            real_sequence = 0;
+                        }
+                       
+                        var item_prop_id = $('#item_prop_id_' + did).val();
+                        var item_prop = $('#item_prop_' + did).val();
+                        var item_prop_item = $('#item_prop_item_' + did).val();
+
+                        if (existedItem.includes(item_prop)) {
+                            //check if it same as last one
+                            var lastProperties = existedItem.length > 0 ? existedItem[existedItem.length - 1] : null;
+
+                            if (lastProperties != null && lastProperties != undefined) {
+                                if (lastProperties != item_prop) {
+                                    hasError = true;
+                                    return false;
+                                } else {
+                                    existedItem.push(item_prop);
+                                }
+                            }
+
+                        } else {
+                            existedItem.push(item_prop);
+                        }
+
+                        list1.push({
+                            'MM_PROPERTIES_H_ID': item_prop_id,
+                            'PROPERTIES': item_prop,
+                            'PROP_ITEM': item_prop_item,
+                            'TPM_SEQUENCE': real_sequence
+                        });
+                    }
+                });
+
+                if (cont && hasError) {
+                    cont = false;
+                    message = "Please ensure the same main property in TPM tab are placed in a row";
+                }
+
+                sequence = 0;
+                real_sequence = 0;
+
+                $("#item2-table tbody tr").each(function () {
+                    var did = $(this).data("did");                    
+                    if (did != '' && did != null && did != undefined) {
+
+                        if ($('#chk2_' + did).prop('checked')) {
+                            sequence++;
+                            real_sequence = sequence;
+                        } else {
+                            real_sequence = 0;
+                        }
+                        var item_prop_id = $('#item2_prop_id_' + did).val();
+                        var item_prop = $('#item2_prop_' + did).val();
+                        var item_prop_item = $('#item2_prop_item_' + did).val();
+
+                        if (existedItem2.includes(item_prop)) {
+                            //check if it same as last one
+                            var lastProperties = existedItem2.length > 0 ? existedItem2[existedItem2.length - 1] : null;
+
+                            if (lastProperties != null && lastProperties != undefined) {
+                                if (lastProperties != item_prop && real_sequence != 0) {
+                                    hasError2 = true;
+                                    return false;
+                                } else {
+                                    existedItem2.push(item_prop);
+                                }
+                            }
+
+                        } else {
+                            existedItem2.push(item_prop);
+                        }
+
+                        list2.push({
+                            'MM_PROPERTIES_H_ID': item_prop_id,
+                            'PROPERTIES': item_prop,
+                            'PROP_ITEM': item_prop_item,
+                            'COMP_SEQUENCE': real_sequence
+                        });
+                    }
+                });
+
+                if (cont && hasError2) {
+                    cont = false;
+                    message = "Please ensure the same main property in Compounder tab are placed in a row";
+                }
+
+                if (cont) {
+
+                    var model = {
+                        TPMSeqLstModel: list1,
+                        CompSeqLstModel: list2,
+                    };
+
+                    console.log(model)
+
+                    $.ajax({
+                        url: "/MM_PROPERTIES/UpdateReportSeq",
+                        type: 'POST',
+                        data: model,
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            });
+
+            //BUTTON CANCEL/BACK
+            $('#btnCancelView').on('click', function () {
+                var del = '0';
+                window.location.href = listingURL + '?Deleted=' + del;
+            });
+
+            $('#btnBackEdit').on('click', function () {
+                window.location.href = listingURL;
+            });
+        });
+
+    </script>
+}
+

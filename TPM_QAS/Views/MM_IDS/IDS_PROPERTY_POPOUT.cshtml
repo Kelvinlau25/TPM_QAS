@@ -1,0 +1,231 @@
+﻿
+@using TPM_QAS.Models
+@model IDSModel
+
+@{
+    ViewBag.Title = "PROPERTIES LISTING";
+    Layout = "~/Views/Shared/_LayoutScriptOnly.cshtml";
+}
+
+<style>
+    #txtSearch {
+        max-width: 300px;
+    }
+</style>
+
+<div class="modal-content" style="height:100%;padding: 5px;border-radius: 5px;">
+    <div class="modal-header">
+        <p class="text-muted m-0 tr-listing-header-title">Main Property</p>
+    </div>
+    <div class="tr-pop-line mb-2"></div>
+    <div class="modal-body" id="modal-body">
+        <div class="table-search"></div>
+        <table id="tr-datatable2" class="table table-hover table-bordered compact" style="width:100%; margin-top: 0px !important">
+            <thead>
+                <tr style="background-color: #FCFCFC">
+                    <th>
+                        <input id="trPopupCheckbox" type="checkbox" class="dt-checkboxes select-all" style="margin-top:5.5px; display:none">
+                    </th>
+                    <th>Main Property</th>
+                </tr>
+            </thead>
+            <tbody style="width:auto;">
+                @if (Model.IDSPropertiesPopupModel.Count > 0)
+                {
+                    foreach (var item in Model.IDSPropertiesPopupModel)
+                    {
+                        <tr>
+                            <td>
+                                <input type="checkbox" class="dt-checkboxes checkbox" name="selecteddata" id="selecteddata"  onClick="handlePopupCheckboxClick(this)">
+                            </td>
+                            <td class="PROPERTIES">
+                                <span id="PROPERTIES">@item.PROPERTIES</span>
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+        <button type="reset" id="btnResetPopup" class="btn btn-sm btn-secondary">Reset</button>
+        <div class="col"><button class="btn btn-sm btn-secondary mx-1 my-button" id="closeButton">Back</button></div>
+        <div class="col"><button id="Submit" type="button" class="btn btn-sm btn-primary mx-1" onclick="SetValues();">Submit</button></div>
+    </div>
+</div>
+
+
+<script>
+    var table;
+    var data = [], dataAll = [];
+
+    $(document).ready(function () {
+        $('.sticky-top').hide();
+        $('#sidebar').hide();
+        $('.tr-footer').remove();
+
+        checkboxPopupChecking();
+
+        $('.select-all').on('change', function () {
+            var isChecked = $(this).prop('checked');
+            table.rows().every(function (rowIdx, tableLoop, rowLoop) {
+                var node = this.node();
+                $(node).find('.dt-checkboxes').prop('checked', isChecked);
+            });
+            checkboxPopupChecking();
+        });
+
+        //loadDataTable
+        table = $('#tr-datatable2').DataTable({
+            pagingType: 'simple_numbers',
+            columns: [
+                { data: '' },
+                { data: 'PROPERTIES' }
+            ],
+            dom: "<'row toolbar-pop-row g-0'<'col-sm-12 col-md-12'<'toolbar-pop pb-2'>>>" +
+                "<'row toolbar-row g-0'<'col-sm-12 col-md-6 align-self-center'l><'col-sm-12 col-md-6'<'d-flex justify-content-end'>>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-12 col-md-4'i><'col-sm-12 col-md-8'<'d-flex justify-content-end'p<'go-to align-self-center mx-2'>>>>",// +
+            initComplete: function () {
+                $("div.toolbar-pop").html('<div class="input-group input-group-sm">' +
+                    '<input type="text" id="txtSearch" class="form-control remove-right-border" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
+                    '<div class="input-group-text listing-search-icon">' +
+                    '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                    '</div>' +
+                    '</div>');
+
+                $("#btnSearch").on("click", function (e) {
+                    e.preventDefault();
+                });
+
+                $("#txtSearch").on("keyup", function (e) {
+                    table.search($('#txtSearch').val()).draw();
+                });
+            },
+            drawCallback: function (settings) {
+                var api = this.api();
+                $("#txtGoTo").val(api.page() + 1);
+            }
+        });
+
+        $("div.go-to").html('<div class="d-flex align-items-center p-0"><input class="form-control" type="text" id="txtGoTo" style="width:50px" value=1> &nbsp; <div class="page-info">of ' + table.page.info().pages + '</div></div>');
+        $("#txtGoTo").on('keyup', function (e) {
+            try {
+                var page = e.target.value;
+                if ($.isNumeric(page) && page > 0 && page <= table.page.info().pages) {
+                    table.page(page - 1).draw('page');
+                } else if (e.target.value.trim() == '') {
+
+                }
+                else {
+                    e.target.value = table.page() + 1;
+                }
+
+            } catch (ex) {
+                console.warn(ex.toString());
+                e.target.value = 1;
+            }
+        });
+        $("#txtGoTo").on('blur', function (e) {
+            try {
+                var page = e.target.value;
+                if (page.trim() == '') {
+                    $("#txtGoTo").val(1);
+                    table.page(0).draw('page');
+                    $("#txtGoTo").focus();
+                }
+            } catch (ex) {
+                console.warn(ex.toString());
+                e.target.value = 1;
+            }
+        });
+        $(".dataTables_length .form-select").on('change', function () {
+            $("#txtGoTo").val(table.page() + 1);
+            $("div.page-info").html('of ' + table.page.info().pages + '</div>');
+        });
+        $('#tr-datatable2 tbody').on('dblclick', 'tr', function () {
+            var data = table.row(this).data();
+            $('#exampleFormControlInputVM').val(data.name);
+            $('#modalPopupContainer').modal('hide');
+        });
+    });
+</script>
+
+<script>
+
+    function handlePopupCheckboxClick(checkbox) {
+        checkboxPopupChecking();
+    }
+
+    function checkboxPopupChecking() {
+        var rowCount = $('#tr-datatable2 tbody tr').length;
+        if (rowCount > 0) {
+            $('#trPopupCheckbox').show();
+        } else {
+            $('#trPopupCheckbox').hide();
+        }
+
+        if (areAllCheckboxesPopupChecked()) {
+            $('#trPopupCheckbox').prop('checked', true);
+            console.log('All checkboxes are checked');
+        } else {
+            $('#trPopupCheckbox').prop('checked', false);
+            console.log('Not all checkboxes are checked');
+        }
+    }
+
+    function areAllCheckboxesPopupChecked() {
+        var allCheckboxes = $('#tr-datatable2 tbody input[type="checkbox"]');
+        for (var i = 0; i < allCheckboxes.length; i++) {
+            if (!allCheckboxes[i].checked) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    $('#closeButton').on('click', function () {
+        window.location.reload();
+        window.close();
+    });
+
+    $('#btnResetPopup').on('click', function () {
+        var table = $('#tr-datatable2').DataTable();
+        table.rows().nodes().to$().find('.dt-checkboxes:checked').prop('checked', false);
+    });
+
+    function SetValues() {
+        var list = [];
+
+        // loop over each table row (tr)
+        $("#tr-datatable2").DataTable().$('tr', { "filter": "applied" }).each(function () {
+            //debugger
+            var currentRow = $(this);
+
+            var checkbox = currentRow.find('input[name=selecteddata]');
+            var PROPERTIES = currentRow.find(".PROPERTIES").find("#PROPERTIES").html();
+
+            if (checkbox.prop("checked") == true) {
+                if (PROPERTIES != undefined) {
+                    list.push({
+                        PROPERTIES: PROPERTIES
+                    });
+                }
+            }
+        });
+
+        if (list.length == 0) {
+            displayToast("error", "Please select Properties")
+            return;
+        }
+
+        if (window.opener != null && !window.opener.closed) {
+            console.log(list)
+            window.opener.addPropertiesList(list);
+        }
+        window.close();
+    }
+
+</script>

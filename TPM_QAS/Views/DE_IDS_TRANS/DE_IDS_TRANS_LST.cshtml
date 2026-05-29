@@ -1,0 +1,721 @@
+﻿@using TPM_QAS.Models
+@model IEnumerable<DailyIDSTransVM>
+
+@{
+    ViewBag.Title = "Daily IDS Transaction - List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    List<SelectListItem> statusList = new List<SelectListItem>();
+    List<SelectListItem> statusList2 = new List<SelectListItem>();
+    if (TempData["STATUS_DDL"] != null)
+    {
+        statusList = TempData["STATUS_DDL"] as List<SelectListItem>;
+        statusList2 = TempData["STATUS_DDL"] as List<SelectListItem>;
+    }
+    if (statusList2 != null && statusList2.Count > 0)
+    {
+        foreach (var item in statusList2)
+        {
+            if (item.Value == "All")
+            {
+                item.Value = "";
+            }
+        }
+    }
+}
+
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">Daily Property Inspection Result</p>
+        </div>
+        <div class="col-sm-6 text-end align-self-center">
+            <div class="d-flex justify-content-end">
+                <div class="dt-buttons btn-group flex-wrap">
+                    <a href="@Url.Action("DE_IDS_TRANS_ADD", "DE_IDS_TRANS")" class="btn btn-sm btn-outline-secondary mt-1 my-button" tabindex="0" aria-controls="tr-datatable" id="btnAdd"><span><i class="fa-solid fa-plus text-primary"></i>&nbsp;&nbsp; Create Form</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+        <div>
+            <div class="row pt-3 pb-2">
+                <div class="col-12 col-sm-8">
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item" style="border-radius: 0px !important">
+                            <div class="row align-items-center">
+                                @Html.DropDownList("select-id", statusList, new { @class = "tr-select", style = "color: #FCFCFC; border: 0px" })
+                            </div>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="border-top: 1px solid #F0F0F0">
+                                <div class="accordion-body text-center">
+                                    @if (Model.Count() > 1)
+                                    {
+                                        <p class="h6 m-0 p-2 tr-rec" style="color: #00A251">@Model.Count() entries</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="h6 m-0 p-2 tr-rec" style="color: #00A251">@Model.Count() entry</p>
+                                    }
+
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-4 align-self-end tr-text pb-0 mb-0" id="action-bar">
+                    <div class="dt-buttons btn-group flex-wrap">
+                        <button class="m-0 p-0 tr-btn tr-audit my-button" tabindex="0" aria-controls="tr-datatable" type="button" id="btnAuditTrail"><span>Audit Trail</span></button>
+                    </div>
+                    <div class="dt-buttons btn-group flex-wrap">
+                        <button class="tr-btn m-0 py-0 px-3 text-danger tr-trash isHide" tabindex="0" aria-controls="tr-datatable" type="button" id="btnDelete" data-bs-toggle="modal" data-bs-target="#delete-confirmation-modal"><span><i class="fa-solid fa-trash-can tr-icon-size tr-icon-del"></i></span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row" id="aat">
+            <table id="tr-datatable" class="table table-hover table-bordered compact" style="width:100%; margin-top: 0px !important">
+                <thead>
+                    <tr style="background-color:#FCFCFC">
+                        <th></th>
+                        <th>Packed Date</th>
+                        <th>Inspection Date</th>
+                        <th>Product Type</th>
+                        <th>Lot No</th>
+                        <th>Grade</th>
+                        <th>Inspection</th>
+                        <th>Tonnage</th>
+                        <th>Quantity (KGs)</th>
+                        <th>PIC</th>
+                        <th>Status</th>
+                        <th>View</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="row tr-btm-btn-area">
+            <div class="col">
+                <div class="aud export-section py-2">
+                    <button id="exportpdf" class="btn buttons-excel buttons-html5 btn-sm btn-primary tr-btn-primary" onclick="pdfexport();"> Export all file to PDF</button> &nbsp;
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+    
+
+
+<!--ADV SEARCH MODAL-->
+<div class="modal fade" id="ASModal" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;">Advanced Search</h5>
+            </div>
+            <hr />
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+                    <div class="row align-items-center mb-2">
+                        <div class="col-md-2 isLabel">Packed Date <span style="float:right">:</span></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="AS_FIELD1" type="date" />
+                        </div>
+                        <div class="col-md-2 isLabel">Inspection Date <span style="float:right">:</span></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="AS_FIELD2" type="date" />
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center">
+                        <div class="col-md-2 isLabel">Product Type <span style="float:right">:</span></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="AS_FIELD3" type="text" />
+                        </div>
+                        <div class="col-md-2 isLabel">Lot no <span style="float:right">:</span></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="AS_FIELD4" type="text" />
+                        </div>
+                    </div>
+
+
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel">Grade <span style="float:right">:</span></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="AS_FIELD5" type="text" />
+                        </div>
+                        <div class="col-md-2 isLabel">Quantity (KGs) <span style="float:right">:</span></div>
+                        <div class="col-md-4">
+                            <input class="form-control input-number" id="AS_FIELD6" type="text" />
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel">PIC <span style="float:right">:</span></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="AS_FIELD7" type="text" />
+                        </div>
+                        <div class="col-md-2 isLabel">Status <span style="float:right">:</span></div>
+                        <div class="col-md-4">
+                            @Html.DropDownList("AS_FIELD8", statusList2, new { @class = "form-control form-select" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" id="btnReset" class="btn btn-sm btn-secondary" style="margin-right: auto;">Reset</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-sm btn-primary" onclick="as_search();" data-bs-dismiss="modal">Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script type="text/javascript">
+        var table;
+        var data = [], dataAll = [];
+        var jsonData = @Html.Raw(ViewBag.SerializedData);
+
+        var data = jsonData;
+        dataAll = data;
+
+        var isManager = '@ViewBag.isManager';
+        //$(document).ready(function () {
+        //    loadings();
+        //    //hidesidebar();
+        //    //loaddatatable();
+        //    $.when(hidesidebar()).then(
+        //        $.when(loaddatatable()).then(function () {
+        //            setTimeout(function () {
+        //                //$('#aat').;
+        //                //table.columns.adjust();
+        //                var table = $('#tr-datatable').DataTable();
+
+        //                $('#aat').css('display', 'block');
+        //                table.columns.adjust();
+        //                loadings(false);
+        //            }, 100);
+        //        })
+        //    );
+
+        //});
+
+
+        $(document).ready(function () {
+            $.when(loaddatatable()).then(function () {
+                setTimeout(function () {
+                    var table = $('#tr-datatable').DataTable();
+
+                    $('#aat').css('display', 'block');
+                    table.columns.adjust();
+                    loadings(false);
+                }, 10);
+            })
+        });
+        function loaddatatable() {
+            table = $('#tr-datatable').DataTable({
+                data: data,
+                scrollCollapse: true,
+                scrollY: calcDataTableHeight,
+                pagingType: 'simple_numbers',
+                columns: [
+                    { data: 'ID_IDS_H' },
+                    { data: 'PACKEDDATE2' },
+                    { data: 'PACKEDDATE' },
+                    { data: 'PRODTYPE' },
+                    { data: 'LOTNO' },
+                    { data: 'GRADE' },
+                    { data: 'INSPECTION' },
+                    { data: 'ranges' },
+                    { data: 'QUANTITY' },
+                    { data: 'TESTEDBY' },
+                    { data: 'STATUS' },
+                    { data: 'ID_IDS_H' },
+                ],
+
+                columnDefs: [{
+                    targets: 0,
+                    render: function (data, type, row, meta) {
+                        if (type === 'display') {
+                            data = `<div class="checkbox"><input type="checkbox" class="dt-checkboxes" value="${data}"><label></label></div>`;
+                        }
+                        return data;
+                    },
+                    checkboxes: {
+                        selectRow: true,
+                        selectAllRender: '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>'
+                    }
+                },
+                    {
+                        targets: 1, // Packed Date column index (0-based)
+                        render: function (data, type, row) {
+                            if (type === 'sort') {
+                                const parts = data.split('-'); // split "DD-MM-YYYY"
+                                return new Date(parts[2], parts[1] - 1, parts[0]).getTime(); // YYYY, MM (0-based), DD
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                        targets: 2, // Inspection Date column index
+                        render: function (data, type, row) {
+                            if (type === 'sort') {
+                                const parts = data.split('-');
+                                return new Date(parts[2], parts[1] - 1, parts[0]).getTime();
+                            }
+                            return data;
+                        }
+                    },
+                    {
+                    targets: 5,
+                    render: function (data, type, row, meta) {
+                        if (type === 'display') {
+                            if (data === 'NG' || data === 'R') {
+                                data = `<div style="color:red;">${data}</div>`;
+                            }
+                        }
+                        return data;
+                    }
+                    }, {
+                        targets: 10,
+                        render: function (data, type, row, meta) {
+                            if (type === 'display') {
+                                if (data != '') {//(data === 'Completed' || data === 'Draft') {
+                                    var href = `#`;
+                                    //`/Report/Report2/${row.ID_IDS_H}`;
+
+                                    data = `<a href="${href}" class="btnreport " onclick='report(${row.ID_IDS_H});'>${data}</a>`;
+
+                                }
+                            }
+                            return data;
+                        }
+                }, {
+                    targets: 11,
+                    render: function (data, type, row, meta) {
+                        if (type === 'display') {
+                            var href = `/DE_IDS_TRANS/DE_IDS_TRANS_DETAIL/${data}`;
+
+                            data = `<a href="${href}" class="name tr-icon-size"><i class="fa-solid fa-eye my-button"></i></a>`;
+                        }
+                        return data;
+                    },
+                    orderable: false
+                }],
+                select: {
+                    style: 'multi',
+                    info: false,
+                    selector: 'td:nth-child(1)'
+                },
+                order: [],
+                dom: "<'row toolbar-row g-0'<'col-sm-12 col-md-6 align-self-center'l><'col-sm-12 col-md-6'<'d-flex justify-content-end'<'toolbar'>>>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'<'d-flex justify-content-end'p<'go-to align-self-center mx-2'>>>>",
+                initComplete: function () {
+                    $("div.toolbar").html(
+                        '<div class="input-group input-group-sm">' +
+                        '<input type="text" id="txtSearch" class="form-control remove-right-border" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
+                        '<div class="input-group-text listing-search-icon">' +
+                        '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                        '</div>' +
+                        '<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#ASModal" id="btnAS" style="min-width: 30px; background-color: #057FE5;"><i class="fa-solid fa-sliders" style="transform: rotate(90deg);"></i></button>' +
+                        '</div>'
+                    );
+                },
+                drawCallback: function (settings) {
+                    var api = this.api();
+                    $("#txtGoTo").val(api.page() + 1);
+
+                    var total_page = api.page.info().pages == 0 ? 1 : api.page.info().pages;
+                    $("div.page-info").html('of ' + total_page);
+
+                    var rowCount = api.rows({ filter: 'applied' }).nodes().length;
+                    if (rowCount <= 1) {
+                        $('.tr-rec').html(`<span class="me-1" style="color:#00A251;font-size:20px;">${rowCount}</span>entry`);
+                    } else {
+                        $('.tr-rec').html(`<span class="me-1" style="color:#00A251;font-size:20px;">${rowCount}</span>entries`);
+                    }
+                }
+            });
+
+            $("div.go-to").html('<div class="d-flex align-items-center p-0"><input class="form-control" type="text" id="txtGoTo" style="width:50px" value=1> &nbsp; <div class="page-info">of ' + table.page.info().pages + '</div></div>');
+            $("#txtGoTo").on('keyup', function (e) {
+                try {
+                    var page = e.target.value;
+                    if ($.isNumeric(page) && page > 0 && page <= table.page.info().pages) {
+                        table.page(page - 1).draw('page');
+                    } else if (e.target.value.trim() == '') {
+
+                    }
+                    else {
+                        e.target.value = table.page() + 1;
+                    }
+
+                } catch (ex) {
+                    console.warn(ex.toString());
+                    e.target.value = 1;
+                }
+            });
+            $("#txtGoTo").on('blur', function (e) {
+                try {
+                    var page = e.target.value;
+                    if (page.trim() == '') {
+                        $("#txtGoTo").val(1);
+                        table.page(0).draw('page');
+                        $("#txtGoTo").focus();
+                    }
+                } catch (ex) {
+                    console.warn(ex.toString());
+                    e.target.value = 1;
+                }
+            });
+            $(".dataTables_length .form-select").on('change', function () {
+                $("#txtGoTo").val(table.page() + 1);
+                $("div.page-info").html('of ' + table.page.info().pages + '</div>');
+            });
+            table.on('select deselect', function (e, dt, type, indexes) {
+                var rowCnt = table.rows({ selected: true }).count();
+                console.log('count', rowCnt);
+                if (rowCnt > 0) {
+                    if (isManager == 'Y') {
+                        $(".tr-trash").removeClass('isHide');
+                    } else {
+                        $(".tr-trash").addClass('isHide');
+                    }
+
+                    //$(".tr-audit").removeClass('isHide');
+                    $("#btnExport").prop('disabled', false);
+                } else {
+                    $(".tr-trash").addClass('isHide');
+                    //$(".tr-audit").addClass('isHide');
+                    $("#btnExport").prop('disabled', true);
+                }
+            });
+
+
+            //Multi Select
+            var abc = $('.tr-select2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.tr-select2:input').val('');
+            $('.tr-select2').multiselect('rebuild');
+
+            var def = $('.tr-select').select2({
+                theme: "bootstrap-5",
+                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+                placeholder: $(this).data('placeholder'),
+                minimumResultsForSearch: Infinity,
+                templateSelection: function formatState(state) {
+                    return 'Status : ' + state.element.value;
+                },
+                dropdownCssClass: 'tr-select2-container',
+                selectionCssClass: 'tr-no-border'
+            });
+
+            $('.multiselectpicker').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.multiselectpicker2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.multiselect-native-select > .btn-group').addClass("w-100");
+            $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+            $('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-100");
+
+            addTableButtons();
+
+            $('.tr-select').on('change', function (e) {
+                if (e.target.value == "All") {
+                    data = dataAll;
+                } else {
+                    data = dataAll.filter(x => x.STATUS.toString() == e.target.value);
+                }
+                if (data.length > 1) {
+                    $('.tr-rec').text(data.length + ' entries');
+                } else {
+                    $('.tr-rec').text(data.length + ' entry');
+                }
+
+                table.clear().rows.add(data).draw();
+            });
+        }
+
+        $(document).on('click', '#btnSearch', function (e) {
+            e.preventDefault();
+            as_exclude();
+            table.search($('#txtSearch').val()).draw();
+        });
+        $(document).on('keyup', '#txtSearch', function (e) {
+            as_exclude();
+            table.search($(this).val()).draw();
+        });
+
+        $(document).on('click', '#btnReset', function (e) {
+            e.preventDefault();
+            $('#AS_FIELD1').val('');
+            $('#AS_FIELD2').val('');
+            $('#AS_FIELD3').val('');
+            $('#AS_FIELD4').val('');
+            $('#AS_FIELD5').val('');
+            $('#AS_FIELD6').val('');
+            $('#AS_FIELD7').val('');
+            $('#AS_FIELD8').val('');
+            as_search();
+        });
+        function as_search() {
+            table.search("");
+            table.columns(1).search(formatDateInput($('#AS_FIELD1').val().trim()));
+            table.columns(2).search(formatDateInput($('#AS_FIELD2').val().trim()));
+            table.columns(3).search($('#AS_FIELD3').val().trim());
+            table.columns(4).search($('#AS_FIELD4').val().trim());
+            table.columns(5).search($('#AS_FIELD5').val().trim());
+            table.columns(8).search($('#AS_FIELD6').val().trim());
+            table.columns(9).search($('#AS_FIELD7').val().trim());
+            table.columns(10).search($('#AS_FIELD8').val().trim());
+            table.draw();
+        }
+        function as_exclude() {
+            table.columns(1).search("");
+            table.columns(2).search("");
+            table.columns(3).search("");
+            table.columns(4).search("");
+            table.columns(5).search("");
+            table.columns(8).search("");
+            table.columns(9).search("");
+            table.columns(10).search("");
+        }
+
+        function hidesidebar() {
+            $('#sidebar2').collapse('toggle');
+            $('#sidebar').collapse('toggle');
+        }
+    </script>
+
+    <script>
+
+        $(document).ready(function () {
+
+            var listingURL = '/DE_IDS_TRANS/DE_IDS_TRANS_LST';
+
+            //Audit action control
+            var audit_url = '@Url.Action("DE_IDS_TRANS_AUDIT", "DE_IDS_TRANS")';
+
+            $('#btnAuditTrail').on('click', function () {
+                cont = true;
+                message = "";
+
+                var checkedValues = [];
+                var checkboxes = table.column(0).nodes().to$().find('.dt-checkboxes');
+                checkboxes.each(function () {
+                    if ($(this).is(':checked')) {
+                        checkedValues.push($(this).val());
+                    }
+                });
+
+                if (checkedValues.length == 0) {
+                    cont = false;
+                    message = "Please tick a record first.";
+                }
+
+                if (checkedValues.length > 1) {
+                    cont = false;
+                    message = "Multiple selection for audit trail is not applicable.";
+                }
+
+                if (cont) {
+                    var first_checked = checkedValues[0];
+                    window.location.href = audit_url + '?id=' + first_checked;
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+            });
+
+            //Delete action control
+            $('#btnConfirmDel').on('click', function () {
+                var cont = true;
+                var message = "";
+
+                var listingURL = '/DE_IDS_TRANS/DE_IDS_TRANS_LST';
+
+                var checkedValues = [];
+                var checkboxes = table.column(0).nodes().to$().find('.dt-checkboxes');
+                checkboxes.each(function () {
+                    if ($(this).is(':checked')) {
+                        checkedValues.push($(this).val());
+                    }
+                });
+
+                var first_checked = checkedValues[0];
+
+                if (first_checked == undefined || first_checked == null) {
+                    cont = false;
+                    message = "Please tick a record first to delete.";
+                }
+
+                if (cont) {
+
+                    $.ajax({
+                        url: "/DE_IDS_TRANS/deleteIDSTrans",
+                        type: 'POST',
+                        data: {
+                            lstid: checkedValues
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data successfully deleted");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        }
+                    });
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            });
+
+        });
+
+        function report(id) {
+            loadings();
+            window.location.href = '@Url.Action("ReportInt", "Report")' + '/' + id;
+            loadings(false);
+            return false;
+        }
+
+        function pdfexport() {
+            loadings();
+            cont = true;
+            message = "";
+
+            var checkedValues = [];
+            var checkboxes = table.column(0).nodes().to$().find('.dt-checkboxes');
+            checkboxes.each(function () {
+                if ($(this).is(':checked')) {
+                    data = dataAll.filter(x => x.ID_IDS_H.toString() == $(this).val());
+                    if (data.length > 0) {
+                        //if (data[0].status != 'completed') {
+                        //    cont = false;
+                        //    message = "only lotno with completed status can be export.";
+                        //} else {
+                            checkedValues.push({
+                                ID_IDS_H: $(this).val(),
+                                LOTNO: data[0].LOTNO,
+                                PRODUCT_CODE: data[0].PRODTYPE
+                            });
+                       // }
+                    }
+                }
+            });
+
+            if (checkedValues.length == 0) {
+                cont = false;
+                message = "Please tick a record first.";
+            }
+
+            if (checkedValues.length > 15) {
+                cont = false;
+                message = "Maximum of 15 set of lotno only can be export at one time.";
+            }
+
+            if (cont) {
+                //var first_checked = checkedValues[0];
+                //window.location.href = audit_url + '?id=' + first_checked;
+
+                $.ajax({
+                    url: '@Url.Action("GenerateMultipleReports", "Report")',
+                    type: 'POST',
+                    datatype: 'application/json',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ ids: checkedValues}),
+                    success: function (response) {
+                        if (response.message === "PDFs generated") {
+                            displayToast("s", "PDFs successfully generated.");
+
+                            setTimeout(function () {
+                                window.location.href = '@Url.Action("DE_IDS_TRANS_LST", "DE_IDS_TRANS")';
+                            }, 2000);
+                        }
+                        else {
+                            alert(response.message);
+                        }
+                    },
+                    error: function (ex) {
+                        console.log(ex);
+                        alert("Error occured");
+                    },
+                    complete: function () {
+                        loadings(false);
+                    }
+
+                });
+            } else {
+                loadings(false);
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+            return false;
+
+        }
+
+
+        function formatDateInput(date, format = "dd-MM-yyyy") {
+            var formattedDate = '';
+            var selectedDate = new Date(date);
+            if (!isNaN(selectedDate.getTime())) {
+                var day = selectedDate.getDate().toString().padStart(2, "0");
+                var month = (selectedDate.getMonth() + 1).toString().padStart(2, "0");
+                var year = selectedDate.getFullYear();
+
+                switch (format) {
+                    case 'dd-MM-yyyy':
+                        formattedDate = day + "-" + month + "-" + year;
+                        break;
+                    case 'dd/MM/yyyy':
+                        formattedDate = day + "/" + month + "/" + year;
+                        break;
+                    default:
+                        formattedDate = day + "/" + month + "/" + year;
+                        break;
+                }
+            }
+            return formattedDate;
+        }
+    </script>
+}
+

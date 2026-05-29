@@ -1,0 +1,595 @@
+﻿@using TPM_QAS.Models
+@model CheckPlanModel
+@{
+    ViewBag.Title = "CHECKING PLAN MM - Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Html.BeginForm("MM_CHECK_PLAN_ADD", "MM_CHECK_PLAN", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">New Form - Checking Plan</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">Checking Plan</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Product Group </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.DropDownListFor(Model => Model.MM_PRODGROUP_H_ID, Model.DropdownProdGroup, "Select an option..", new { id = "ddlProdGroup", @class = "ddloption form-control form-select", required = "required" })
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Company Group <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="compgroup" id="compounderRadio" onchange = handleRadioChange() value="COMPOUNDER"
+                                       @(Model.COMP_GROUP != null && Model.COMP_GROUP.ToString() == "COMPOUNDER" ? "checked" : "")>
+                                <label class="form-check-label" for="compounderRadio">Compounder</label>
+
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="compgroup" id="tpmRadio" onchange = handleRadioChange() value="TPM"
+                                       @(Model.COMP_GROUP != null && Model.COMP_GROUP.ToString() == "TPM" ? "checked" : "")>
+                                <label class="form-check-label" for="tpmRadio">TPM</label>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Pattern Type <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="pattern" id="patternfull" value="F"
+                                       @(Model.PATTERN_TYPE != null && Model.PATTERN_TYPE.ToString() == "F" ? "checked" : "")>
+                                <label class="form-check-label" for="fullRadio">Full</label>
+                            </div>
+                            <div class="form-check form-check-inline tpmpattern" style="display:none">
+                                <input class="form-check-input" type="radio" name="pattern" id="patternpartial" value="P"
+                                        @(Model.PATTERN_TYPE != null && Model.PATTERN_TYPE.ToString() == "P" ? "checked" : "")>
+                                <label class="form-check-label" for="partialRadio">Partial</label>
+                            </div>
+                            <div class="form-check form-check-inline tpmpattern" style="display:none">
+                                <input class="form-check-input" type="radio" name="pattern" id="patternc" value="C"
+                                        @(Model.PATTERN_TYPE != null && Model.PATTERN_TYPE.ToString() == "C" ? "checked" : "")>
+                                <label class="form-check-label" for="cRadio">C</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-cols-2 mt-4">
+                        <div class="col-2 align-self-center">
+                            <h6 class="text-muted" style="float: left">Properties Listing</h6>
+                        </div>
+                        <div class="col-3">
+                            <div class="input-group">
+                                <div class="input-group-text tr-input-group" id="searchProperty" onclick="popupProperty()">
+                                    <a href="#" class="text-reset vm tr-disabled"><i class="fa-solid fa-ellipsis" aria-hidden="true" style="color: #fff"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row row-cols-auto justify-content-end g-1">
+                                <div class="col">
+                                    <button class="btn btn-sm btn-md btn-danger" id="removeBtn" type="button">
+                                        Remove
+                                    </button>
+                                </div>
+                                <div class="col">
+                                    <button class="btn btn-sm btn-md btn-primary" id="addBtn" onclick="popupProperty()" type="button">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 mx-1">
+                        <table id="item-table" class="detailTable" style="width:100%">
+                            <thead>
+                                <tr class="toolbar-row">
+                                    <th style="width: 3%; text-align: center;">
+                                        <input id="trCheckbox" type="checkbox" class="dt-checkboxes select-all form-check-input" style="margin-top:5.5px; display:none">
+                                    </th>
+                                    <th>Properties</th>
+                                    <th>Property Items</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ var count = 0; }
+                                @if (Model.CheckPlanPropLstModel != null && Model.CheckPlanPropLstModel.Count > 0)
+                                {
+                                    foreach (var item in Model.CheckPlanPropLstModel)
+                                    {
+                                        count++;
+                                        <tr id="R_@count" data-did="@count">
+                                            <td class="text-center">
+                                                <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_@count" onClick="handleCheckboxClick(this)">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" id="item_prop_@count" value="@item.PROPERTIES" placeholder="" disabled>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" id="item_propitem_@count" value="@item.PROP_ITEM" placeholder="" disabled>
+                                            </td>
+                                            <td class="d-none">
+                                                <input type="text" class="form-control" id="item_stat_@count" value="0">
+                                                <input type="text" class="form-control" id="item_dbid_@count" value="@item.MM_CHECKPLAN_D_ID">
+                                                <input type="text" class="form-control" id="item_propid_@count" value="@item.MM_PROPERTIES_H_ID">
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                        <input type="hidden" id="item-count" value="@count" />
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary mx-1 my-button" data-bs-toggle="modal" data-bs-target="#back-confirmation-modal">Back</button></div>
+                <div class="col"><button hidden id="btnDraft" type="button" class="btn btn-sm btn-primary">Save As Draft</button></div>
+                <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+            </div>
+        </div>
+    </div>
+
+}
+
+
+<script>
+    var idh = '@Model.MM_CHECKPLAN_H_ID' != 0 ? '@Model.MM_CHECKPLAN_H_ID' : 0;
+
+    $(document).ready(function () {
+
+
+        checkboxChecking();
+
+        var listingURL = '/MM_CHECK_PLAN/MM_CHECK_PLAN_LST';
+
+        //REMOVE D
+        $('#removeBtn').on('click', function () {
+            $('#item-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                var row = $(ele).closest('tr');
+                var itemStatInput = row.find('input[id^="item_stat_"]');
+                var item_stat = itemStatInput.val();
+
+                if (item_stat != '1') {
+                    itemStatInput.val('5');
+                    row.hide();
+                } else {
+                    row.remove();
+                }
+            });
+
+            checkboxChecking();
+        });
+
+
+        //SUBMIT
+        $('#btnConfirmSubmit').on('click', function () {
+            $('.invalid-feedback').remove();
+            $('.is-invalid').removeClass('is-invalid');
+
+            var cont = true;
+            var message = "";
+
+            var ddlProdGroup = $("#ddlProdGroup").val();
+            var prodgroup = $('#ddlProdGroup option:selected').text();
+            var pattern = $("input[name='pattern']:checked").val();
+            var comp_group = $("input[name='compgroup']:checked").val();
+
+            if (ddlProdGroup == undefined || ddlProdGroup == null || ddlProdGroup == 0 || ddlProdGroup == "" || ddlProdGroup == "Select an option..") {
+                cont = false;
+                message += 'Please select Product Group. <br>';
+            }
+
+            if (pattern == undefined || pattern == null || pattern == "") {
+                cont = false;
+                message += 'Please select Pattern Type. <br>';
+            }
+
+            if (comp_group == undefined || comp_group == null || comp_group == "") {
+                cont = false;
+                message += 'Please select Company Group. <br>';
+            }
+
+            if (comp_group == "COMPOUNDER") {
+                pattern = "F";
+            }
+
+            $('.required-field').each(function (e) {
+                var input_val = $(this).val().trim();
+                if (input_val == null || input_val == undefined || input_val === "") {
+                    cont = false;
+                    $(this).addClass('is-invalid');
+                    inputError(this);
+                }
+            });
+
+            var hasItem = false;
+            var hasError = false;
+            var hasDuplicate = false;
+            var existedItem = [];
+
+            var propertylist = [];
+
+            $("#item-table tbody tr").each(function () {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat = $('#item_stat_' + did).val();
+                    var item_dbid = $('#item_dbid_' + did).val();
+
+                    var item_prop = $('#item_prop_' + did).val();
+                    var item_propitem = $('#item_propitem_' + did).val();
+                    var item_propid = $('#item_propid_' + did).val();
+
+                    if (item_stat != '5') {
+                        if (item_propid !== "" && item_propid != '0') {
+                            hasItem = true;
+                            if (existedItem.includes(item_propid)) {
+                                hasDuplicate = true;
+                                return false;
+                            } else {
+                                existedItem.push(item_propid);
+                            }
+                        } else {
+                            hasError = true;
+                        }
+                    }
+
+                    propertylist.push({
+                        'MM_CHECKPLAN_D_ID': item_dbid,
+                        'RECORD_TYP': item_stat,
+
+                        'PROPERTIES': item_prop,
+                        'PROP_ITEM': item_propitem,
+                        'MM_PROPERTIES_H_ID': item_propid
+                    });
+                }
+            });
+
+            if (cont && !hasItem) {
+                cont = false;
+                message = "Please add at least one Properties Listing.";
+            }
+            if (cont && hasError) {
+                cont = false;
+                message = "Please make sure Property field in Properties Listing is not empty.";
+            }
+            if (cont && hasDuplicate) {
+                cont = false;
+                message = "Duplicate properties and property items selected.";
+            }
+
+            if (cont) {
+
+                var model = {
+                    MM_CHECKPLAN_H_ID: idh,
+                    RECORD_TYP: '1',
+
+                    MM_PRODGROUP_H_ID: ddlProdGroup,
+                    PROD_GROUP: prodgroup,
+                    PATTERN_TYPE: pattern,
+                    COMP_GROUP: comp_group,
+                    CheckPlanPropLstModel: propertylist
+                };
+
+                console.log(model)
+
+                $.ajax({
+                    url: "/MM_CHECK_PLAN/InsertUpdateCheckPlan",
+                    type: 'POST',
+                    data: {
+                        model: model
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data save successfully");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+
+        });
+
+        //DRAFT
+        $('#btnDraft').on('click', function () {
+            var cont = true;
+            var message = "";
+
+            var txtprodtype = $("#txtprodtype").val();
+            var comp_group = $("input[name='compgroup']:checked").val();
+
+            var ddlProdGroup = $("#ddlProdGroup").val();
+            var prodgroup = $('#ddlProdGroup option:selected').text();
+            var pattern = $("input[name='pattern']:checked").val();
+            var comp_group = $("input[name='compgroup']:checked").val();
+
+            if (ddlProdGroup == undefined || ddlProdGroup == null || ddlProdGroup == 0 || ddlProdGroup == "" || ddlProdGroup == "Select an option..") {
+                cont = false;
+                message += 'Please select Product Group. <br>';
+            }
+
+            if (pattern == undefined || pattern == null || pattern == "") {
+                cont = false;
+                message += 'Please select Pattern Type. <br>';
+            }
+
+            if (comp_group == undefined || comp_group == null || comp_group == "") {
+                cont = false;
+                message += 'Please select Company Group. <br>';
+            }
+
+            //var hasItem = false;
+            //var hasError = false;
+            var hasDuplicate = false;
+            var existedItem = [];
+
+            var propertylist = [];
+
+            $("#item-table tbody tr").each(function () {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat = $('#item_stat_' + did).val();
+                    var item_dbid = $('#item_dbid_' + did).val();
+
+                    var item_prop = $('#item_prop_' + did).val();
+                    var item_propitem = $('#item_propitem_' + did).val();
+                    var item_propid = $('#item_propid_' + did).val();
+
+                    if (item_stat != '5') {
+                        item_stat = "8";
+                        if (item_propid !== "" && item_propid != '0') {
+                            //hasItem = true;
+                            if (existedItem.includes(item_propid)) {
+                                hasDuplicate = true;
+                                return false;
+                            } else {
+                                existedItem.push(item_propid);
+                            }
+                        }
+                        //else {
+                        //    hasError = true;
+                        //}
+                    }
+
+                    propertylist.push({
+                        'MM_CHECKPLAN_D_ID': item_dbid,
+                        'RECORD_TYP': item_stat,
+
+                        'PROPERTIES': item_prop,
+                        'PROP_ITEM': item_propitem,
+                        'MM_PROPERTIES_H_ID': item_propid
+                    });
+                }
+            });
+
+            //if (cont && !hasItem) {
+            //    cont = false;
+            //    message = "Please add at least one Properties Listing.";
+            //}
+
+            //if (cont && hasError) {
+            //    cont = false;
+            //    message = "Please make sure Property field in Properties Listing is not empty.";
+            //}
+
+            if (cont && hasDuplicate) {
+                cont = false;
+                message = "Duplicate properties and property items selected.";
+            }
+
+
+            if (cont) {
+
+                var model = {
+                    MM_CHECKPLAN_H_ID: idh,
+                    RECORD_TYP: '8',
+
+                    MM_PRODGROUP_H_ID: ddlProdGroup,
+                    PROD_GROUP: prodgroup,
+                    PATTERN_TYPE: pattern,
+                    COMP_GROUP: comp_group,
+                    CheckPlanPropLstModel: propertylist
+                };
+
+                console.log(model)
+
+                $.ajax({
+                    url: "/MM_CHECK_PLAN/DraftCheckingPlan",
+                    type: 'POST',
+                    data: {
+                        model: model
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data save as draft successfully");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+        });
+
+        $('#btnConfirmBack').on('click', function () {
+            window.location.href = listingURL;
+        });
+    });
+
+    function handleRadioChange() {
+
+        var external = $('#compounderRadio').is(':checked');
+        var tpm = $('#tpmRadio').is(':checked');
+        var comp = "";
+
+        if (external) {
+            comp = "COMPOUNDER"
+        } else {
+            if (tpm) {
+                comp = "TPM"
+            }
+        }
+
+        if (comp === 'TPM') {
+            $('.tpmpattern').show();
+        } else {
+            $('.tpmpattern').hide();
+        }
+    }
+
+    //ADD PROPERTIES LIST
+    function addPropertiesList(data) {
+        var cont = true;
+        var message = "";
+
+        var hasDuplicate = false;
+        for (var i = 0; i < data.length; i++) {
+
+            var rowIdx = $('#item-count').val();
+
+            if (rowIdx != '0') {
+                var tlength = $('#item-table tbody tr').length;
+
+                if (tlength != 0) {
+                    $("#item-table tbody tr").each(function () {
+                        var propid = data[i].MM_PROPERTIES_H_ID;
+
+                        var did = $(this).data('did');
+                        if (did != '' && did != null && did != undefined) {
+                            var item_stat = $('#item_stat_' + did).val();
+                            var item_propid = $('#item_propid_' + did).val();
+
+                            if (data[i].INSERT != 'N') {
+                                if (item_stat != '5' && item_propid == propid) {
+                                    hasDuplicate = true;
+                                    data[i].INSERT = 'N';
+                                } else {
+                                    data[i].INSERT = 'Y';
+                                }
+                            }
+
+                        }
+                    });
+                } else {
+                    data[i].INSERT = 'Y';
+                }
+
+            } else {
+                data[i].INSERT = 'Y';
+            }
+        }
+
+        //if (cont && hasDuplicate) {
+        //    cont = false;
+        //    message = "Duplicate property and property items selected.";
+        //}
+
+        if (cont) {
+            var rowIdx = $('#item-count').val();
+
+            for (var i = 0; i < data.length; i++) {
+
+                if (data[i].INSERT == 'Y') {
+                    rowIdx++;
+                    $('#item-count').val(rowIdx);
+
+                    $("#item-table tbody").append(`
+                    <tr id="R_${rowIdx}" data-did="${rowIdx}">
+                        <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_${rowIdx}" onClick="handleCheckboxClick(this)"></td>
+                        <td><input type="text" class="form-control" value="${data[i].PROPERTIES}"  id="item_prop_${rowIdx}" placeholder="" disabled></td>
+                        <td><input type="text" class="form-control" value="${data[i].PROP_ITEM}"  id="item_propitem_${rowIdx}" placeholder="" disabled></td>
+                        <td class="d-none">
+                            <input type="text" id="item_stat_${rowIdx}" value="1">
+                            <input type="text" id="item_dbid_${rowIdx}" value="0">
+                            <input type="text" id="item_propid_${rowIdx}" value="${data[i].MM_PROPERTIES_H_ID}">
+                        </td>
+                    </tr>`);
+
+                    checkboxChecking();
+                }
+            }
+
+        } else {
+            if (message != "") {
+                displayToast("error", message)
+            }
+        }
+    }
+
+
+    //POPUP
+    function popupProperty() {
+
+        var id = idh;
+        var popup;
+        var url = '@Url.Action("MM_CHECK_PLAN_PROPERTY_POPOUT", "MM_CHECK_PLAN")';
+
+        url = url + '?id=' + id;
+        popup = window.open(url, "Popup", "directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width=800,height=800");
+        popup.focus();
+
+    }
+</script>

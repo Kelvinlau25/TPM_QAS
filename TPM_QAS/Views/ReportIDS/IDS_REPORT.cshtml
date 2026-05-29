@@ -1,0 +1,281 @@
+﻿@using TPM_QAS.Models
+@model REPORT_IDS_VM
+
+@{
+    ViewBag.Title = "Daily Inspection Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .multiselect-container {
+        max-height: 230px !important;
+    }
+</style>
+
+@using (Html.BeginForm("IDS_REPORT", "ReportIDS", FormMethod.Post, new { encType = "multipart/form-data", id="reportForm" }))
+{
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">Daily Inspection Report</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Date From <span class="text-danger">*</span> <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(Model => Model.DATE_FROM, new { @class = "form-control", @type = "date", @id = "txtdatefrom" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Date To <span class="text-danger">*</span> <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4 d-flex">
+                            @Html.TextBoxFor(Model => Model.DATE_TO, new { @class = "form-control", @type = "date", @id = "txtdateto" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Product Type <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4 d-flex">
+                            @Html.DropDownListFor(m => m.PROD_TYPE, new SelectList(Model.DropdownProdType, "Value", "Text"), "None Selected", new { @class = "form-control advMultiselectpicker", @id = "ddlProp" })
+                            @Html.ValidationMessageFor(a => a.PROD_TYPE, "", new { @class = "red", @style = "color:red" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Product Line From <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4 d-flex">
+                            @Html.TextBoxFor(Model => Model.PROD_LINE_FROM, new { @class = "form-control", @id = "txtprodlinefr" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Product Line To <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4 d-flex">
+                            @Html.TextBoxFor(Model => Model.PROD_LINE_TO, new { @class = "form-control", @id = "txtprodlineto" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Property<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.DropDownListFor(Model => Model.SELECTED_PROP, Model.DropdownPropItem, new { @id = "ddlpropitem", @class = "multiselectpicker form-control", @multiple = "multiple" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-4">
+                            <div class="form-check form-check-inline check">
+                                <input class="form-check-input" type="checkbox" id="cbxIncExt" name="INC_EXTERNAL" value="true">
+                                <label class="form-check-label" for="cbxIncExt">Include External</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    @*<div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">By (Graph X-axis) <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4 d-flex">
+                            <div class="form-check-inline">
+                                @Html.RadioButtonFor(m => m.xaxis, "LotNo", new { id = "xaxis", name = "xaxis" })
+                                <label class="form-check-label" for="xaxis">Lot No</label>
+                            </div>
+                        </div>
+                    </div>*@
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnGenerate" type="button" class="btn btn-sm btn-primary">Generate</button></div>
+                <div class="col hidden"><button id="btnSubmit" type="submit" class="btn btn-sm btn-primary">Actual Generate</button></div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#btnGenerate').on('click', function () {
+            var proceed = true;
+            var msg = '';
+
+            var datefr = $('#txtdatefrom').val();
+            var dateto = $('#txtdateto').val();
+            var propitem = $('#ddlpropitem').val();
+            var prodlinefr = $('#txtprodlinefr').val();
+            var prodlineto = $('#txtprodlineto').val();
+            var prodtype = $('#ddlProp').val();
+
+
+            if (datefr != '' && dateto != '') {
+                var fromDate = new Date(datefr);
+                var toDate = new Date(dateto);
+                var today = new Date();
+
+                // 1️⃣ Validate date range order
+                if (fromDate > toDate) {
+                    proceed = false;
+                    msg += 'Date From cannot be later than Date To\n';
+                }
+
+                // 2️⃣ Validate that "Date From" is within the past 6 months
+                var sixMonthsAgo = new Date(today.getFullYear(), today.getMonth() - 6, today.getDate());
+                // 🟢 Format cutoff date as dd/MM/yyyy
+                var day = String(sixMonthsAgo.getDate()).padStart(2, '0');
+                var month = String(sixMonthsAgo.getMonth() + 1).padStart(2, '0'); // JS months are 0-based
+                var year = sixMonthsAgo.getFullYear();
+                var cutoffDateText = `${day}/${month}/${year}`;
+                if (fromDate < sixMonthsAgo) {
+                    proceed = false;
+                    msg += `Date From must be greater than ${cutoffDateText}. Data older than 6 months has been archived.\n`;
+                }
+
+                // 3️⃣ Optionally, prevent future dates
+                if (toDate > today) {
+                    proceed = false;
+                    msg += 'Date To cannot be in the future\n';
+                }
+            } else {
+                proceed = false;
+                msg = msg + 'Please choose Date From and Date To\n';
+            }
+
+            //if (propitem != '') {
+            //    $('#txtlistproperties').val(propitem);
+            //} else {
+            //    proceed = false;
+            //    msg = msg + 'Please choose atleast 1 Property\n';
+            //}
+
+            //if (prodlinefr == '' || prodlineto == '') {
+            //    proceed = false;
+            //    msg = msg + 'Please insert Production Line From and Production Line To\n';
+            //}
+
+            //if (prodtype == '') {
+            //    proceed = false;
+            //    msg = msg + "Please select Product Type\n";
+            //}
+
+            if (proceed) {
+                $("#reportForm").submit();
+            } else {
+                alert(msg);
+            }
+
+        });
+
+        $("#reportForm").on("submit", function (e) {
+            var datefr = $('#txtdatefrom').val();
+            var dateto = $('#txtdateto').val();
+
+            e.preventDefault();
+            $.ajax({
+                url: '/ReportIDS/IDS_REPORT',
+                type: 'POST',
+                data: $(this).serialize(),
+                beforeSend: function () {
+                    loadings();
+                },
+                success: function (response) {
+                    loadings(false);
+                    if (response.success) {
+                        // Trigger download
+                        window.location.href = '/ReportIDS/DownloadReport?datefr=' + datefr + '&dateto=' + dateto + '&fileKey=' + response.fileKey;
+                        loadings(false);
+                    } else {
+                        alert(response.message); // Show error
+                    }
+                },
+                error: function () {
+                    alert("Something went wrong. Please try again.");
+                }
+            });
+        });
+
+    });
+
+    $(document).keypress(
+        function (event) {
+            if (event.which == '13') {
+                event.preventDefault();
+            }
+        }
+    );
+
+
+</script>
+
+
+<script>
+    $('.advMultiselectpicker').multiselect({
+        buttonClass: 'form-select form-control text-start',
+        includeResetOption: false,
+        includeResetDivider: false,
+        includeSelectAllOption: false,
+        onSelectAll: function () {
+            // Custom code to limit the selection to the top 6 options
+            var selectedOptions = $(".advMultiselectpicker").val() || [];
+            if (selectedOptions.length > 6) {
+                var firstSixOptions = selectedOptions.slice(0, 6);
+                $(".advMultiselectpicker").multiselect("deselectAll", false)
+                    .multiselect("select", firstSixOptions);
+            }
+
+        },
+        enableCaseInsensitiveFiltering: true,
+        enableFiltering: true,
+        templates: {
+            button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+            filter: '<div class="multiselect-filter"><div class="input-group input-group-sm p-1"><div class="input-group-prepend"></div><input class="form-control multiselect-search" type="text" /></div></div>',
+        },
+        onChange: function (option, checked) {
+            advMultiselectpickerOnChange();
+        }
+    });
+
+    function advMultiselectpickerOnChange() {
+        var selectedOptions = $('.advMultiselectpicker option:selected');
+
+        if (selectedOptions.length > 0) {
+            $('.advMultiselectpicker.form-control + .btn-group .multiselect-selected-text').addClass('multiselect-selected-text-color');
+        }
+        else {
+            $('.advMultiselectpicker.form-control + .btn-group .multiselect-selected-text').removeClass('multiselect-selected-text-color');
+        }
+    }
+
+    $('.multiselect-native-select').addClass("w-100");
+    $('.multiselect-native-select > .btn-group').removeClass("w-100");
+    $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+    //$('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-300");
+
+    $('.multiselect-native-select > .btn-group').removeClass("w-100");
+</script>

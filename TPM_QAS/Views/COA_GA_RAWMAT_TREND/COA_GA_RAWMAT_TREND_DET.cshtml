@@ -1,0 +1,681 @@
+﻿
+@using TPM_QAS.Models
+@model RawMatTrendModel
+@{
+    ViewBag.Title = "RAW MATERIAL TREND ANALYSIS";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+@using (Html.BeginForm("COA_GA_RAWMAT_TREND_DET", "COA_GA_RAWMAT_TREND", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">TPM COA - Raw Materials Trend Analysis</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">Graph Setting</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+                    <hr />
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Date From </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-3 flex-grow-1">
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.DATE_FROM, new { @class = "form-control tr-date", id = "txtdatefrom", style = "border-right:none" })
+                                <div class="input-group-text" id="calendar-from" style="background: none; border-left:none">
+                                    <a href="" class="dp"><i class="fa-solid fa-calendar-days tr-icon-blue" aria-hidden="true"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-1">
+                        </div>
+
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Date To </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-3 flex-grow-1">
+                            <div class="input-group">
+                                @Html.TextBoxFor(m => m.DATE_TO, new { @class = "form-control tr-date", id = "txtdateto", style = "border-right:none" })
+                                <div class="input-group-text" id="calendar-to" style="background: none; border-left:none">
+                                    <a href="" class="dp"><i class="fa-solid fa-calendar-days tr-icon-blue" aria-hidden="true"></i></a>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Material Name </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-3 flex-grow-1">
+                            @Html.DropDownListFor(Model => Model.MM_MATERIAL_H_ID, Model.DropdownMaterial, "Select an option..", new { id = "ddlmat", @class = "ddloption form-control form-select", required = "required" })
+                        </div>
+                        <div class="col-sm-1">
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Supplier Name </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-3 flex-grow-1">
+                            @Html.ListBoxFor(Model => Model.MM_SUPPLIER_H_ID, Model.DropdownSupplier, new { multiple = "multiple", id = "ddlsupp", @class = "multiselectpicker ddloption form-control form-select", required = "required" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Inspection Item </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-3 flex-grow-1">
+                            @Html.ListBoxFor(Model => Model.MM_MATERIAL_D2_ID, Model.DropdownItem, new { multiple = "multiple", id = "ddlinsp", @class = "multiselectpicker ddloption form-control form-select", required = "required" })
+                        </div>
+                        <div class="col-sm-1"></div>
+                        <div class="col-sm-2"></div>
+                        <div class="col-sm-3 flex-grow-1"></div>
+                    </div>
+
+                    <div class="row row-cols-auto justify-content-end g-1">
+
+                        <div class="col"><button id="btnReset" type="button" class="btn btn-sm btn-secondary mx-1 my-button">Reset</button></div>
+                        <div class="col"><button id="btnExcel" type="button" class="btn btn-sm btn-primary">Export to Excel</button></div>
+                        <div class="col"><button id="btnGenerate" type="button" class="btn btn-sm btn-primary">Generate</button></div>
+                    </div>
+
+                    <div class="chartresult" style="display:none">
+                        <hr />
+                        <br />
+
+                        <nav class="tr-tab">
+                            <div class="nav nav-tabs" id="nav-tab" role="tablist"></div>
+                        </nav>
+                        <div class="tab-content p-2" id="nav-tabContent" style="border: 4px solid #EBF3FF;"></div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+}
+
+
+@section scripts{
+
+ 
+
+
+    <script>
+        $(document).ready(function () {
+            $(".tr-date").datepicker({
+                format: "dd-mm-yyyy",
+                autoclose: true,
+                orientation: "bottom auto",
+                endDate: new Date()
+            });
+
+            $("#calendar-from").click(function (e) {
+                e.preventDefault();
+                $("#txtdatefrom").focus();
+            });
+
+            $("#calendar-to").click(function (e) {
+                e.preventDefault();
+                $("#txtdateto").focus();
+            });
+
+            $('.multiselectpicker').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                includeSelectAllOption: true,
+                enableFiltering: true,
+                enableCaseInsensitiveFiltering: true,
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+
+            $("#ddlmat").change(function () {
+                var ddlmat = $("#ddlmat").val();
+
+                if (ddlmat != undefined && ddlmat != null && ddlmat != 0 && ddlmat != "" && ddlmat != "Select an option..") {
+                    $.ajax({
+                        url: '@Url.Action("GetSupplierDDL", "COA_GA_RAWMAT_TREND")',
+                        type: "POST",
+                        data: { matid: ddlmat },
+                        success: function (response) {
+                            if (response && response.length > 0) {
+                                var ddlsupp = $("#ddlsupp");
+                                var selectedData = ddlsupp.val() || [];
+
+                                if (!Array.isArray(selectedData)) {
+                                    selectedData = [selectedData];
+                                }
+
+                                ddlsupp.empty();
+
+                                $.each(response, function (index, item) {
+                                    var isSelected = selectedData.includes(item.Value) ? 'selected' : '';
+                                    ddlsupp.append(`<option value="${item.Value}" ${isSelected}>${item.Text}</option>`);
+                                });
+
+                                ddlsupp.multiselect("rebuild");
+                                ddlsupp.trigger("change");
+                            } else {
+                                var ddlsupp = $("#ddlsupp");
+                                ddlsupp.empty();
+                                ddlsupp.multiselect("rebuild");
+                                ddlsupp.trigger("change");
+                            }
+                        }
+                    });
+                }
+
+
+            });
+
+            $("#ddlsupp").change(function () {
+                var ddlmat = $("#ddlmat").val();
+                var ddlsupp = $("#ddlsupp").val();
+
+                var selectedOptions = $("#ddlsupp option:selected").length;
+                var totalOptions = $("#ddlsupp option").length;
+
+                var isSelectAll = (selectedOptions === totalOptions);
+                if (selectedOptions > 5) {
+                    displayToast("error", "You can only select up to 5 suppliers.");
+
+                    if (isSelectAll) {
+                        $("#ddlsupp").multiselect("deselectAll", false);
+                    } else {
+                        $("#ddlsupp option:selected").last().prop("selected", false);
+                    }
+
+                    $("#ddlsupp").multiselect("refresh");
+                    return;
+                }
+
+                if (ddlmat != undefined && ddlmat != null && ddlmat != 0 && ddlmat != "" && ddlmat != "Select an option.."
+                    && ddlsupp != undefined && ddlsupp != null && ddlsupp != 0 && ddlsupp != "" && ddlsupp != "Select an option..") {
+                    $.ajax({
+                        url: '@Url.Action("GetInspItemDDL", "COA_GA_RAWMAT_TREND")',
+                        type: "POST",
+                        data: { supp: ddlsupp, matid: ddlmat },
+                        success: function (response) {
+                            if (response && response.length > 0) {
+                                var ddlinsp = $("#ddlinsp");
+                                var selectedData = ddlinsp.val() || [];
+
+                                if (!Array.isArray(selectedData)) {
+                                    selectedData = [selectedData];
+                                }
+
+                                ddlinsp.empty();
+
+                                $.each(response, function (index, item) {
+                                    var isSelected = selectedData.includes(item.Value) ? 'selected' : '';
+                                    ddlinsp.append(`<option value="${item.Value}" ${isSelected}>${item.Text}</option>`);
+                                });
+
+                                ddlinsp.multiselect("rebuild");
+                                ddlinsp.trigger("change");
+                            } else {
+                                var ddlinsp = $("#ddlinsp");
+                                ddlinsp.empty();
+                                ddlinsp.multiselect("rebuild");
+                                ddlinsp.trigger("change");
+                            }
+                        }
+                    });
+                } else {
+                    var ddlinsp = $("#ddlinsp");
+                    ddlinsp.empty();
+                    ddlinsp.multiselect("rebuild");
+                    ddlinsp.trigger("change");
+                }
+
+
+            });
+
+            //SUBMIT
+            $('#btnGenerate').on('click', function () {
+                var cont = true;
+                var message = "";
+
+                var txtdatefrom = $("#txtdatefrom").val();
+                var txtdateto = $("#txtdateto").val();
+                var ddlmat = $("#ddlmat").val();
+                var ddlsupp = $("#ddlsupp").val().join(',');
+                var ddlinsp = $("#ddlinsp").val().join(',');
+
+                if (txtdatefrom == undefined || txtdatefrom == null || txtdatefrom == "") {
+                    cont = false;
+                    message += 'Missing Date From value. <br>';
+                }
+                if (txtdateto == undefined || txtdateto == null || txtdateto == "") {
+                    cont = false;
+                    message += 'Missing Date To value. <br>';
+                }
+
+                if (ddlmat == undefined || ddlmat == null || ddlmat == 0 || ddlmat == "" || ddlmat == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Material Name. <br>';
+                }
+
+                if (ddlsupp == undefined || ddlsupp == null || ddlsupp == 0 || ddlsupp == "" || ddlsupp == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Supplier Name. <br>';
+                }
+
+                if (ddlinsp == undefined || ddlinsp == null || ddlinsp == 0 || ddlinsp == "" || ddlinsp == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Inspection Item. <br>';
+                }
+
+                if (cont) {
+                    let partsfrom = txtdatefrom.split("-");
+                    let parsedDatefrom = new Date(partsfrom[2], partsfrom[1] - 1, partsfrom[0]);
+
+                    let partsto = txtdateto.split("-");
+                    let parsedDateto = new Date(partsto[2], partsto[1] - 1, partsto[0]);
+
+                    if (parsedDatefrom > parsedDateto) {
+                        cont = false;
+                        message += 'Date From must smaller than Date To. <br>';
+                    }
+                }
+
+                $('.required-field').each(function (e) {
+                    var input_val = $(this).val().trim();
+                    if (input_val == null || input_val == undefined || input_val === "") {
+                        cont = false;
+                        $(this).addClass('is-invalid');
+                        inputError(this);
+                    }
+                });
+
+                if (cont) {
+
+                    var model = {
+                        DATE_FROM: txtdatefrom,
+                        DATE_TO: txtdateto,
+                        MM_MATERIAL_H_ID: ddlmat,
+                        MM_SUPPLIER_H_ID_STRING: ddlsupp,
+                        MM_MATERIAL_D2_ID_STRING: ddlinsp
+                    };
+
+                    //console.log(model)
+
+                    $.ajax({
+                        url: "/COA_GA_RAWMAT_TREND/getTrendChartData",
+                        type: 'POST',
+                        data: { model: model },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                var parsedOcrData = JSON.parse(response.ocrResulData);
+                                generateTabs(response.dtl, parsedOcrData);
+                            } else {
+                                displayToast("error", response.message);
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log("Error: ", jqXHR.responseText);
+                            displayToast("error", jqXHR.responseText);
+                        }
+                    });
+
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            });
+
+            //excel
+            $('#btnExcel').on('click', function () {
+                var cont = true;
+                var message = "";
+
+                var txtdatefrom = $("#txtdatefrom").val();
+                var txtdateto = $("#txtdateto").val();
+                var ddlmat = $("#ddlmat").val();
+                var ddlsupp = $("#ddlsupp").val().join(',');
+                var ddlinsp = $("#ddlinsp").val().join(',');
+
+                if (txtdatefrom == undefined || txtdatefrom == null || txtdatefrom == "") {
+                    cont = false;
+                    message += 'Missing Date From value. <br>';
+                }
+                if (txtdateto == undefined || txtdateto == null || txtdateto == "") {
+                    cont = false;
+                    message += 'Missing Date To value. <br>';
+                }
+
+                if (ddlmat == undefined || ddlmat == null || ddlmat == 0 || ddlmat == "" || ddlmat == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Material Name. <br>';
+                }
+
+                if (ddlsupp == undefined || ddlsupp == null || ddlsupp == 0 || ddlsupp == "" || ddlsupp == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Supplier Name. <br>';
+                }
+
+                if (ddlinsp == undefined || ddlinsp == null || ddlinsp == 0 || ddlinsp == "" || ddlinsp == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Inspection Item. <br>';
+                }
+
+                $('.required-field').each(function (e) {
+                    var input_val = $(this).val().trim();
+                    if (input_val == null || input_val == undefined || input_val === "") {
+                        cont = false;
+                        $(this).addClass('is-invalid');
+                        inputError(this);
+                    }
+                });
+
+
+                if (cont) {
+                    let partsfrom = txtdatefrom.split("-");
+                    let parsedDatefrom = new Date(partsfrom[2], partsfrom[1] - 1, partsfrom[0]);
+
+                    let partsto = txtdateto.split("-");
+                    let parsedDateto = new Date(partsto[2], partsto[1] - 1, partsto[0]);
+
+                    if (parsedDatefrom > parsedDateto) {
+                        cont = false;
+                        message += 'Date From must smaller than Date To. <br>';
+                    }
+                }
+
+                if (cont) {
+
+                    var model = {
+                        DATE_FROM: txtdatefrom,
+                        DATE_TO: txtdateto,
+                        MM_MATERIAL_H_ID: ddlmat,
+                        MM_SUPPLIER_H_ID_STRING: ddlsupp,
+                        MM_MATERIAL_D2_ID_STRING: ddlinsp
+                    };
+
+                    //console.log(model)
+                    $.ajax({
+                        url: '/COA_GA_RAWMAT_TREND/CheckTrendExcel',
+                        type: 'POST',
+                        data: { model: model },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                const query = $.param(model); 
+                                window.location.href = '/COA_GA_RAWMAT_TREND/TrendExcel?' + query;
+                            } else {
+                                displayToast("error", response.message);
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", "Server error occurred while checking data.");
+                        },
+                        complete: function () {
+                            document.body.style.cursor = 'default';
+                            loadings(false);
+                        }
+                    });
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            });
+
+            $('#btnReset').on('click', function () {
+                var listingURL = '/COA_GA_RAWMAT_TREND/COA_GA_RAWMAT_TREND_DET';
+                window.location.href = listingURL;
+            });
+
+
+        });
+
+        function generateTabs(datal, ocrResulData) {
+            var data = JSON.parse(datal);
+
+            if (typeof ocrResulData === "string") {
+                ocrResulData = JSON.parse(ocrResulData); 
+            }
+
+            var confInspItem = [...new Set(data.map(item => item.TPM_SPEC_NAME))];
+
+            let $navTab = $("#nav-tab");
+            let $tabContent = $("#nav-tabContent");
+
+            $navTab.empty();
+            $tabContent.empty();
+
+            let tabcount = 1;
+
+            $.each(confInspItem, function (key, tpmSpecName) {
+                let tabId = tabcount;
+                let shortTabName = tpmSpecName.length > 25 ? tpmSpecName.substring(0, 25) + "..." : tpmSpecName;
+
+                let tabButton = `
+                    <button class="nav-link ${tabcount === 1 ? 'active' : ''}"
+                            id="nav${tabId}tab"
+                            data-bs-toggle="tab"
+                            data-bs-target="#nav${tabId}"
+                            type="button"
+                            role="tab"
+                            aria-controls="nav${tabId}"
+                            aria-selected="${tabcount === 1 ? 'true' : 'false'}"
+                            title="${tpmSpecName}">
+                        ${shortTabName}
+                    </button>`;
+
+                $navTab.append(tabButton);
+
+                let tabPane = `
+                    <div class="tab-pane fade ${tabcount === 1 ? 'show active' : ''}"
+                         id="nav${tabId}" role="tabpanel"
+                         aria-labelledby="nav${tabId}tab">
+                         <div class="row align-items-baseline" style="margin-bottom:23px">
+                             <div class="col align-self-center">
+                                 <span class="card-title text-muted">Inspection Graph for ${tpmSpecName}</span>
+                             </div>
+                             <div class="col-12 col-sm-12">
+                                 <div class="card mt-3 mb-2 card-height height-override">
+                                     <div class="card-body">
+                                      <div id="chartContainer${tabId}"></div>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                    </div>`;
+
+                $tabContent.append(tabPane);
+
+                //console.log(ocrResulData)
+
+                let filteredData = {};
+                let unitValue = ""; 
+
+                Object.keys(ocrResulData).forEach(supplier => {
+                    try {
+                        let supplierData = JSON.parse(ocrResulData[supplier]);
+
+                        supplierData = supplierData.map(item => ({
+                            ...item,
+                            y: parseFloat(item.y) 
+                        }));
+
+                        let matchingData = supplierData.filter(item => item.itemspec === tpmSpecName);
+
+                        if (matchingData.length > 0) {
+                            filteredData[supplier] = matchingData;
+                            unitValue = matchingData[0].UNIT;
+                        }
+                    } catch (error) {
+                        console.error(`Error parsing JSON for supplier: ${supplier}`, error);
+                    }
+                });
+
+                generateChart(filteredData, "chartContainer" + tabId, unitValue, tpmSpecName);
+
+                tabcount++;
+            });
+
+            $('.chartresult').show();
+        }
+
+
+        function generateChart(parsedData, place, unit, tpmSpecName) {
+
+            if (unit != '') {
+                unit = '(' + unit + ')';
+            }
+
+            tpmSpecName = tpmSpecName + ' ' + unit;
+            //console.log("parsedData", parsedData)
+            var chartData = [];
+            var colors = colorSelection();
+            var i = 0;
+
+            Object.entries(parsedData).forEach(([supplierName, dataPoints]) => {
+                i++;
+                //let formattedDataPoints = dataPoints.map(dp => ({
+                //    ...dp,
+                //    x: new Date(dp.x)
+                //}));
+
+                let formattedDataPoints = dataPoints.map(dp => ({
+                    label: dp.LOTNO,  
+                    y: parseFloat(dp.y), 
+                    LOTNO: dp.LOTNO, 
+                    DATEFULL: dp.DATEFULL,  
+                }));
+
+
+                chartData.push({
+                    type: "spline",
+                    name: supplierName,
+                    showInLegend: true,
+                    color: colors[i + 1][1],
+                    markerSize: 14,
+                    lineThickness: 2,
+                    toolTipContent:
+                        "📦 <b>Lot No:</b> {LOTNO}<br>" +
+                        "📅 <b>Date:</b> {DATEFULL}<br>" +
+                        "📊 <b>Result:</b> {y}",  
+
+                    dataPoints: formattedDataPoints
+                });
+                
+            });
+
+
+            // for interval
+            let allYValues = [];
+
+            Object.entries(parsedData).forEach(([supplierName, dataPoints]) => {
+                dataPoints.forEach(dp => allYValues.push(dp.y));
+            });
+
+            let minY = Math.min(...allYValues) - 5;
+            let maxY = Math.max(...allYValues) + 5;
+
+            //let minY = Math.min(...allYValues);
+            //let maxY = Math.max(...allYValues);
+
+            //let numTicks = 10;
+            //let interval = (maxY - minY) / numTicks;
+
+            //interval = Math.pow(10, Math.floor(Math.log10(interval)));
+
+            //minY = Math.floor(minY / interval) * interval; 
+            //maxY = Math.ceil(maxY / interval) * interval;
+
+            var chart = new CanvasJS.Chart(place, {
+                theme: "light1",
+                exportEnabled: false,
+                animationEnabled: true,
+                axisX: {
+                    title: "Lot Number",
+                    titleFontSize: 16,
+                    //valueFormatString: "DD MMM HH:mm",
+                    //labelFormatter: function (e) {
+                    //    return CanvasJS.formatDate(e.value, "DD MMM HH:mm");
+                    //},
+                    titleFontFamily: "Roboto",
+                    titleFontWeight: "bold",
+                    labelFontFamily: "Roboto",
+                    titleFontColor: "#54575A",
+                    labelFontColor: "#54575A",
+                },
+                axisY: {
+                    title: `${tpmSpecName}`,
+                    //minimum: minY,   
+                    //maximum: maxY,
+                    titleFontSize: 16,
+                    titleFontFamily: "Roboto",
+                    titleFontWeight: "bold",
+                    labelFontFamily: "Roboto",
+                    titleFontColor: "#54575A",
+                    labelFontColor: "#54575A",
+                    gridThickness: 1,
+                    lineColor: "#9B9B9B",
+                    gridColor: "#9B9B9B",
+                },
+                legend: {
+                    cursor: "pointer",
+                    itemclick: function (e) {
+                        e.dataSeries.visible = !e.dataSeries.visible;
+                        e.chart.render();
+                    }
+                },
+                data: chartData
+            });
+
+            $('#nav-tab button').on('shown.bs.tab', function () {
+                chart.render();
+            });
+
+            setTimeout(() => chart.render(), 1000);
+        }
+
+
+
+        function colorSelection() {
+            var colors = [
+                ["#FFD275", "#B594B6"], //fluctuation, curve appearing
+                ["rgb(200,200,200,0.5)", "rgb(245,245,245,1)", "rgb(255, 204, 213, 0.7)"], //train, test, user limit range
+                ["#caf0f8", "#023e8a"], //blue
+                ["#e0aaff", "#7b2cbf"], //purple
+                ["#f2d492", "#e2711d"], //yellow
+                ["#ccdbdc", "#007ea7"], //light blue
+                ["#e0efda", "#6e9887"], //green
+                ["#b8c0ff", "#bc6c25"], //orange
+            ];
+
+            return colors;
+        }
+    </script>
+}

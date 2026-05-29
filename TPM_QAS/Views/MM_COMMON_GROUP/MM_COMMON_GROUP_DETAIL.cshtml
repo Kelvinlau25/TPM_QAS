@@ -1,0 +1,567 @@
+﻿@using TPM_QAS.Models
+@model CommonGroupModel
+
+
+@{
+    ViewBag.Title = "COMMON GROUP MM - Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row g-0 px-3 tr-listing-header">
+    <div class="col-sm-6 align-self-center">
+        <p class="text-muted m-0 tr-listing-header-title main-title">View Form - Common Group</p>
+    </div>
+    <div class="col-sm-6 text-end align-self-center">
+        <div class="d-flex justify-content-end">
+            <div id="customDTButton"></div>
+        </div>
+    </div>
+</div>
+
+<div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+        <div class="card mt-3 mb-2 card-height">
+            <div class="card-body">
+                <div class="row align-items-baseline">
+                    <div class="col"><h6 class="card-title text-muted">Common Group</h6></div>
+                    @if (Model.RECORD_TYP != null)
+                    {
+                        if (Model.RECORD_TYP != "5")
+                        {
+                            <div class="col text-end"><button class="btn btn-sm btn-primary" id="btnEdit" type="button" data-behaviour="toggle">Edit</button></div>
+                        }
+
+                    }
+                </div>
+
+                <hr />
+
+                <div class="row align-items-baseline">
+                    <div class="col-sm-2">
+                        <p class="text-muted">Category <span class="text-danger">*</span><span style="float:right">:</span></p>
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(model => model.CATEGORY, new { @class = "isEditable form-control required-field", id = "txtcategory", @maxlength = "100", disabled = "disabled" })
+
+                    </div>
+                </div>
+
+                <div id="common">
+                    <div class="d-none isEditable row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Sub-category <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(model => model.SUB_CATEGORY, new { @class = "isEditable form-control", id = "txtmainsub", @maxlength = "100", disabled = "disabled" })
+
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row row-cols-2 mt-4">
+                    <div class="a1 col align-self-center">
+                        <h6 class="text-muted" style="float: left">Details</h6>
+                    </div>
+                    <div id="color" class="col-3">
+                        <div class="input-group">
+                            <div class="input-group-text tr-input-group tr-disabled" id="searchProperty" onclick="popupColor()">
+                                <a href="#" class="text-reset vm isEditable" disabled><i class="fa-solid fa-ellipsis" aria-hidden="true" style="color: #fff"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="a2 d-none isEditable col">
+                        <div class="row row-cols-auto justify-content-end g-1">
+                            <div class="col">
+                                <button class="btn btn-sm btn-md btn-danger" id="removeBtn" type="button">
+                                    Remove
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-sm btn-md btn-primary" id="addBtn" type="button">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-2 mx-1">
+                    <table id="item-table" class="detailTable" style="width:100%">
+                        <thead>
+                            <tr class="toolbar-row">
+                                <th class="d-none isEditable" style="width: 3%; text-align: center;">
+                                    <input id="trCheckbox" type="checkbox" class=" dt-checkboxes select-all form-check-input" style="margin-top:5.5px;">
+                                </th>
+                                <th>Sub-Category</th>
+                                <th class="switchon">Items</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                            @{ var count = 0; }
+                            @foreach (var item in Model.CommonGroupLstModel)
+                            {
+                                count++;
+                                <tr id="R_@count" data-did="@count">
+                                    <td class="d-none isEditable text-center">
+                                        <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_@count" onClick="handleCheckboxClick(this)">
+                                    </td>
+                                    <td>
+                                        <input type="text" class="isItemDisabled required-field form-control" id="item_sub_@count" value="@item.SUB_CATEGORY" placeholder="" style="border:none; box-shadow: none;" readonly>
+                                    </td>
+                                    <td class="switchon">
+                                        <input type="text" class="isEditable form-control" id="item_name_@count" value="@item.ITEMS" placeholder="" style="border:none;box-shadow: none;" readonly>
+                                    </td>
+                                    <td class="d-none">
+                                        <input type="text" class="form-control" id="item_stat_@count" value="0">
+                                        <input type="text" class="form-control" id="item_dbid_@count" value="@item.MM_COMMONGROUP_D_ID">
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <input type="hidden" id="item-count" value="@count" />
+                </div>
+
+                <div class="hideInfo">
+                    <hr />
+
+                    <div class="row row-cols-2 mt-4">
+                        <div class="col align-self-center">
+                            <h6 style="float: left" class="text-muted">Entry Details</h6>
+                        </div>
+                        <div class="col">
+
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Updated By<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.UPDATED_BY">
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="text-muted">Created By<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.CREATED_BY">
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Updated Date<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.UPDATED_DATE">
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="text-muted">Created Date<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.CREATED_DATE">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row tr-btm-btn-area">
+            @if (Model.RECORD_TYP != null)
+            {
+                if (@Model.RECORD_TYP != "5")
+                {
+                    <div class="col"><button id="btnDeleteView" type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#delete-confirmation-modal">Delete</button></div>
+                }
+
+            }
+            <div class="col">
+                <div class="row row-cols-auto justify-content-end isNotEditable" style="padding-right: 20px">
+                    <div class="col"><button id="btnCancelView" type="button" class="btn btn-sm btn-secondary">Back</button></div>
+                </div>
+
+                <div class="row row-cols-auto justify-content-end isEditable g-1" style="display:none; padding-right: 20px">
+                    <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-back-confirmation-modal">Back</button></div>
+                    <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            checkboxChecking();
+
+            var listingURL = '/MM_COMMON_GROUP/MM_COMMON_GROUP_LST';
+            var idh = '@Model.MM_COMMONGROUP_H_ID';
+
+            var cat = $("#txtcategory").val().toUpperCase();
+
+            if (cat.includes("BLANK YI") || cat.includes("BLANK BLACK")){
+                $('.switchon').addClass("d-none");
+                $('.a1').removeClass("col").addClass("col-2");
+                $('.a2').removeClass("col").addClass("col-7");
+                $("#common").hide();
+                $("#color").show();
+            } else {
+                $('.switchon').removeClass("d-none");
+                $('.a1').removeClass("col-2").addClass("col");
+                $('.a2').removeClass("col-7").addClass("col");
+                $("#color").hide();
+                $("#common").show();
+            }
+
+            //ADD
+            $('#addBtn').on('click', function () {
+
+                var cont = true;
+                var message = "";
+
+                var cat2 = $("#txtcategory").val().toUpperCase();
+
+                if (cat2.includes("BLANK YI") || cat2.includes("BLANK BLACK")) {
+                    popupColor();
+                } else {
+                    var txtmainsub = $("#txtmainsub").val();
+
+                    if (txtmainsub == null || txtmainsub == undefined || txtmainsub === "") {
+                        cont = false;
+                        message = "Missing Sub-Category value.";
+                    }
+
+                    if (cont) {
+                        var rowIdx = $('#item-count').val();
+                        rowIdx++;
+                        $('#item-count').val(rowIdx);
+
+                        $('#item-table tbody').append(`
+                           <tr id="R_${rowIdx}" data-did="${rowIdx}">
+                               <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_${rowIdx}" onClick="handleCheckboxClick(this)"></td>
+                               <td><input type="text" class="form-control required-field" value="${txtmainsub}"  id="item_sub_${rowIdx}" placeholder="" disabled></td>
+                               <td><input type="text" class="form-control " id="item_name_${rowIdx}" placeholder=""></td>
+                               <td class="d-none">
+                                   <input type="text" id="item_stat_${rowIdx}" value="1">
+                                   <input type="text" id="item_dbid_${rowIdx}" value="0">
+                               </td>
+                            </tr>
+                           `);
+
+                        checkboxChecking();
+                    } else {
+                        if (message != "") {
+                            displayToast("error", message)
+                        }
+                    }
+                }
+
+            });
+
+            //REMOVE
+            $('#removeBtn').on('click', function () {
+                    $('#item-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                        var row = $(ele).closest('tr');
+                        var itemStatInput = row.find('input[id^="item_stat_"]');
+                        var item_stat = itemStatInput.val();
+
+                        if (item_stat != '1') {
+                            itemStatInput.val('5');
+                            row.hide();
+                        } else {
+                           row.remove();
+                        }
+                    });
+
+                    checkboxChecking();
+            });
+
+            //SUBMIT
+            $('#btnConfirmSubmit').on('click', function () {
+                $('.invalid-feedback').remove();
+                $('.is-invalid').removeClass('is-invalid');
+
+                
+                var cont = true;
+                var message = "";
+
+                var txtcategory = $("#txtcategory").val();
+
+                if (txtcategory == undefined || txtcategory == null || txtcategory == "") {
+                    cont = false;
+                    message += 'Missing Category value. <br>';
+                }
+
+                $('.required-field').each(function (e) {
+                    var input_val = $(this).val().trim();
+                    if (input_val == null || input_val == undefined || input_val === "") {
+                        cont = false;
+                        message += 'Please fill in required field. <br>';
+                        $(this).addClass('is-invalid');
+                        inputError(this);
+                    }
+                });
+
+                var hasItem = false;
+                var hasError = false;
+                var hasDuplicate = false;
+                var existedItem = [];
+
+                var list = [];
+
+                $("#item-table tbody tr").each(function () {
+                    var did = $(this).data("did");
+                    if (did != '' && did != null && did != undefined) {
+                        var item_stat = $('#item_stat_' + did).val();
+                        var item_dbid = $('#item_dbid_' + did).val();
+
+                        var item_sub = $('#item_sub_' + did).val();
+                        var item_name = $('#item_name_' + did).val();
+
+                        var subname = item_sub + '*' + item_name;
+
+                        if (item_stat != '5') {
+                            if (subname !== "") {
+                                hasItem = true;
+                                if (existedItem.includes(subname)) {
+                                    hasDuplicate = true;
+                                    return false;
+                                } else {
+                                    existedItem.push(subname);
+                                }
+                            } else {
+                                hasError = true;
+                            }
+                        }
+
+                        list.push({
+                            'MM_COMMONGROUP_D_ID': item_dbid,
+                            'RECORD_TYP': item_stat,
+                            'SUB_CATEGORY': item_sub,
+                            'ITEMS': item_name,
+                        });
+                    }
+                });
+
+                if (cont && !hasItem) {
+                    cont = false;
+                    message = "Please add at least one Sub Category and item.";
+                }
+                if (cont && hasError) {
+                    cont = false;
+                    message = "Please make sure required field in Sub Category is not empty.";
+                }
+                if (cont && hasDuplicate) {
+                    cont = false;
+                    message = "Duplicate Sub-Category with similar item.";
+                }
+
+                if (cont) {
+                    
+                    var model = {
+                        MM_COMMONGROUP_H_ID: idh,
+                        CATEGORY: txtcategory,
+                        RECORD_TYP: '3',
+                        CommonGroupLstModel: list
+                    };
+
+                    console.log(model)
+
+                    $.ajax({
+                        url: "/MM_COMMON_GROUP/InsertUpdateCommonGroup",
+                        type: 'POST',
+                        data: {
+                            model: model
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            });
+
+            // BUTTON DELETE
+            $('#btnConfirmDel').on('click', function () {
+
+                var lstid = [];
+                lstid.push(idh)
+
+                $.ajax({
+                    url: "/MM_COMMON_GROUP/deleteCommonGroup",
+                    type: 'POST',
+                    data: {
+                        lstid: lstid
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data successfully deleted");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            });
+
+            //BUTTON CANCEL/BACK
+            $('#btnCancelView').on('click', function () {
+                var del = '0';
+                if (@Model.RECORD_TYP != null && @Model.RECORD_TYP  == '5') {
+                    del = '1';
+                }
+                window.location.href = listingURL + '?Deleted=' + del;
+            });
+
+            $('#btnBackEdit').on('click', function () {
+                 window.location.href = listingURL;
+            });
+
+        });
+
+        //ADD PROPERTY COLOR LIST
+        function addColorList(data) {
+            var cont = true;
+            var message = "";
+
+            var hasDuplicate = false;
+            for (var i = 0; i < data.length; i++) {
+
+                var rowIdx = $('#item-count').val();
+
+                if (rowIdx != '0') {
+
+                    var tlength = $('#item-table tbody tr').length;
+
+                    if (tlength != 0) {
+                        $("#item-table tbody tr").each(function () {
+                            var propcolor = data[i].PROPCOLOR;
+
+                            var did = $(this).data('did');
+                            if (did != '' && did != null && did != undefined) {
+                                var item_stat = $('#item_stat_' + did).val();
+                                var item_sub = $('#item_sub_' + did).val();
+
+                                if (data[i].INSERT != 'N') {
+                                    if (item_stat != '5' && item_sub == propcolor) {
+                                        hasDuplicate = true;
+                                        data[i].INSERT = 'N';
+                                    } else {
+                                        data[i].INSERT = 'Y';
+                                    }
+                                }
+
+                            }
+                        });
+                    } else {
+                        data[i].INSERT = 'Y';
+                    }
+
+
+                } else {
+                    data[i].INSERT = 'Y';
+                }
+            }
+
+            //if (cont && hasDuplicate) {
+            //    cont = false;
+            //    message = "Duplicate property and property items selected.";
+            //}
+
+            if (cont) {
+                var rowIdx = $('#item-count').val();
+
+                for (var i = 0; i < data.length; i++) {
+
+                    if (data[i].INSERT == 'Y') {
+                        rowIdx++;
+                        $('#item-count').val(rowIdx);
+
+                        $("#item-table tbody").append(`
+                        <tr id="R_${rowIdx}" data-did="${rowIdx}">
+                            <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_${rowIdx}" onClick="handleCheckboxClick(this)"></td>
+                            <td><input type="text" class="form-control" value="${data[i].PROPCOLOR}"  id="item_sub_${rowIdx}" placeholder="" disabled></td>
+                            <td class="switchon d-none"><input type="text" class="form-control" value=""  id="item_name_${rowIdx}" placeholder="" disabled></td>
+                            <td class="d-none">
+                                <input type="text" id="item_stat_${rowIdx}" value="1">
+                                <input type="text" id="item_dbid_${rowIdx}" value="0">
+                            </td>
+                        </tr>`);
+
+                        checkboxChecking();
+                    }
+                }
+
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+        }
+
+        //POPUP 1
+        function popupColor() {
+            var isDisabled = $('#searchProperty').hasClass('tr-disabled');
+
+            if (!isDisabled) {
+                var txtcategory = $("#txtcategory").val().toUpperCase();
+                var type = "";
+                if (txtcategory.includes("YI")){
+                    type = "YI";
+                } else if(txtcategory.includes("BLANK BLACK")){
+                    type = "BLACK";
+                }
+
+                var popup;
+                var url = '@Url.Action("MM_COMMON_GROUP_COLOR_POPOUT", "MM_COMMON_GROUP")';
+
+                url = url + '?type=' + type;
+                popup = window.open(url, "Popup", "directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width=800,height=800");
+                popup.focus();
+            }
+
+        }
+
+
+
+    </script>
+}
+

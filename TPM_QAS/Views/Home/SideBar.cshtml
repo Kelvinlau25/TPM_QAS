@@ -1,0 +1,314 @@
+﻿@using HomeModel
+@model List<HomeModel.SideBarContent>
+
+@{
+    Layout = null;
+}
+
+@{
+    int count = 0;
+    int count2 = 0;
+}
+
+<style type="text/css">
+
+    #loading {
+        display: none;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.8);
+        z-index: 1000;
+    }
+
+    #loadingcontent {
+        display: table;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+    }
+
+    #loadingspinner {
+        display: table-cell;
+        vertical-align: middle;
+        width: 100%;
+        text-align: center;
+        font-size: larger;
+        padding-top: 80px;
+    }
+
+    #elementToRotate1, #elementToRotate2, #elementToRotate3, #elementToRotate4 {
+        transition: transform 0.5s;
+    }
+
+    .rotated {
+        transform: rotate(90deg);
+    }
+
+    .nav-link:hover {
+        color: #7386D5;
+        background: #fff;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    .sidebar .nav-link {
+        padding: 0;
+    }
+
+
+    #sidebarcontent a[data-bs-toggle="collapse"][area-expanded="true"] .dropdown-toggle-icon {
+        transform: rotate(90deg);
+    }
+
+</style>
+
+<li>
+    @foreach (var row in Model)
+    {
+        if (row.LAYER == 1)
+        {
+            count++;
+            <a href="#pageSubmenu_@count" data-bs-toggle="collapse" data-bs-parent="#accordionExample11_@count" aria-expanded="false" class="dropdown-toggle nav-link nav-header header-text collapsed" aria-controls="pageSubmenu_@count">
+                @row.RESOURCE_name
+                <div class="fas fa-chevron-right dropdown-toggle-icon" style="margin-top: 3px"></div>
+                <div class="fas fa-chevron-down dropdown-toggle-icon" style="margin-top: 3px"></div>
+            </a>
+            <ul class="list-unstyled collapse" id="pageSubmenu_@count" style="">
+                @foreach (var row2 in Model)
+                {
+                    count2++;
+                    if (row2.RESOURCE_PARENT_ID == row.ID_ACL_RESOURCE && row2.LAYER == 2)
+                    {
+                        <li class="nav-item">
+                            @Html.ActionLink(row2.RESOURCE_name, row2.RESOURCE_VIEW, row2.RESOURCE_CONTROLLER, "", new { @id = "btnDashboard_" + count2, @class = "nav-link sub-header-text", target = ""})
+                        </li>
+                    }
+                }
+            </ul>
+        }
+    }
+</li>
+
+<script>
+    // Add this script after the sidebar HTML code
+    $(document).ready(function () {
+        $(".active a").click(function (e) {
+            e.stopPropagation();
+        });
+
+        //let rotated1 = false;
+        //let rotated2 = false;
+        //let rotated3 = false;
+        //let rotated4 = false;
+        //const elementToRotate1 = document.getElementById('elementToRotate1');
+        //const elementToRotate2 = document.getElementById('elementToRotate2');
+        //const elementToRotate3 = document.getElementById('elementToRotate3');
+        //const elementToRotate4 = document.getElementById('elementToRotate4');
+
+        //var url = window.location.pathname;
+        //if (url.includes('/Home/Cap7')) {
+        //    $("#collapse_1").collapse('show');
+        //    $("#actionLink_Cap7").addClass("active");
+        //    $("#actionLink_Cap7").parentsUntil(".nav").find(".showhightlight1").addClass("active");
+        //    rotated1 = true;
+        //}
+        //else if (url.includes('/Home/FBD5')) {
+        //    $("#collapse_1").collapse('show');
+        //    $("#actionLink_Cap7").addClass("active");
+        //    $("#actionLink_Cap7").parentsUntil(".nav").find(".showhightlight1").addClass("active");
+        //    rotated1 = true;
+        //}
+        //else if (url.includes('Mstmain/MM_AREA')) {
+        //    $("#collapse_2").collapse('show');
+        //    $("#actionLink_MM_AREA_LST").addClass("active");
+        //    $("#actionLink_MM_AREA_LST").parentsUntil(".nav").find(".showhightlight2").addClass("active");
+        //    rotated2 = true;
+        //} 
+        //else if (url.includes('Closing/CLOSE_MONTH')) {
+        //    $("#collapse_2").collapse('show');
+        //    $("#actionLink_CLOSE_MONTH_LST").addClass("active");
+        //    $("#actionLink_CLOSE_MONTH_LST").parentsUntil(".nav").find(".showhightlight2").addClass("active");
+        //    rotated2 = true;
+        //}
+        //else if (url.includes('Mstmain/MM_APP_ROLE')) {
+        //    $("#collapse_2").collapse('show');
+        //    $("#actionLink_MM_APP_ROLE_LST").addClass("active");
+        //    $("#actionLink_MM_APP_ROLE_LST").parentsUntil(".nav").find(".showhightlight2").addClass("active");
+        //    rotated2 = true;
+        //}
+        //else if (url.includes('Mstmain/MM_EQUIP')) {
+        //    $("#collapse_2").collapse('show');
+        //    $("#actionLink_MM_EQUIP_LST").addClass("active");
+        //    $("#actionLink_MM_EQUIP_LST").parentsUntil(".nav").find(".showhightlight2").addClass("active");
+        //    rotated2 = true;
+        //}
+        //else if (url.includes('Mstmain/MM_COMMONGRP')) {
+        //    $("#collapse_2").collapse('show');
+        //    $("#actionLink_MM_COMMONGRP_LST").addClass("active");
+        //    $("#actionLink_MM_COMMONGRP_LST").parentsUntil(".nav").find(".showhightlight2").addClass("active");
+        //    rotated2 = true;
+        //}
+        //else if (url.includes('Mstmain/MM_VECTOR')) {
+        //    $("#collapse_2").collapse('show');
+        //    $("#actionLink_MM_VECTOR_LST").addClass("active");
+        //    $("#actionLink_MM_VECTOR_LST").parentsUntil(".nav").find(".showhightlight2").addClass("active");
+        //    rotated2 = true;
+        //}
+        //else if (url.includes('Machine_Downtime/Machine_Downtime')) {
+        //    $("#collapse_2").collapse('show');
+        //    $("#actionLink_Machine_Downtime").addClass("active");
+        //    $("#actionLink_Machine_Downtime").parentsUntil(".nav").find(".showhightlight2").addClass("active");
+        //    rotated2 = true;
+        //}
+        //else if (url.includes('Entry/DT_ENG_PROD_REQ')) {
+        //    $("#collapse_3").collapse('show');
+        //    $("#actionLink_DT_ENG_PROD_REQ_LST").addClass("active");
+        //    $("#actionLink_DT_ENG_PROD_REQ_LST").parentsUntil(".nav").find(".showhightlight3").addClass("active");
+        //    rotated3 = true;
+        //}
+        //else if (url.includes('Entry/DT_ENGIN_INSP')) {
+        //    $("#collapse_3").collapse('show');
+        //    $("#actionLink_DT_ENGIN_INSP_ADD").addClass("active");
+        //    $("#actionLink_DT_ENGIN_INSP_ADD").parentsUntil(".nav").find(".showhightlight3").addClass("active");
+        //    rotated3 = true;
+        //}
+        //else if (url.includes('Entry/DT_PROD_REQ')) {
+        //    $("#collapse_3").collapse('show');
+        //    $("#actionLink_DT_PROD_REQ_ADD").addClass("active");
+        //    $("#actionLink_DT_PROD_REQ_ADD").parentsUntil(".nav").find(".showhightlight3").addClass("active");
+        //    rotated3 = true;
+        //}
+        //else if (url.includes('CEEntry/CE_ENTRY')) {
+        //    $("#collapse_3").collapse('show');
+        //    $("#actionLink_CE_ENTRY_LST").addClass("active");
+        //    $("#actionLink_CE_ENTRY_LST").parentsUntil(".nav").find(".showhightlight3").addClass("active");
+        //    rotated3 = true;
+        //}
+        //else if (url.includes('EquipSchEntry/EQUIP_SCH_ENTRY')) {
+        //    $("#collapse_3").collapse('show');
+        //    $("#actionLink_EQUIP_SCH_ENTRY_LST").addClass("active");
+        //    $("#actionLink_EQUIP_SCH_ENTRY_LST").parentsUntil(".nav").find(".showhightlight3").addClass("active");
+        //    rotated3 = true;
+        //}
+        //else if (url.includes('Entry/DT_SHIFT_E_VIB')) {
+        //    $("#collapse_3").collapse('show');
+        //    $("#actionLink_DT_SHIFT_E_VIB_LST").addClass("active");
+        //    $("#actionLink_DT_SHIFT_E_VIB_LST").parentsUntil(".nav").find(".showhightlight3").addClass("active");
+        //    rotated3 = true;
+        //}
+        //else if (url.includes('Entry/DT_SHIFT_TX_TEMP')) {
+        //    $("#collapse_3").collapse('show');
+        //    $("#actionLink_DT_SHIFT_TX_TEMP_LST").addClass("active");
+        //    $("#actionLink_DT_SHIFT_TX_TEMP_LST").parentsUntil(".nav").find(".showhightlight3").addClass("active");
+        //    rotated3 = true;
+        //}
+        //else if (url.includes('DTEntry/SHIFT_E')) {
+        //    $("#collapse_3").collapse('show');
+        //    $("#actionLink_SHIFT_E_LST").addClass("active");
+        //    $("#actionLink_SHIFT_E_LST").parentsUntil(".nav").find(".showhightlight3").addClass("active");
+        //    rotated3 = true;
+        //}
+        //else if (url.includes('DTEntry/DAILY_JE')) {
+        //    $("#collapse_3").collapse('show');
+        //    $("#actionLink_DAILY_JE_LST").addClass("active");
+        //    $("#actionLink_DAILY_JE_LST").parentsUntil(".nav").find(".showhightlight3").addClass("active");
+        //    rotated3 = true;
+        //}
+        //else if (url.includes('Entry/ENTRY_COGEN')) {
+        //    $("#collapse_3").collapse('show');
+        //    $("#actionLink_ENTRY_COGEN_LIST").addClass("active");
+        //    $("#actionLink_ENTRY_COGEN_LIST").parentsUntil(".nav").find(".showhightlight3").addClass("active");
+        //    rotated3 = true;
+        //}
+        //else if (url.includes('ReportEntry/SHIFT_E_RPT')) {
+        //    $("#collapse_4").collapse('show');
+        //    $("#actionLink_SHIFT_E_RPT").addClass("active");
+        //    $("#actionLink_SHIFT_E_RPT").parentsUntil(".nav").find(".showhightlight4").addClass("active");
+        //    rotated4 = true;
+        //}
+        //else if (url.includes('Inq/INQ_DAILY_JE')) {
+        //    $("#collapse_4").collapse('show');
+        //    $("#actionLink_INQ_DAILY_JE").addClass("active");
+        //    $("#actionLink_INQ_DAILY_JE").parentsUntil(".nav").find(".showhightlight4").addClass("active");
+        //    rotated4 = true;
+        //}
+        //else if (url.includes('EnginInspec/RPT_ENG_INSP')) {
+        //    $("#collapse_4").collapse('show');
+        //    $("#actionLink_RPT_ENG_INSP").addClass("active");
+        //    $("#actionLink_RPT_ENG_INSP").parentsUntil(".nav").find(".showhightlight4").addClass("active");
+        //    rotated4 = true;
+        //}
+        //else if (url.includes('EnginInspec/RPT_PROD_REQ')) {
+        //    $("#collapse_4").collapse('show');
+        //    $("#actionLink_RPT_PROD_REQ").addClass("active");
+        //    $("#actionLink_RPT_PROD_REQ").parentsUntil(".nav").find(".showhightlight4").addClass("active");
+        //    rotated4 = true;
+        //}
+        //else if (url.includes('ReportEntry/YEARLY_MAINT_SCH')) {
+        //    $("#collapse_4").collapse('show');
+        //    $("#actionLink_YEARLY_MAINT_SCH").addClass("active");
+        //    $("#actionLink_YEARLY_MAINT_SCH").parentsUntil(".nav").find(".showhightlight4").addClass("active");
+        //    rotated4 = true;
+        //}
+
+        //if (rotated1) {
+        //    elementToRotate1.style.transform = 'rotate(90deg)';
+        //}
+        //if (rotated2) {
+        //    elementToRotate2.style.transform = 'rotate(90deg)';
+        //}
+        //if (rotated3) {
+        //    elementToRotate3.style.transform = 'rotate(90deg)';
+        //}
+        //if (rotated4) {
+        //    elementToRotate4.style.transform = 'rotate(90deg)';
+        //}
+
+        //const rotateButton1 = document.getElementById('rotateButton1');
+        //rotateButton1.addEventListener('click', () => {
+        //    rotated1 = !rotated1;
+        //    if (rotated1) {
+        //        elementToRotate1.style.transform = 'rotate(90deg)';
+        //    } else {
+        //        elementToRotate1.style.transform = 'rotate(0deg)';
+        //    }
+        //});
+
+        //const rotateButton2 = document.getElementById('rotateButton2');
+        //rotateButton2.addEventListener('click', () => {
+        //    rotated2 = !rotated2;
+        //    if (rotated2) {
+        //        elementToRotate2.style.transform = 'rotate(90deg)';
+        //    } else {
+        //        elementToRotate2.style.transform = 'rotate(0deg)';
+        //    }
+        //});
+
+        //const rotateButton3 = document.getElementById('rotateButton3');
+        //rotateButton3.addEventListener('click', () => {
+        //    rotated3 = !rotated3;
+        //    if (rotated3) {
+        //        elementToRotate3.style.transform = 'rotate(90deg)';
+        //    } else {
+        //        elementToRotate3.style.transform = 'rotate(0deg)';
+        //    }
+        //});
+
+        //const rotateButton4 = document.getElementById('rotateButton4');
+        //rotateButton4.addEventListener('click', () => {
+        //    rotated4 = !rotated4;
+        //    if (rotated4) {
+        //        elementToRotate4.style.transform = 'rotate(90deg)';
+        //    } else {
+        //        elementToRotate4.style.transform = 'rotate(0deg)';
+        //    }
+        //});
+    });
+</script>

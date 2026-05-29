@@ -1,0 +1,868 @@
+﻿@using TPM_QAS.Models
+@model CheckRoutineModel
+@{
+    ViewBag.Title = "CHECKING ROUTINE MM - Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Html.BeginForm("MM_CHECK_ROUTINE_ADD", "MM_CHECK_ROUTINE", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">New Form - Checking Routine</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">Checking Routine</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Product Group </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.DropDownListFor(Model => Model.MM_PRODGROUP_H_ID, Model.DropdownProdGroup, "Select an option..", new { id = "ddlProdGroup", @class = "ddloption form-control form-select", required = "required" })
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Pattern <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="pattern" id="patternfull" value="F"
+                                       @(Model.PATTERN != null && Model.PATTERN.ToString() == "F" ? "checked" : "")>
+                                <label class="form-check-label" for="fullRadio">Full</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="pattern" id="patternpartial" value="P"
+                                       @(Model.PATTERN != null && Model.PATTERN.ToString() == "P" ? "checked" : "")>
+                                <label class="form-check-label" for="partialRadio">Partial</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="pattern" id="patternc" value="C"
+                                       @(Model.PATTERN != null && Model.PATTERN.ToString() == "C" ? "checked" : "")>
+                                <label class="form-check-label" for="cRadio">C</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row row-cols-2 mt-4">
+                        <div class="col-2 align-self-center">
+                            <h6 class="text-muted" style="float: left">Product Line Info</h6>
+                        </div>
+                        <div class="col-3">
+                            <div class="input-group">
+                                <div class="input-group-text tr-input-group" id="searchProdLine" onclick="popupProd()">
+                                    <a href="#" class="text-reset vm tr-disabled"><i class="fa-solid fa-ellipsis" aria-hidden="true" style="color: #fff"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row row-cols-auto justify-content-end g-1">
+                                <div class="col">
+                                    <button class="btn btn-sm btn-md btn-danger" id="removeBtn" type="button">
+                                        Remove
+                                    </button>
+                                </div>
+                                <div class="col">
+                                    <button class="btn btn-sm btn-md btn-primary" id="addBtn" onclick="popupProd()" type="button">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 mx-1">
+                        <table id="item-table" class="detailTable" style="width:100%">
+                            <thead>
+                                <tr class="toolbar-row">
+                                    <th style="width: 3%; text-align: center;">
+                                        <input id="trCheckbox" type="checkbox" class="dt-checkboxes select-all form-check-input" style="margin-top:5.5px; display:none">
+                                    </th>
+                                    <th>Product Line</th>
+                                    <th>Product Line No</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ var count = 0; }
+                                @if (Model.CheckRoutineProdLstModel != null && Model.CheckRoutineProdLstModel.Count > 0)
+                                {
+                                    foreach (var item in Model.CheckRoutineProdLstModel)
+                                    {
+                                        count++;
+                                        <tr id="R_@count" data-did="@count">
+                                            <td class="text-center">
+                                                <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_@count" onClick="handleCheckboxClick(this)">
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" id="item_prodline_@count" value="@item.PRODLINE" placeholder="" disabled>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="form-control" id="item_lineno_@count" value="@item.PRODLINENO" placeholder="" disabled>
+                                            </td>
+                                            <td class="d-none">
+                                                <input type="text" class="form-control" id="item_stat_@count" value="0">
+                                                <input type="text" class="form-control" id="item_dbid_@count" value="@item.MM_CHECKROUTINE_D_ID">
+                                                <input type="text" class="form-control" id="item_prodid_@count" value="@item.PRODLINENO_ID">
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                        <input type="hidden" id="item-count" value="@count" />
+                    </div>
+
+                    <br />
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Sequence <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.TextBoxFor(Model => Model.SEQUENCE, new { @class = "required-field form-control", id = "txtSeq", @maxlength = "100", @readonly = "readonly" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary mx-1 my-button" data-bs-toggle="modal" data-bs-target="#back-confirmation-modal">Back</button></div>
+                <div class="col"><button hidden id="btnDraft" type="button" class="btn btn-sm btn-primary">Save As Draft</button></div>
+                <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@*SEQUENCE FIELD MODAL*@
+<div class="modal fade" id="seqmodal" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-seq" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;">Sequence</h5>
+            </div>
+            <hr />
+
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+
+                    <div class="row align-items-center">
+                        <div class="d-inline-flex">
+                            <div class="form-check form-switch">
+                                
+                                <label class="form-check-label" for="wholeWeekSwitch">Whole week</label>
+                                <input class="form-check-input" type="checkbox" id="wholeWeekSwitch"
+                                       @(Model.WHOLEWEEK != null && Model.WHOLEWEEK.ToString() == "1" ? "checked" : "")>
+                            </div>
+                            @*<div class="form-check form-switch" style="margin-left: 15px">
+                                <label class="form-check-label" for="workingDaySwitch">Working days only</label>
+                                <input class="form-check-input" type="checkbox" id="workingDaySwitch"
+                                       @(Model.WEEKORDAY != null && Model.WEEKORDAY.ToString() == "WD" ? "checked" : "")>
+                            </div>*@
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-6">
+                            <div class="d-flex day-box workday" id="box1">
+                                <div class="col-md-2">
+                                    <input class="dt-checkboxes-day cb-work form-check-input" type="checkbox" id="monBox" onchange="highlightBox('box1', 'monBox')"
+                                           @(Model.MONDAY != null && Model.MONDAY.ToString() == "1" ? "checked" : "")>
+                                </div>
+                                <div class="col-md-5 isLabel">Monday</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex day-box workday" id="box2">
+                                <div class="col-md-2">
+                                    <input class="dt-checkboxes-day cb-work form-check-input" type="checkbox" id="tueBox" onchange="highlightBox('box2', 'tueBox')"
+                                           @(Model.TUESDAY != null && Model.TUESDAY.ToString() == "1" ? "checked" : "")>
+                                </div>
+                                <div class="col-md-5 isLabel">Tuesday</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-6">
+                            <div class="d-flex day-box workday" id="box3">
+                                <div class="col-md-2">
+                                    <input class="dt-checkboxes-day cb-work form-check-input" type="checkbox" id="wedBox" onchange="highlightBox('box3', 'wedBox')"
+                                           @(Model.WEDNESDAY != null && Model.WEDNESDAY.ToString() == "1" ? "checked" : "")>
+                                </div>
+                                <div class="col-md-5 isLabel">Wednesday</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex day-box workday" id="box4">
+                                <div class="col-md-2">
+                                    <input class="dt-checkboxes-day cb-work form-check-input" type="checkbox" id="thursBox" onchange="highlightBox('box4', 'thursBox')"
+                                           @(Model.THURSDAY != null && Model.THURSDAY.ToString() == "1" ? "checked" : "")>
+                                </div>
+                                <div class="col-md-5 isLabel">Thursday</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-6">
+                            <div class="d-flex day-box workday" id="box5">
+                                <div class="col-md-2">
+                                    <input class="dt-checkboxes-day cb-work form-check-input" type="checkbox" id="friBox" onchange="highlightBox('box5', 'friBox')"
+                                           @(Model.FRIDAY != null && Model.FRIDAY.ToString() == "1" ? "checked" : "")>
+                                </div>
+                                <div class="col-md-5 isLabel">Friday</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex day-box weekend" id="box6">
+                                <div class="col-md-2">
+                                    <input class="dt-checkboxes-day cb-weekend form-check-input" type="checkbox" id="satBox" onchange="highlightBox('box6', 'satBox')"
+                                           @(Model.SATURDAY != null && Model.SATURDAY.ToString() == "1" ? "checked" : "")>
+                                </div>
+                                <div class="col-md-5 isLabel">Saturday</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-6">
+                            <div class="d-flex day-box weekend" id="box7">
+                                <div class="col-md-2">
+                                    <input class="dt-checkboxes-day cb-weekend form-check-input" type="checkbox" id="sunBox" onchange="highlightBox('box7', 'sunBox')"
+                                           @(Model.SUNDAY != null && Model.SUNDAY.ToString() == "1" ? "checked" : "")>
+                                </div>
+                                <div class="col-md-5 isLabel">Sunday</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-center">
+                        <input class="form-control" id="seqmodalfield" type="text" disabled />
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" id="btnResetSeqModal" class="btn btn-sm btn-secondary">Reset</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" id="btnsubmitmodal" class="btn btn-sm btn-primary">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+     var idh = '@Model.MM_CHECKROUTINE_H_ID' != 0 ? '@Model.MM_CHECKROUTINE_H_ID' : 0;
+
+    $(document).ready(function () {
+
+        checkboxChecking();
+        var listingURL = '/MM_CHECK_ROUTINE/MM_CHECK_ROUTINE_LST';
+
+        higlightCheckedBoxes();
+        updateSeqModal()
+        $("#txtSeq").val($("#seqmodalfield").val());
+
+        //REMOVE D
+        $('#removeBtn').on('click', function () {
+            $('#item-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                var row = $(ele).closest('tr');
+                var itemStatInput = row.find('input[id^="item_stat_"]');
+                var item_stat = itemStatInput.val();
+
+                if (item_stat != '1') {
+                    itemStatInput.val('5');
+                    row.hide();
+                } else {
+                    row.remove();
+                }
+            });
+
+            checkboxChecking();
+        });
+
+        //SUBMIT
+        $('#btnConfirmSubmit').on('click', function () {
+            $('.invalid-feedback').remove();
+            $('.is-invalid').removeClass('is-invalid');
+
+            var cont = true;
+            var message = "";
+
+            var ddlProdGroup = $("#ddlProdGroup").val();
+            var prodgroup = $('#ddlProdGroup option:selected').text();
+            var pattern = $("input[name='pattern']:checked").val();
+            var txtSeq = $("#txtSeq").val();
+
+            var wholeweek = $("#wholeWeekSwitch").prop("checked") ? 1 : 0;
+
+            var monday = $("#monBox").prop("checked") ? 1 : 0;
+            var tuesday = $("#tueBox").prop("checked") ? 1 : 0;
+            var wednesday = $("#wedBox").prop("checked") ? 1 : 0;
+            var thursday = $("#thursBox").prop("checked") ? 1 : 0;
+            var friday = $("#friBox").prop("checked") ? 1 : 0;
+            var saturday = $("#satBox").prop("checked") ? 1 : 0;
+            var sunday = $("#sunBox").prop("checked") ? 1 : 0;
+
+            if (ddlProdGroup == undefined || ddlProdGroup == null || ddlProdGroup == 0 || ddlProdGroup == "" || ddlProdGroup == "Select an option..") {
+                cont = false;
+                message += 'Please select Product Group. <br>';
+            }
+
+            if (pattern == undefined || pattern == null || pattern == "") {
+                cont = false;
+                message += 'Please select Pattern Type. <br>';
+            }
+
+            if (txtSeq == undefined || txtSeq == null || txtSeq == "") {
+                cont = false;
+                message += 'Missing Sequence value. <br>';
+            }
+
+            //var weekorday = "";
+
+            //if ($('#workingDaySwitch').prop('checked')) {
+            //    weekorday = "WD";
+            //}
+
+            //if ($('#wholeWeekSwitch').prop('checked')) {
+            //    weekorday = "WW";
+            //}
+
+            //if (weekorday != "WD" && weekorday != "WW") {
+            //    weekorday = "D";
+            //}
+
+            $('.required-field').each(function (e) {
+                var input_val = $(this).val().trim();
+                if (input_val == null || input_val == undefined || input_val === "") {
+                    cont = false;
+                    $(this).addClass('is-invalid');
+                    inputError(this);
+                }
+            });
+
+            var hasItem = false;
+            var hasError = false;
+            var hasDuplicate = false;
+            var existedItem = [];
+
+            var list = [];
+
+            $("#item-table tbody tr").each(function () {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat = $('#item_stat_' + did).val();
+                    var item_dbid = $('#item_dbid_' + did).val();
+
+                    var item_prodline = $('#item_prodline_' + did).val();
+                    var item_lineno = $('#item_lineno_' + did).val();
+                    var item_prodid = $('#item_prodid_' + did).val();
+
+                    if (item_stat != '5') {
+                        if (item_prodid !== "" && item_prodid != '0') {
+                            hasItem = true;
+                            if (existedItem.includes(item_prodid)) {
+                                hasDuplicate = true;
+                                return false;
+                            } else {
+                                existedItem.push(item_prodid);
+                            }
+                        } else {
+                            hasError = true;
+                        }
+                    }
+
+                    list.push({
+                        'MM_CHECKROUTINE_D_ID': item_dbid,
+                        'RECORD_TYP': item_stat,
+
+                        'PRODLINE': item_prodline,
+                        'PRODLINENO': item_lineno,
+                        'PRODLINENO_ID': item_prodid
+                    });
+                }
+            });
+
+            if (cont && !hasItem) {
+                cont = false;
+                message = "Please add at least one Product Line Info Listing.";
+            }
+            if (cont && hasError) {
+                cont = false;
+                message = "Please make sure Product Line field in Product Line Info Listing is not empty.";
+            }
+            if (cont && hasDuplicate) {
+                cont = false;
+                message = "Duplicate Product Line and Product Line No items selected.";
+            }
+
+            if (cont) {
+
+                var model = {
+                    MM_CHECKROUTINE_H_ID: idh,
+                    RECORD_TYP: '1',
+
+                    MM_PRODGROUP_H_ID: ddlProdGroup,
+                    PROD_GROUP: prodgroup,
+                    PATTERN: pattern,
+                    WEEKORDAY: 'W',
+                    WHOLEWEEK: wholeweek,
+
+                    MONDAY: monday,
+                    TUESDAY: tuesday,
+                    WEDNESDAY: wednesday,
+                    THURSDAY: thursday,
+                    FRIDAY: friday,
+                    SATURDAY: saturday,
+                    SUNDAY: sunday,
+
+                    SEQUENCE: txtSeq,
+
+                    CheckRoutineProdLstModel: list
+                };
+
+                console.log(model)
+
+                $.ajax({
+                    url: "/MM_CHECK_ROUTINE/InsertUpdateCheckRoutine",
+                    type: 'POST',
+                    data: {
+                        model: model
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data save successfully");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+
+        });
+
+        //DRAFT
+        $('#btnDraft').on('click', function () {
+            var cont = true;
+            var message = "";
+
+            var ddlProdGroup = $("#ddlProdGroup").val();
+            var prodgroup = $('#ddlProdGroup option:selected').text();
+            var pattern = $("input[name='pattern']:checked").val();
+            var txtSeq = $("#txtSeq").val();
+            var wholeweek = $("#wholeWeekSwitch").prop("checked") ? 1 : 0;
+
+            var monday = $("#monBox").prop("checked") ? 1 : 0;
+            var tuesday = $("#tueBox").prop("checked") ? 1 : 0;
+            var wednesday = $("#wedBox").prop("checked") ? 1 : 0;
+            var thursday = $("#thursBox").prop("checked") ? 1 : 0;
+            var friday = $("#friBox").prop("checked") ? 1 : 0;
+            var saturday = $("#satBox").prop("checked") ? 1 : 0;
+            var sunday = $("#sunBox").prop("checked") ? 1 : 0;
+
+            if (ddlProdGroup == undefined || ddlProdGroup == null || ddlProdGroup == 0 || ddlProdGroup == "" || ddlProdGroup == "Select an option..") {
+                cont = false;
+                message += 'Please select Product Group. <br>';
+            }
+
+            if (pattern == undefined || pattern == null || pattern == "") {
+                cont = false;
+                message += 'Please select Pattern Type. <br>';
+            }
+
+            //if (txtSeq == undefined || txtSeq == null || txtSeq == "") {
+            //    cont = false;
+            //    message += 'Missing Sequence value. <br>';
+            //}
+
+            //var weekorday = "";
+
+            //if ($('#workingDaySwitch').prop('checked')) {
+            //    weekorday = "WD";
+            //}
+
+            //if ($('#wholeWeekSwitch').prop('checked')) {
+            //    weekorday = "WW";
+            //}
+
+            //if (weekorday != "WD" && weekorday != "WW") {
+            //    weekorday = "D";
+            //}
+
+            //var hasItem = false;
+            //var hasError = false;
+            var hasDuplicate = false;
+            var existedItem = [];
+
+            var list = [];
+
+            $("#item-table tbody tr").each(function () {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat = $('#item_stat_' + did).val();
+                    var item_dbid = $('#item_dbid_' + did).val();
+
+                    var item_prodline = $('#item_prodline_' + did).val();
+                    var item_lineno = $('#item_lineno_' + did).val();
+                    var item_prodid = $('#item_prodid_' + did).val();
+
+                    if (item_stat != '5') {
+                        item_stat = "8";
+                        if (item_prodid !== "" && item_prodid != '0') {
+                            //hasItem = true;
+                            if (existedItem.includes(item_prodid)) {
+                                hasDuplicate = true;
+                                return false;
+                            } else {
+                                existedItem.push(item_prodid);
+                            }
+                        }
+                        //else {
+                        //    hasError = true;
+                        //}
+                    }
+
+                    list.push({
+                        'MM_CHECKROUTINE_D_ID': item_dbid,
+                        'RECORD_TYP': item_stat,
+
+                        'PRODLINE': item_prodline,
+                        'PRODLINENO': item_lineno,
+                        'PRODLINENO_ID': item_prodid
+                    });
+                }
+            });
+
+
+            //if (cont && !hasItem) {
+            //    cont = false;
+            //    message = "Please add at least one Product Line Info Listing.";
+            //}
+
+            //if (cont && hasError) {
+            //    cont = false;
+            //    message = "Please make sure Product Line field in Product Line Info Listing is not empty.";
+            //}
+
+            if (cont && hasDuplicate) {
+                cont = false;
+                message = "Duplicate Product Line and Product Line No items selected.";
+            }
+
+            if (cont) {
+
+                var model = {
+                    MM_CHECKROUTINE_H_ID: idh,
+                    RECORD_TYP: '8',
+
+                    MM_PRODGROUP_H_ID: ddlProdGroup,
+                    PROD_GROUP: prodgroup,
+                    PATTERN: pattern,
+                    WEEKORDAY: 'W',
+                    WHOLEWEEK: wholeweek,
+
+                    MONDAY: monday,
+                    TUESDAY: tuesday,
+                    WEDNESDAY: wednesday,
+                    THURSDAY: thursday,
+                    FRIDAY: friday,
+                    SATURDAY: saturday,
+                    SUNDAY: sunday,
+
+                    SEQUENCE: txtSeq,
+
+                    CheckRoutineProdLstModel: list
+                };
+
+                console.log(model)
+
+                $.ajax({
+                    url: "/MM_CHECK_ROUTINE/DraftCheckingRoutine",
+                    type: 'POST',
+                    data: {
+                        model: model
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data save as draft successfully");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+        });
+
+        $("#txtSeq").click(function () {
+            $("#seqmodal").modal("show");
+        });
+
+        // Event handler for workingDaySwitch
+        $("#workingDaySwitch").on("change", function () {
+            var isChecked = $(this).prop("checked");
+
+            if (isChecked) {
+                $("#wholeWeekSwitch").prop("checked", false);
+
+                $("#satBox, #sunBox").prop("checked", false);
+                $(".weekend").removeClass("highlight");
+                $(".workday").addClass("highlight");
+
+            } else {
+                $(".workday").removeClass("highlight");
+            }
+
+            $("#monBox, #tueBox, #wedBox, #thursBox, #friBox").prop("checked", isChecked);
+
+            updateSeqModal();
+        });
+
+        // Event handler for wholeWeekSwitch
+        $("#wholeWeekSwitch").on("change", function () {
+            var isChecked = $(this).prop("checked");
+
+            if (isChecked) {
+                $("#workingDaySwitch").prop("checked", false);
+
+                $(".workday").addClass("highlight");
+                $(".weekend").addClass("highlight");
+
+            } else {
+                $(".workday").removeClass("highlight");
+                $(".weekend").removeClass("highlight");
+            }
+
+            $("#monBox, #tueBox, #wedBox, #thursBox, #friBox, #satBox, #sunBox").prop("checked", isChecked);
+
+            updateSeqModal();
+        });
+
+        $(".dt-checkboxes-day").on("change", function () {
+
+            //uncheck wholeWeekSwitch if has any day cb unticked
+            var isAnyUnchecked = $(".dt-checkboxes-day").filter(":not(:checked)").length > 0;
+            $("#wholeWeekSwitch").prop("checked", !isAnyUnchecked);
+
+            //uncheck workingDaySwitch if has any work day cb unticked
+            var workcheckbox = $(".cb-work").filter(":not(:checked)").length > 0;
+            $("#workingDaySwitch").prop("checked", !workcheckbox);
+
+            //uncheck workingDaySwitch if has any weekend day cb ticked
+            var weekendCheckbox = $(".cb-weekend").filter(":checked").length > 0;
+            if (!workcheckbox && weekendCheckbox) {
+                $("#workingDaySwitch").prop("checked", false);
+            }
+
+            //checked wholeWeekSwitch check if all days is ticked
+            var isSevenChecked = $(".dt-checkboxes-day").filter(":checked").length === 7;
+            $("#wholeWeekSwitch").prop("checked", isSevenChecked);
+
+            updateSeqModal();
+
+        });
+
+        $("#btnsubmitmodal").click(function () {
+
+            var inputValue = $("#seqmodalfield").val();
+            $("#txtSeq").val(inputValue);
+
+            $("#seqmodal").modal("hide");
+        });
+
+        // BUTTON RESET MODAL
+        $('#btnResetSeqModal').on('click', function () {
+
+            $("#workingDaySwitch").prop("checked", false);
+            $("#wholeWeekSwitch").prop("checked", false);
+            $(".dt-checkboxes-day").prop("checked", false);
+            $(".day-box").removeClass("highlight");
+            $("#seqmodalfield").val("");
+
+        });
+
+        $('#btnConfirmBack').on('click', function () {
+            window.location.href = listingURL;
+        });
+    });
+
+    //ADD PROD LINE LIST
+    function addProductList(data) {
+        var cont = true;
+        var message = "";
+
+        var hasDuplicate = false;
+        for (var i = 0; i < data.length; i++) {
+
+            var rowIdx = $('#item-count').val();
+
+            if (rowIdx != '0') {
+                var tlength = $('#item-table tbody tr').length;
+
+                if (tlength != 0) {
+                    $("#item-table tbody tr").each(function () {
+                        var prodid = data[i].PRODLINENO_ID;
+
+                        var did = $(this).data('did');
+                        if (did != '' && did != null && did != undefined) {
+                            var item_stat = $('#item_stat_' + did).val();
+                            var item_prodid = $('#item_prodid_' + did).val();
+
+                            if (data[i].INSERT != 'N') {
+                                if (item_stat != '5' && item_prodid == prodid) {
+                                    hasDuplicate = true;
+                                    data[i].INSERT = 'N';
+                                } else {
+                                    data[i].INSERT = 'Y';
+                                }
+                            }
+
+                        }
+                    });
+                } else {
+                    data[i].INSERT = 'Y';
+                }
+
+            } else {
+                data[i].INSERT = 'Y';
+            }
+        }
+
+        //if (cont && hasDuplicate) {
+        //    cont = false;
+        //    message = "Duplicate product line and product line no selected.";
+        //}
+
+        if (cont) {
+            var rowIdx = $('#item-count').val();
+
+            for (var i = 0; i < data.length; i++) {
+
+                if (data[i].INSERT == 'Y') {
+                    rowIdx++;
+                    $('#item-count').val(rowIdx);
+
+                    $("#item-table tbody").append(`
+                    <tr id="R_${rowIdx}" data-did="${rowIdx}">
+                        <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_${rowIdx}" onClick="handleCheckboxClick(this)"></td>
+                        <td><input type="text" class="form-control" value="${data[i].PRODLINE}"  id="item_prodline_${rowIdx}" placeholder="" disabled></td>
+                        <td><input type="text" class="form-control" value="${data[i].PRODLINENO}"  id="item_lineno_${rowIdx}" placeholder="" disabled></td>
+                        <td class="d-none">
+                            <input type="text" id="item_stat_${rowIdx}" value="1">
+                            <input type="text" id="item_dbid_${rowIdx}" value="0">
+                            <input type="text" id="item_prodid_${rowIdx}" value="${data[i].PRODLINENO_ID}">
+                        </td>
+                    </tr>`);
+
+                    checkboxChecking();
+
+                }
+            }
+
+        } else {
+            if (message != "") {
+                displayToast("error", message)
+            }
+        }
+    }
+
+    function updateSeqModal() {
+
+        var checkedDays = [];
+
+        $(".dt-checkboxes-day:checked").each(function () {
+            var dayLabel = $(this).closest('.day-box').find('.isLabel').text();
+            checkedDays.push(dayLabel.trim());
+        });
+
+        $("#seqmodalfield").val(checkedDays.join(", "));
+    }
+
+    function highlightBox(boxId, checkboxId) {
+        var $box = $('#' + boxId);  //box6
+        var $checkbox = $('#' + checkboxId); //satbox
+
+        if ($checkbox.prop('checked')) {
+            $box.addClass('highlight');
+        } else {
+            $box.removeClass('highlight');
+        }
+    }
+
+    function higlightCheckedBoxes() {
+        $('.dt-checkboxes-day').each(function (index) {
+            var checkbox = $(this);
+            var boxId = 'box' + (index + 1);
+
+            if (checkbox.prop('checked')) {
+                $('#' + boxId).addClass('highlight');
+            } else {
+                $('#' + boxId).removeClass('highlight');
+            }
+        });
+    }
+
+    //POPUP
+    function popupProd() {
+        var id = idh;
+        var popup;
+        var url = '@Url.Action("MM_CHECK_ROUTINE_PRODLINE_POPOUT", "MM_CHECK_ROUTINE")';
+
+        url = url + '?id=' + id;
+        popup = window.open(url, "Popup", "directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width=800,height=800");
+        popup.focus();
+    }
+</script>

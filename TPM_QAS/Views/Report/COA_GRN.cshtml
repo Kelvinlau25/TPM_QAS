@@ -1,0 +1,209 @@
+﻿@using TPM_QAS.Models
+@model COAGRN
+
+@{
+    ViewBag.Title = "Ungraded GRN Raw Material Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .multiselect-container{
+        max-height:230px !important;
+    }
+
+    th, td{
+        border:1px solid black;
+    }
+</style>
+@using (Html.BeginForm("COA_GRN", "Report", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">Ungraded GRN Raw Material</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="col"><button id="btnSubmit" type="submit" class="btn btn-sm btn-primary">View</button></div>
+                    <br />
+                    <br />
+                    @if (ViewBag.ShowReport == "TRUE")
+                    {
+                        <nav class="tr-tab">
+                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                <button class="nav-link active" id="nav-UN-tab" data-bs-toggle="tab" data-bs-target="#nav-UN" type="button" role="tab" aria-controls="nav-UN" aria-selected="true">Ungraded GRN</button>
+                                <button class="nav-link" id="nav-GRADED-tab" data-bs-toggle="tab" data-bs-target="#nav-GRADED" type="button" role="tab" aria-controls="nav-GRADED" aria-selected="false">Graded GRN</button>
+                            </div>
+                        </nav>
+                        <div class="tab-content p-2" id="nav-tabContent" style="border: 4px solid #EBF3FF; ">
+                            <div class="tab-pane fade show active" id="nav-UN" role="tabpanel" aria-labelledby="nav-UN-tab" tabindex="0">
+                                <h6 class="card-title text-muted pt-2"></h6>
+                                <div>
+                                    <div class="col"><button id="btnexport" type="button" onclick="exportexcel('N')" class="btn btn-sm btn-primary">Export to Excel</button></div>
+                                    <br />
+                                    <table id="ungradedgrn" class="detailTable" style="width:100%">
+                                        <thead>
+                                            <tr class="toolbar-row">
+                                                <th colspan="6" class="text-center">Ungraded GRN Raw Material</th>
+                                            </tr>
+                                            <tr class="toolbar-row">
+                                                <th>GRN Date </th>
+                                                <th>Item Code </th>
+                                                <th>Item Description </th>
+                                                <th>Vendor Lot Number</th>
+                                                <th>Lot Quantity</th>
+                                                <th>Organization</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.COAGRNDETAILUN != null)
+                                            {
+                                            for (var j = 0; j < Model.COAGRNDETAILUN.Count; j++)
+                                            {
+                                            <tr>
+                                                <td>@Model.COAGRNDETAILUN[j].GRN_DATE</td>
+                                                <td>@Model.COAGRNDETAILUN[j].ITEM_CODE</td>
+                                                <td>@Model.COAGRNDETAILUN[j].ITEM_DESC</td>
+                                                <td>@Model.COAGRNDETAILUN[j].VENDOR_LOTNO</td>
+                                                <td>@Model.COAGRNDETAILUN[j].LOTQTY</td>
+                                                <td>@Model.COAGRNDETAILUN[j].ORGANIZATION</td>
+                                            </tr>
+                                            }
+                                            }
+
+                                            @if (Model.COAGRNDETAILUN == null || Model.COAGRNDETAILUN.Count == 0)
+                                            {
+                                            <tr>
+                                                <td colspan="6" class="text-center"> No Record to show </td>
+                                            </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+
+                            <div class="tab-pane fade" id="nav-GRADED" role="tabpanel" aria-labelledby="nav-GRADED-tab" tabindex="0">
+                                <h6 class="card-title text-muted pt-2"></h6>
+
+                                <div>
+                                    <div class="col"><button id="btnexport" type="button" onclick="exportexcel('Y')" class="btn btn-sm btn-primary">Export to Excel</button></div>
+                                    <br />
+                                    <table id="gradedgrn" class="detailTable" style="width:100%">
+                                        <thead>
+                                            <tr class="toolbar-row">
+                                                <th colspan="8" class="text-center">Graded GRN Raw Material</th>
+                                            </tr>
+                                            <tr class="toolbar-row">
+                                                <th>GRN Date </th>
+                                                <th>Item Code </th>
+                                                <th>Item Description </th>
+                                                <th>Vendor Lot Number</th>
+                                                <th>Lot Quantity</th>
+                                                <th>Organization</th>
+                                                <th>Grading Date</th>
+                                                <th>Grading Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.COAGRNDETAILGRADED != null)
+                                            {
+                                            for (var j = 0; j < Model.COAGRNDETAILGRADED.Count; j++)
+                                            {
+                                            <tr>
+                                                <td>@Model.COAGRNDETAILGRADED[j].GRN_DATE</td>
+                                                <td>@Model.COAGRNDETAILGRADED[j].ITEM_CODE</td>
+                                                <td>@Model.COAGRNDETAILGRADED[j].ITEM_DESC</td>
+                                                <td>@Model.COAGRNDETAILGRADED[j].VENDOR_LOTNO</td>
+                                                <td>@Model.COAGRNDETAILGRADED[j].LOTQTY</td>
+                                                <td>@Model.COAGRNDETAILGRADED[j].ORGANIZATION</td>
+                                                <td>@Model.COAGRNDETAILGRADED[j].GRADING_DATE</td>
+                                                <td>@Model.COAGRNDETAILGRADED[j].GRADING_STATUS</td>
+                                            </tr>
+                                            }
+                                            }
+
+                                            @if (Model.COAGRNDETAILGRADED == null || Model.COAGRNDETAILGRADED.Count == 0)
+                                            {
+                                            <tr>
+                                                <td colspan="8" class="text-center"> No Record to show </td>
+                                            </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+                    </div>
+
+            
+
+            @*<div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnGenerate" type="button" class="btn btn-sm btn-primary">Generate</button></div>
+                <div class="col hidden"><button id="btnSubmit" type="submit" class="btn btn-sm btn-primary">Gen erate</button></div>
+            </div>*@
+        </div>
+    </div>
+
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {       
+
+        $('#btnGenerate').on('click', function () {
+
+            $('#btnSubmit').click();
+
+        });
+
+        $('#btnSubmit').on('click', function () {
+            setTimeout(function () {
+                loadings(false);
+            }, 5000);
+        });
+
+
+    });
+
+    function exportexcel(type) {
+        loadings();
+
+        $.ajax({
+            url: '/Report/CheckGRNExcel',
+            type: 'GET',
+            data: { type: type },
+            success: function (res) {
+                if (res.success) {
+                    window.location.href = '/Report/GRNExcel?type=' + type;
+                } else {
+                    displayToast("error", res.message);
+                }
+            },
+            error: function () {
+                displayToast("error", "Server error occurred while checking data.");
+            },
+            complete: function () {
+                document.body.style.cursor = 'default';
+                loadings(false);
+            }
+        });
+    }
+
+
+    $(document).keypress(
+        function (event) {
+            if (event.which == '13') {
+                event.preventDefault();
+            }
+        }
+    );
+
+
+</script>

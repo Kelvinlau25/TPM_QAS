@@ -1,0 +1,450 @@
+﻿
+@using TPM_QAS.Models
+@model CalculationModel
+@{
+    ViewBag.Title = "CALCULATION MM - Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Html.BeginForm("MM_CALCULATION_ADD", "MM_CALCULATION", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">New Form - Calculation</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">Calculation</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+
+                    <hr />
+
+                    @Html.HiddenFor(model => model.MM_CALC_ID)
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Property </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-5">
+                            @Html.DropDownListFor(Model => Model.PROPERTIES, Model.DropdownProperty, "Select an option..", new { id = "ddlproperty", @class = "ddloption form-control form-select", required = "required", onchange = "this.form.submit() + this.options['action'].value;" })
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Company Group <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(m => m.COMP_GROUP, "COMPOUNDER", new { id = "compounderRadio", name = "compgroup" })
+                                <label class="form-check-label" for="compounderRadio">Compounder</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(m => m.COMP_GROUP, "TPM", new { id = "tpmRadio", name = "compgroup" })
+                                <label class="form-check-label" for="tpmRadio">TPM</label>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Property Item </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-5">
+                            @Html.DropDownListFor(Model => Model.MM_PROPERTIES_H_ID, Model.DropdownItem, "Select an option..", new { id = "ddlpropitem", @class = "ddloption form-control form-select", required = "required" })
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Formula <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-5">
+                            @Html.TextBoxFor(Model => Model.FORMULA, new { @class = "required-field form-control", id = "txtformula", @readonly = "readonly" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary mx-1 my-button" data-bs-toggle="modal" data-bs-target="#back-confirmation-modal">Back</button></div>
+                <div class="col"><button hidden id="btnDraft" type="button" class="btn btn-sm btn-primary">Save As Draft</button></div>
+                <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@*formula modal*@
+<div class="modal fade" id="calmodal" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;">Formula</h5>
+            </div>
+            <hr />
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Variable <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-5">
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnvar1" value="var1" onclick='varClickVar("var1"); return false;'>1</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnvar2" value="var2" onclick='varClickVar("var2"); return false;'>2</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnvar3" value="var3" onclick='varClickVar("var3"); return false;'>3</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnvar4" value="var4" onclick='varClickVar("var4"); return false;'>4</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnvar5" value="var5" onclick='varClickVar("var5"); return false;'>5</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnvar6" value="var6" onclick='varClickVar("var6"); return false;'>6</button>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Symbol <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-5">
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnsym1" value="(" onclick='varClickSymbol("("); return false;'>(</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnsym2" value=")" onclick='varClickSymbol(")"); return false;'>)</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnsym3" value="+" onclick='varClickSymbol("+"); return false;'>+</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnsym4" value="-" onclick='varClickSymbol("-"); return false;'>-</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnsym5" value="*" onclick='varClickSymbol("*"); return false;'>*</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnsym6" value="/" onclick='varClickSymbol("/"); return false;'>/</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnsym7" value="." onclick='varClickNumber("."); return false;'>.</button>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Number <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-7">
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum1" value="1" onclick='varClickNumber("1"); return false;'>1</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum2" value="2" onclick='varClickNumber("2"); return false;'>2</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum3" value="3" onclick='varClickNumber("3"); return false;'>3</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum4" value="4" onclick='varClickNumber("4"); return false;'>4</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum5" value="5" onclick='varClickNumber("5"); return false;'>5</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum6" value="6" onclick='varClickNumber("6"); return false;'>6</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum7" value="7" onclick='varClickNumber("7"); return false;'>7</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum8" value="8" onclick='varClickNumber("8"); return false;'>8</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum9" value="9" onclick='varClickNumber("9"); return false;'>9</button>
+                            <button type="button" class="btn btn-outline-dark varinput" id="btnnum0" value="0" onclick='varClickNumber("0"); return false;'>0</button>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-center">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Formula <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            <input class="form-control modalform" id="txt_modal_1" type="text" disabled />
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="button" class="btn btn-outline-dark varerase" id="btnerase" value="Backspace" onclick='varClickErase(); return false;'>Backspace</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" id="btnResetModal" class="btn btn-sm btn-secondary" style="margin-right: auto;">Reset</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" id="btnsubmitcal" class="btn btn-sm btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts{
+
+    <script>
+
+
+        $(document).ready(function () {
+            var idh = '@Model.MM_CALC_ID' != 0 ? '@Model.MM_CALC_ID' : 0;
+            var listingURL = '/MM_CALCULATION/MM_CALCULATION_LST';
+
+
+            $("#txtformula").click(function () {
+                $("#calmodal").modal("show");
+            });
+
+            $("#btnsubmitcal").click(function () {
+
+                var inputValue = $("#txt_modal_1").val();
+                $("#txtformula").val(inputValue);
+
+                $("#calmodal").modal("hide");
+            });
+
+            //SUBMIT
+            $('#btnConfirmSubmit').on('click', function () {
+                $('.invalid-feedback').remove();
+                $('.is-invalid').removeClass('is-invalid');
+
+                var cont = true;
+                var message = "";
+
+                var ddlproperty = $("#ddlproperty").val();
+                var ddlpropitemID = $("#ddlpropitem").val();
+                var ddlpropitem = $("#ddlpropitem option:selected").text();
+                var comp_group = $("input[name='compgroup']:checked").val();
+                var txtformula = $("#txtformula").val();
+
+                var compounder = $('#compounderRadio').is(':checked');
+                var tpm = $('#tpmRadio').is(':checked');
+                var comp_group = "";
+
+                if (ddlproperty == undefined || ddlproperty == null || ddlproperty == 0 || ddlproperty == "" || ddlproperty == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Property. <br>';
+                }
+
+                if (compounder == false && tpm == false) {
+                    cont = false;
+                    message += 'Please select Company Group. <br>';
+                } else {
+                    if (compounder) {
+                        comp_group = "COMPOUNDER"
+                    } else {
+                        if (tpm) {
+                            comp_group = "TPM"
+                        }
+                    }
+                }
+
+                if (ddlpropitemID == undefined || ddlpropitemID == null || ddlpropitemID == 0 || ddlpropitemID == "" || ddlpropitemID == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Property Item. <br>';
+                }
+                if (txtformula == undefined || txtformula == null || txtformula == "") {
+                    cont = false;
+                    message += 'Formula field cannot empty. <br>';
+                }
+
+                $('.required-field').each(function (e) {
+                    var input_val = $(this).val().trim();
+                    if (input_val == null || input_val == undefined || input_val === "") {
+                        cont = false;
+                        $(this).addClass('is-invalid');
+                        inputError(this);
+                    }
+                });
+
+
+                if (cont) {
+
+                    var model = {
+                        MM_CALC_ID: idh,
+                        RECORD_TYP: '1',
+
+                        PROPERTIES: ddlproperty,
+                        PROP_ITEM: ddlpropitem,
+                        MM_PROPERTIES_H_ID: ddlpropitemID,
+                        COMP_GROUP: comp_group,
+                        FORMULA: txtformula
+
+                    };
+
+                    $.ajax({
+                        url: "/MM_CALCULATION/UpdateInsertCalculation",
+                        type: 'POST',
+                        data: {
+                            model: model
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            });
+
+            //DRAFT
+            $('#btnDraft').on('click', function () {
+                var cont = true;
+                var message = "";
+                var list = [];
+
+                //allow to draft if fill in property, propitem and comp group  only
+
+                var ddlproperty = $("#ddlproperty").val();
+                var ddlpropitemID = $("#ddlpropitem").val();
+                var ddlpropitem = $("#ddlpropitem option:selected").text();
+                var txtformula = $("#txtformula").val();
+
+                var compounder = $('#compounderRadio').is(':checked');
+                var tpm = $('#tpmRadio').is(':checked');
+                var comp_group = "";
+
+                if (ddlproperty == undefined || ddlproperty == null || ddlproperty == 0 || ddlproperty == "" || ddlproperty == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Property. <br>';
+                }
+
+                if (compounder == false && tpm == false) {
+                    cont = false;
+                    message += 'Please select Company Group. <br>';
+                } else {
+                    if (compounder) {
+                        comp_group = "COMPOUNDER"
+                    } else {
+                        if (tpm) {
+                            comp_group = "TPM"
+                        }
+                    }
+                }
+
+                if (ddlpropitemID == undefined || ddlpropitemID == null || ddlpropitemID == 0 || ddlpropitemID == "" || ddlpropitemID == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Property Item. <br>';
+                }
+
+                //if (txtformula == undefined || txtformula == null || txtformula == "") {
+                //    cont = false;
+                //    message += 'Formula field cannot empty. <br>';
+                //}
+
+                if (cont) {
+
+                    var model = {
+                        MM_CALC_ID: idh,
+                        RECORD_TYP: '8',
+
+                        PROPERTIES: ddlproperty,
+                        PROP_ITEM: ddlpropitem,
+                        MM_PROPERTIES_H_ID: ddlpropitemID,
+                        COMP_GROUP: comp_group,
+                        FORMULA: txtformula
+                    };
+
+                    console.log(model)
+
+                    $.ajax({
+                        url: "/MM_CALCULATION/DraftCalculation",
+                        type: 'POST',
+                        data: {
+                            model: model
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save as draft successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+            });
+
+            $('#btnConfirmBack').on('click', function () {
+                window.location.href = listingURL;
+            });
+
+
+        });
+
+        function varClickVar(text) {
+            var txt = $('#txt_modal_1').val();
+            if (txt.indexOf(text) === -1) {
+                $('#txt_modal_1').focus();
+                var trimmedValue = $.trim(txt);
+                $('#txt_modal_1').val(trimmedValue + (trimmedValue.length > 0 ? " " : "") + text + " ");
+            }
+        }
+
+        function varClickSymbol(text) {
+            var txt = $('#txt_modal_1').val();
+            $('#txt_modal_1').focus();
+            var trimmedValue = $.trim(txt);
+            $('#txt_modal_1').val(trimmedValue + " " + text);
+        }
+
+        function varClickNumber(num) {
+            var txt = $('#txt_modal_1').val();
+            $('#txt_modal_1').focus();
+            var trimmedValue = $.trim(txt);
+
+            if (!isNaN(trimmedValue.slice(-1)) || trimmedValue.slice(-1) === '.') {
+                $('#txt_modal_1').val(trimmedValue + num);
+            } else {
+                $('#txt_modal_1').val(trimmedValue + ' ' + num);
+            }
+        }
+
+        function varClickErase() {
+            var txt = $('#txt_modal_1').val();
+            $('#txt_modal_1').focus();
+
+            if (txt.length > 0) {
+                var trimmedValue = $.trim(txt);
+                var parts = trimmedValue.split(" ");
+                var lastPart = parts[parts.length - 1];
+
+                if (/^var[1-6]$/.test(lastPart)) {
+                    // If the last part is a variable (e.g., var1, var2), remove the entire variable
+                    parts.pop();
+                    $('#txt_modal_1').val(parts.join(" "));
+                } else {
+                    // Otherwise, just remove the last character
+                    $('#txt_modal_1').val(trimmedValue.slice(0, -1));
+                }
+            }
+        }
+
+
+    </script>
+}

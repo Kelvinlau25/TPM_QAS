@@ -1,0 +1,532 @@
+﻿@using TPM_QAS.Models
+@model AppRoleModel
+@{
+    ViewBag.Title = "APPROVAL ROLE MM - Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Html.BeginForm("MM_APP_ROLE_ADD", "MM_APP_ROLE", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">New Form - Approval Role</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">Approval Role</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Approval Role Name </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.DropDownListFor(Model => Model.ROLE_NAME_ID, Model.DropdownApprovalName, "Select an option..", new { id = "ddlRoleName", @class = "ddloption form-control form-select", required = "required" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Remark <span class="text-danger"></span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6 d-flex">
+                            @Html.TextBoxFor(Model => Model.REMARKS, new { @class = "form-control", id = "txtremark", @maxlength = "100" })
+                        </div>
+                    </div>
+
+                    <div class="row row-cols-2 mt-4">
+                        <div class="col-2 align-self-center">
+                            <h6 class="text-muted" style="float: left">Employee Listing</h6>
+                        </div>
+                        <div class="col-3">
+                            <div class="input-group">
+                                <div class="input-group-text tr-input-group" id="searchEmployee" onclick="popupEmployee()">
+                                    <a href="#" class="text-reset vm tr-disabled"><i class="fa-solid fa-ellipsis" aria-hidden="true" style="color: #fff"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-7">
+                            <div class="row row-cols-auto justify-content-end g-1">
+                                <div class="col">
+                                    <button class="btn btn-sm btn-md btn-danger" id="removeBtn" type="button">
+                                        Remove
+                                    </button>
+                                </div>
+                                <div class="col">
+                                    <button class="btn btn-sm btn-md btn-primary" id="addBtn" onclick="popupEmployee()" type="button">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 mx-1">
+                        <table id="item-table" class="detailTable" style="width:100%">
+                            <thead>
+                                <tr class="toolbar-row">
+                                    <th style="width: 3%; text-align: center;">
+                                        <input id="trCheckbox" type="checkbox" class="dt-checkboxes select-all form-check-input" style="margin-top:5.5px; display:none">
+                                    </th>
+                                    <th>Employee Name</th>
+                                    <th>Employee ID</th>
+                                    <th>Email</th>
+                                    <th>Department</th>
+                                    <th>Section</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ var count = 0; }
+                                @if (Model.AppRoleEmpLstModel != null && Model.AppRoleEmpLstModel.Count > 0)
+                                {
+                                    foreach (var item in Model.AppRoleEmpLstModel)
+                                    {
+                                        count++;
+                                    <tr id="R_@count" data-did="@count">
+                                        <td class="text-center">
+                                            <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_@count" onClick="handleCheckboxClick(this)">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" id="item_empname_@count" value="@item.EMP_NAME" placeholder="" disabled>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" id="item_empid_@count" value="@item.EMP_ID" placeholder="" disabled>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" id="item_email_@count" value="@item.EMP_EMAIL" placeholder="" disabled>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" id="item_dept_@count" value="@item.EMP_DEPT" placeholder="" disabled>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="form-control" id="item_sect_@count" value="@item.EMP_SECTION" placeholder="" disabled>
+                                        </td>
+                                        <td class="d-none">
+                                            <input type="text" class="form-control" id="item_stat_@count" value="0">
+                                            <input type="text" class="form-control" id="item_dbid_@count" value="@item.MM_APPROLE_D_ID">
+                                        </td>
+                                    </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                        <input type="hidden" id="item-count" value="@count" />
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary mx-1 my-button" data-bs-toggle="modal" data-bs-target="#back-confirmation-modal">Back</button></div>
+                <div class="col"><button hidden id="btnDraft" type="button" class="btn btn-sm btn-primary">Save As Draft</button></div>
+                <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+            </div>
+        </div>
+    </div>
+
+}
+
+
+<script>
+    var idh = '@Model.MM_APPROLE_H_ID' != 0 ? '@Model.MM_APPROLE_H_ID' : 0;
+
+    $(document).ready(function () {
+
+
+        checkboxChecking();
+
+        var listingURL = '/MM_APP_ROLE/MM_APP_ROLE_LST';
+
+        //REMOVE D
+        $('#removeBtn').on('click', function () {
+            $('#item-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                var row = $(ele).closest('tr');
+                var itemStatInput = row.find('input[id^="item_stat_"]');
+                var item_stat = itemStatInput.val();
+
+                if (item_stat != '1') {
+                    itemStatInput.val('5');
+                    row.hide();
+                } else {
+                    row.remove();
+                }
+            });
+
+            checkboxChecking();
+        });
+
+
+        //SUBMIT
+        $('#btnConfirmSubmit').on('click', function () {
+            $('.invalid-feedback').remove();
+            $('.is-invalid').removeClass('is-invalid');
+
+            var cont = true;
+            var message = "";
+
+            var ddlRoleName = $("#ddlRoleName").val();
+            var txtremark = $("#txtremark").val();
+
+            if (ddlRoleName == undefined || ddlRoleName == null || ddlRoleName == 0 || ddlRoleName == "" || ddlRoleName == "Select an option..") {
+                cont = false;
+                message += 'Please select Approval Role Name. <br>';
+            }
+
+            $('.required-field').each(function (e) {
+                var input_val = $(this).val().trim();
+                if (input_val == null || input_val == undefined || input_val === "") {
+                    cont = false;
+                    $(this).addClass('is-invalid');
+                    inputError(this);
+                }
+            });
+
+            var hasItem = false;
+            var hasError = false;
+            var hasDuplicate = false;
+            var existedItem = [];
+
+            var emplist = [];
+
+            $("#item-table tbody tr").each(function () {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat = $('#item_stat_' + did).val();
+                    var item_dbid = $('#item_dbid_' + did).val();
+
+                    var item_empname = $('#item_empname_' + did).val();
+                    var item_empid = $('#item_empid_' + did).val();
+                    var item_email = $('#item_email_' + did).val();
+                    var item_dept = $('#item_dept_' + did).val();
+                    var item_sect = $('#item_sect_' + did).val();
+
+                    if (item_stat != '5') {
+                        if (item_empid !== "" && item_empid != '0') {
+                            hasItem = true;
+                            if (existedItem.includes(item_empid)) {
+                                hasDuplicate = true;
+                                return false;
+                            } else {
+                                existedItem.push(item_empid);
+                            }
+                        } else {
+                            hasError = true;
+                        }
+                    }
+
+                    emplist.push({
+                        'MM_APPROLE_D_ID': item_dbid,
+                        'RECORD_TYP': item_stat,
+
+                        'EMP_NAME': item_empname,
+                        'EMP_ID': item_empid,
+                        'EMP_EMAIL': item_email,
+                        'EMP_DEPT': item_dept,
+                        'EMP_SECTION': item_sect
+                    });
+                }
+            });
+
+            if (cont && !hasItem) {
+                cont = false;
+                message = "Please add at least one Employee Listing.";
+            }
+
+            if (cont && hasDuplicate) {
+                cont = false;
+                message = "Duplicate employee name and ID selected.";
+            }
+
+            if (cont) {
+
+                var model = {
+                    MM_APPROLE_H_ID: idh,
+                    RECORD_TYP: '1',
+
+                    ROLE_NAME_ID: ddlRoleName,
+                    REMARKS: txtremark,
+
+                    AppRoleEmpLstModel: emplist
+                };
+
+                console.log(model)
+
+                $.ajax({
+                    url: "/MM_APP_ROLE/InsertUpdateAppRole",
+                    type: 'POST',
+                    data: {
+                        model: model
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data save successfully");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+
+        });
+
+        //DRAFT
+        $('#btnDraft').on('click', function () {
+            var cont = true;
+            var message = "";
+
+            var ddlRoleName = $("#ddlRoleName").val();
+            var txtremark = $("#txtremark").val();
+
+            if (ddlRoleName == undefined || ddlRoleName == null || ddlRoleName == 0 || ddlRoleName == "" || ddlRoleName == "Select an option..") {
+                cont = false;
+                message += 'Please select Approval Role Name. <br>';
+            }
+
+            //var hasItem = false;
+            //var hasError = false;
+            var hasDuplicate = false;
+            var existedItem = [];
+
+            var emplist = [];
+
+            $("#item-table tbody tr").each(function () {
+                var did = $(this).data("did");
+                console.log(did)
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat = $('#item_stat_' + did).val();
+                    var item_dbid = $('#item_dbid_' + did).val();
+
+                    var item_empname = $('#item_empname_' + did).val();
+                    var item_empid = $('#item_empid_' + did).val();
+                    var item_email = $('#item_email_' + did).val();
+                    var item_dept = $('#item_dept_' + did).val();
+                    var item_sect = $('#item_sect_' + did).val();
+
+                    console.log(item_stat)
+                    console.log(item_dbid)
+
+                    console.log(item_empname)
+                    console.log(item_empid)
+                    console.log(item_email)
+                    console.log(item_dept)
+                    console.log(item_sect)
+
+                    if (item_stat != '5') {
+                        item_stat = "8";
+                        
+                        if (item_empid !== "" && item_empid != '0') {
+                            //hasItem = true;
+                            if (existedItem.includes(item_empid)) {
+                                hasDuplicate = true;
+                                //console.log(item_empid)
+                                //console.log(existedItem)
+                                return false;
+                            } else {
+                                existedItem.push(item_empid);
+                            }
+                        }
+                        //else {
+                        //    hasError = true;
+                        //}
+                    }
+
+                    emplist.push({
+                        'MM_APPROLE_D_ID': item_dbid,
+                        'RECORD_TYP': item_stat,
+
+                        'EMP_NAME': item_empname,
+                        'EMP_ID': item_empid,
+                        'EMP_EMAIL': item_email,
+                        'EMP_DEPT': item_dept,
+                        'EMP_SECTION': item_sect
+                    });
+                }
+            });
+
+            //if (cont && !hasItem) {
+            //    cont = false;
+            //    message = "Please add at least one Employee Listing.";
+            //}
+
+            if (cont && hasDuplicate) {
+                cont = false;
+                message = "Duplicate employee name and ID selected.";
+            }
+
+            if (cont) {
+
+                var model = {
+                    MM_APPROLE_H_ID: idh,
+                    RECORD_TYP: '8',
+
+                    ROLE_NAME_ID: ddlRoleName,
+                    REMARKS: txtremark,
+
+                    AppRoleEmpLstModel: emplist
+                };
+
+                console.log(model)
+
+                $.ajax({
+                    url: "/MM_APP_ROLE/DraftAppRole",
+                    type: 'POST',
+                    data: {
+                        model: model
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data save as draft successfully");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+        });
+
+        $('#btnConfirmBack').on('click', function () {
+            window.location.href = listingURL;
+        });
+    });
+
+    //ADD EMP LIST
+    function addEmployeeList(data) {
+        var cont = true;
+        var message = "";
+
+        var hasDuplicate = false;
+        for (var i = 0; i < data.length; i++) {
+
+            var rowIdx = $('#item-count').val();
+
+            if (rowIdx != '0') {
+                var tlength = $('#item-table tbody tr').length;
+
+                if (tlength != 0) {
+                    $("#item-table tbody tr").each(function () {
+                        var empid = data[i].EMP_ID;
+
+                        var did = $(this).data('did');
+                        if (did != '' && did != null && did != undefined) {
+                            var item_stat = $('#item_stat_' + did).val();
+                            var item_empid = $('#item_empid_' + did).val();
+
+                            if (data[i].INSERT != 'N') {
+                                if (item_stat != '5' && item_empid == empid) {
+                                    hasDuplicate = true;
+                                    data[i].INSERT = 'N';
+                                } else {
+                                    data[i].INSERT = 'Y';
+                                }
+                            }
+
+                        }
+                    });
+                } else {
+                    data[i].INSERT = 'Y';
+                }
+
+            } else {
+                data[i].INSERT = 'Y';
+            }
+        }
+
+        //if (cont && hasDuplicate) {
+        //    cont = false;
+        //    message = "Duplicate employee selected.";
+        //}
+
+        if (cont) {
+            var rowIdx = $('#item-count').val();
+
+            for (var i = 0; i < data.length; i++) {
+
+                if (data[i].INSERT == 'Y') {
+                    rowIdx++;
+                    $('#item-count').val(rowIdx);
+
+                    $("#item-table tbody").append(`
+                    <tr id="R_${rowIdx}" data-did="${rowIdx}">
+                        <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_${rowIdx}" onClick="handleCheckboxClick(this)"></td>
+                        <td><input type="text" class="form-control" value="${data[i].EMP_NAME}"  id="item_empname_${rowIdx}" placeholder="" disabled></td>
+                        <td><input type="text" class="form-control" value="${data[i].EMP_ID}"  id="item_empid_${rowIdx}" placeholder="" disabled></td>
+                        <td><input type="text" class="form-control" value="${data[i].EMP_EMAIL}"  id="item_email_${rowIdx}" placeholder="" disabled></td>
+                        <td><input type="text" class="form-control" value="${data[i].EMP_DEPT}"  id="item_dept_${rowIdx}" placeholder="" disabled></td>
+                        <td><input type="text" class="form-control" value="${data[i].EMP_SECTION}"  id="item_sect_${rowIdx}" placeholder="" disabled></td>
+                        <td class="d-none">
+                            <input type="text" id="item_stat_${rowIdx}" value="1">
+                            <input type="text" id="item_dbid_${rowIdx}" value="0">
+                        </td>
+                    </tr>`);
+
+                    checkboxChecking();
+                }
+            }
+
+        } else {
+            if (message != "") {
+                displayToast("error", message)
+            }
+        }
+    }
+
+
+    //POPUP
+    function popupEmployee() {
+
+        var id = idh;
+        var popup;
+        var url = '@Url.Action("MM_APP_ROLE_EMP_POPOUT", "MM_APP_ROLE")';
+
+        url = url + '?id=' + id;
+        popup = window.open(url, "Popup", "directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width=1000,height=800");
+        popup.focus();
+
+    }
+</script>

@@ -1,0 +1,492 @@
+﻿@using TPM_QAS.Models
+@model IEnumerable<FileAttLstModel>
+
+@{
+    ViewBag.Title = "FILE ATTACHMENT - List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row g-0 px-3 tr-listing-header">
+    <div class="col-sm-6 align-self-center">
+        <p class="text-muted m-0 tr-listing-header-title">Main Listing - File Attachment</p>
+    </div>
+</div>
+
+<div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+        <div class="col-sm-6 align-self-center" style="margin-top:10px">
+            <p id="pathtitle" class="text-muted m-0"></p>
+        </div>
+        <div>
+            <div class="row mt-3 pb-2">
+                <div class="col-12 col-sm-8 d-flex align-items-end">
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item" style="border-radius: 0px !important; min-width:250px">
+                            <div class="row align-items-center">
+                                @if (TempData["STATUS_DDL"] != null)
+                                {
+                                    List<SelectListItem> statusList = TempData["STATUS_DDL"] as List<SelectListItem>;
+                                    @Html.DropDownList("select-id", statusList, new { @class = "tr-select", style = "color: #FCFCFC; border: 0px" })
+                                }
+                            </div>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="border-top: 1px solid #F0F0F0">
+                                <div class="accordion-body text-center">
+                                    @if (Model.Count() > 1)
+                                    {
+                                        <p class="h6 m-0 p-2 tr-rec" style="color: #00A251">@Model.Count() entries</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="h6 m-0 p-2 tr-rec" style="color: #00A251">@Model.Count() entry</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-4 align-self-end tr-text pb-0 mb-0" id="action-bar">
+                    <div class="dt-buttons btn-group flex-wrap">
+                        <button class="m-0 p-0 tr-btn my-button tr-trash isHide" tabindex="0" aria-controls="tr-datatable" type="button" id="btnDownload"><span>Download File</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <table id="tr-datatable" class="table table-hover table-bordered compact" style="width:100%; margin-top: 0px !important">
+                <thead>
+                    <tr style="background-color:#FCFCFC">
+                        <th></th>
+                        <th>Date</th>
+                        <th>Lot No</th>
+                        <th>Status</th>
+                        <th class="view-col">View</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+
+        <div class="row tr-btm-btn-area justify-content-between align-items-center">
+            <div class="col-auto">
+                <div class="aud export-section py-2"></div>
+            </div>
+
+            <div class="col-auto py-2" style="padding-right: 20px;">
+                <button id="btnCancelView" type="button" class="btn btn-sm btn-secondary">Back</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!--ADV SEARCH MODAL-->
+<div class="modal fade" id="ASModal" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;">Advanced Search</h5>
+            </div>
+            <hr />
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+                    <div class="row align-items-center mb-2">
+                        <div class="col-md-2 isLabel">Date <span style="float:right">:</span></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="AS_FIELD1" type="text" />
+                        </div>
+                        <div class="col-md-2 isLabel">Lot no <span style="float:right">:</span></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="AS_FIELD2" type="text" />
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center">
+                        <div class="col-md-2 isLabel">Status <span style="float:right">:</span></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="AS_FIELD3" type="text" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" id="btnReset" class="btn btn-sm btn-secondary" style="margin-right: auto;">Reset</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-sm btn-primary" onclick="as_search();" data-bs-dismiss="modal">Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script type="text/javascript">
+        var table;
+        var data = [], dataAll = [];
+        var jsonData = @Html.Raw(Json.Encode(Model));
+        var data = jsonData;
+        dataAll = data;
+
+        $(document).ready(function () {
+            $.when(loaddatatable()).then(function () {
+                setTimeout(function () {
+                    table.columns.adjust();
+                    loadings(false);
+                }, 10);
+            })
+
+            var listingURL = '@Url.Action("FILE_ATTACHMENT_LST", "FILE_ATTACHMENT")'
+            $('#btnCancelView').on('click', function () {
+                window.location.href = listingURL;
+            });
+
+            $('#btnDownload').on('click', function () {
+                var cont = true;
+                var message = "";
+
+                var checkedValues = [];
+                var checkboxes = table.column(0).nodes().to$().find('.dt-checkboxes');
+                checkboxes.each(function () {
+                    if ($(this).is(':checked')) {
+                        var row = table.row($(this).closest('tr'));
+                        var rowData = row.data();
+                        if (rowData.MODULE_TYPE != null && rowData.GROUP_DATE != '') {
+                            checkedValues.push({
+                                MODULE_TYPE: rowData.MODULE_TYPE,
+                                GROUP_DATE: rowData.GROUP_DATE
+                            });
+                        }
+
+                    }
+                });
+
+                var first_checked = checkedValues[0];
+
+                if (first_checked == undefined || first_checked == null) {
+                    cont = false;
+                    message = "Please tick atleast one file to download.";
+                }
+
+                if (cont) {
+
+                    $.ajax({
+                        url: "/FILE_ATTACHMENT/FILE_ATTACHMENT_DL_BULK",
+                        type: 'POST',
+                        data: { lstid: checkedValues },
+                        xhrFields: {
+                            responseType: 'blob'
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (blob, status, xhr) {
+                            loadings(false);
+
+                            var disposition = xhr.getResponseHeader("Content-Disposition");
+                            var filename = "attachments.zip";
+
+                            if (disposition && disposition.indexOf("filename=") !== -1) {
+                                filename = disposition.split("filename=")[1].trim().replace(/"/g, '');
+                            }
+
+                            // ✅ Validate blob type
+                            if (!(blob instanceof Blob)) {
+                                console.error("Response is not a Blob. Actual type:", typeof blob, blob);
+                                displayToast("error", "Invalid file response from server.")
+                                return;
+                            }
+
+                            var blobUrl = window.URL.createObjectURL(blob);
+                            var link = document.createElement('a');
+                            link.href = blobUrl;
+                            link.download = filename;
+                            document.body.appendChild(link);
+                            link.click();
+                            document.body.removeChild(link);
+                            window.URL.revokeObjectURL(blobUrl);
+                        },
+                        error: function (xhr) {
+                            loadings(false);
+                            console.error("Error response:", xhr);
+                            displayToast("error", "Error downloading files: " + xhr.statusText)
+                        }
+                    });
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+            });
+
+            var modtype = '@ViewBag.ModType';
+            var folder = '@ViewBag.Folder';
+
+            var modtypeEncoded = encodeURIComponent(modtype);
+
+            var linkStyle = 'color:##54575A !important; text-decoration:none !important;';
+            var activelinkStyle = 'color:#004098 !important; text-decoration:none !important;font-weight:bold !important;';
+
+            var fileAttachmentLink = $('<a>')
+                .attr('href', '/FILE_ATTACHMENT/FILE_ATTACHMENT_LST')
+                .attr('style', linkStyle)
+                .text('File Attachment');
+
+            var modtypeLink = $('<a>')
+                .attr('href', '/FILE_ATTACHMENT/FILE_ATTACHMENT_LST2/' + modtypeEncoded)
+                .attr('style', activelinkStyle)
+                .text(folder);
+
+            var breadcrumb = $('<span>')
+                .append(fileAttachmentLink)
+                .append(' \\ ')
+                .append(modtypeLink);
+
+            $('#pathtitle').empty().append(breadcrumb);
+        });
+
+        function loaddatatable() {
+            //loadDataTable
+
+            table = $('#tr-datatable').DataTable({
+                data: data,
+                scrollCollapse: true,
+                scrollY: calcDataTableHeight,
+                pagingType: 'simple_numbers',
+                columns: [
+                    { data: 'MODULE_TYPE' },
+                    { data: 'GROUP_DATE' },
+                    { data: 'LOT_NO' },
+                    { data: 'REC_TYPE_DESC' },
+                    { data: 'MODULE_TYPE' },
+                ],
+                columnDefs: [{
+                    targets: 0,
+                    render: function (data, type, row, meta) {
+                        if (type === 'display') {
+                            data = `<div class="checkbox"><input type="checkbox" class="dt-checkboxes" value="${data}"><label></label></div>`;
+                        }
+                        return data;
+                    },
+                    checkboxes: {
+                        selectRow: true,
+                        selectAllRender: '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>'
+                    }
+                }, {
+                    targets: 4,
+                    render: function (data, type, row, meta) {
+                        if (type === 'display') {
+                            //data = `<a href="/FILE_ATTACHMENT/FILE_ATTACHMENT_LST3/${data}" class="name tr-icon-size"><i class="fa-solid fa-eye my-button"></i></a>`;
+                            data = `<a href="/FILE_ATTACHMENT/FILE_ATTACHMENT_LST3/${row.MODULE_TYPE}?seldate=${encodeURIComponent(row.GROUP_DATE)}"
+                                        class="name tr-icon-size">
+                                        <i class="fa-solid fa-eye my-button"></i>
+                                    </a>`;
+
+                        }
+                        return data;
+                    },
+                    orderable: false
+                    },
+                    {
+                        targets: 1,
+                        className: 'text-nowrap',
+                        render: function (data, type, row, meta) {
+                            if (!data) return data;
+
+                            // data expected "dd-MM-yyyy"
+                            var parts = data.split('-'); 
+                            if (parts.length !== 3) return data;
+
+                            var dd = parts[0], mm = parts[1], yyyy = parts[2];
+
+                            if (type === 'display') {
+                                return data;              
+                            }
+                            if (type === 'sort' || type === 'order') {
+
+                                return Date.UTC(parseInt(yyyy), parseInt(mm) - 1, parseInt(dd));
+                            }
+                            if (type === 'filter') {
+                                return data;
+                            }
+                            return data;
+                        }
+                    }, {
+                        targets: 3,
+                        render: function (data, type, row, meta) {
+                            var _status = row.REC_TYPE_DESC;
+                            var _color = "";
+                            if (_status == "New") {
+                                _color = "#00A251";
+                            } else if (_status == "Amend") {
+                                _color = "#004098";
+                            } else if (_status == "Draft") {
+                                _color = "#FF850A";
+                            } else if (_status == "Deleted") {
+                                _color = "#B1003C";
+                            } else {
+                                _color = "#585858";
+                            }
+                            return '<span style=color:' + _color + '>' + _status + '</span>';
+                        }
+                    }],
+                select: {
+                    style: 'multi',
+                    info: false,
+                    selector: 'td:nth-child(1)'
+                },
+                order: [],
+                dom: "<'row toolbar-row g-0'<'col-sm-12 col-md-6 align-self-center'l><'col-sm-12 col-md-6'<'d-flex justify-content-end'<'toolbar'>>>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'<'d-flex justify-content-end'p<'go-to align-self-center mx-2'>>>>",
+                initComplete: function () {
+                    $("div.toolbar").html(
+                        '<div class="input-group input-group-sm">' +
+                        '<input type="text" id="txtSearch" class="form-control remove-right-border" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
+                        '<div class="input-group-text listing-search-icon">' +
+                        '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                        '</div>' +
+                        '<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#ASModal" id="btnAS" style="min-width: 30px; background-color: #057FE5;"><i class="fa-solid fa-sliders" style="transform: rotate(90deg);"></i></button>' +
+                        '</div>'
+                    );
+                },
+                drawCallback: function (settings) {
+                    var api = this.api();
+                    $("#txtGoTo").val(api.page() + 1);
+                }
+            });
+
+            console.log(data)
+
+            $("div.go-to").html('<div class="d-flex align-items-center p-0"><input class="form-control" type="text" id="txtGoTo" style="width:50px" value=1> &nbsp; <div class="page-info">of ' + table.page.info().pages + '</div></div>');
+            $("#txtGoTo").on('keyup', function (e) {
+                try {
+                    var page = e.target.value;
+                    if ($.isNumeric(page) && page > 0 && page <= table.page.info().pages) {
+                        table.page(page - 1).draw('page');
+                    } else if (e.target.value.trim() == '') {
+
+                    }
+                    else {
+                        e.target.value = table.page() + 1;
+                    }
+
+                } catch (ex) {
+                    console.warn(ex.toString());
+                    e.target.value = 1;
+                }
+            });
+            $("#txtGoTo").on('blur', function (e) {
+                try {
+                    var page = e.target.value;
+                    if (page.trim() == '') {
+                        $("#txtGoTo").val(1);
+                        table.page(0).draw('page');
+                        $("#txtGoTo").focus();
+                    }
+                } catch (ex) {
+                    console.warn(ex.toString());
+                    e.target.value = 1;
+                }
+            });
+            $(".dataTables_length .form-select").on('change', function () {
+                $("#txtGoTo").val(table.page() + 1);
+                $("div.page-info").html('of ' + table.page.info().pages + '</div>');
+            });
+            table.on('select deselect', function (e, dt, type, indexes) {
+                var rowCnt = table.rows({ selected: true }).count();
+                console.log('count', rowCnt);
+                if (rowCnt > 0) {
+                    $(".tr-trash").removeClass('isHide');
+                    //$(".tr-audit").removeClass('isHide');
+                    $("#btnExport").prop('disabled', false);
+                } else {
+                    $(".tr-trash").addClass('isHide');
+                    //$(".tr-audit").addClass('isHide');
+                    $("#btnExport").prop('disabled', true);
+                }
+            });
+
+
+            //Multi Select
+            var abc = $('.tr-select2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.tr-select2:input').val('');
+            $('.tr-select2').multiselect('rebuild');
+
+            $('.multiselectpicker').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.multiselectpicker2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.multiselect-native-select > .btn-group').addClass("w-100");
+            $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+            $('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-100");
+
+            addTableButtons();
+
+            $('.tr-select').on('change', function (e) {
+                if (e.target.value == "All") {
+                    data = dataAll;
+                } else {
+                    data = dataAll.filter(x => x.REC_TYPE_DESC.toString() == e.target.value);
+                }
+                if (data.length > 1) {
+                    $('.tr-rec').text(data.length + ' entries');
+                } else {
+                    $('.tr-rec').text(data.length + ' entry');
+                }
+
+                table.clear().rows.add(data).draw();
+            });
+
+        };
+
+        $(document).on('click', '#btnSearch', function (e) {
+            e.preventDefault();
+            as_exclude();
+            table.search($('#txtSearch').val()).draw();
+        });
+        $(document).on('keyup', '#txtSearch', function (e) {
+            as_exclude();
+            table.search($(this).val()).draw();
+        });
+
+        $(document).on('click', '#btnReset', function (e) {
+            e.preventDefault();
+            $('#AS_FIELD1').val('');
+            $('#AS_FIELD2').val('');
+            $('#AS_FIELD3').val('');
+            as_search();
+        });
+        function as_search() {
+            table.search("");
+            table.columns(1).search($('#AS_FIELD1').val().trim());
+            table.columns(2).search($('#AS_FIELD2').val().trim());
+            table.columns(3).search($('#AS_FIELD3').val().trim());
+            table.draw();
+        }
+        function as_exclude() {
+            table.columns(1).search("");
+            table.columns(2).search("");
+            table.columns(3).search("");
+        }
+
+    </script>
+
+    
+}
+

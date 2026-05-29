@@ -1,0 +1,509 @@
+﻿@using TPM_QAS.Models
+@model AppRoleModel
+
+
+@{
+    ViewBag.Title = "APPROVAL ROLE MM - Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row g-0 px-3 tr-listing-header">
+    <div class="col-sm-6 align-self-center">
+        <p class="text-muted m-0 tr-listing-header-title main-title">View Form - Approval Role</p>
+    </div>
+    <div class="col-sm-6 text-end align-self-center">
+        <div class="d-flex justify-content-end">
+            <div id="customDTButton"></div>
+        </div>
+    </div>
+</div>
+
+<div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+        <div class="card mt-3 mb-2 card-height">
+            <div class="card-body">
+                <div class="row align-items-baseline">
+                    <div class="col"><h6 class="card-title text-muted">Checking Plan</h6></div>
+                    @if (Model.RECORD_TYP != null)
+                    {
+                        if (@Model.RECORD_TYP != "5")
+                        {
+                            <div class="col text-end"><button class="btn btn-sm btn-primary" id="btnEdit" type="button" data-behaviour="toggle">Edit</button></div>
+                        }
+
+                    }
+                </div>
+
+                <hr />
+
+                <div class="row align-items-baseline">
+                    <div class="col-sm-2">
+                        <p class="text-muted">Approval Role Name <span class="text-danger">*</span><span style="float:right">:</span></p>
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.DropDownListFor(Model => Model.ROLE_NAME_ID, Model.DropdownApprovalName, "Select an option..", new { id = "ddlRoleName", @class = "ddloption isEditable form-control form-select", required = "required", disabled = "disabled" })
+                    </div>
+                </div>
+
+                <div class="row align-items-baseline">
+                    <div class="col-sm-2">
+                        <p class="text-muted">Remark <span class="text-danger"></span><span style="float:right">:</span></p>
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(model => model.REMARKS, new { @class = "isEditable form-control required-field", id = "txtremark", @maxlength = "100", disabled = "disabled" })
+
+                    </div>
+                </div>
+
+                <div class="row row-cols-2 mt-4">
+                    <div class="col-2 align-self-center">
+                        <h6 class="text-muted" style="float: left">Employee Listing</h6>
+                    </div>
+                    <div class="col-3">
+                        <div class="input-group">
+                            <div class="input-group-text tr-input-group tr-disabled" id="searchEmployee" onclick="popupEmployee()">
+                                <a href="#" class="text-reset vm isEditable" disabled><i class="fa-solid fa-ellipsis" aria-hidden="true" style="color: #fff"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-none isEditable col-7">
+                        <div class="row row-cols-auto justify-content-end g-1">
+                            <div class="col">
+                                <button class="btn btn-sm btn-md btn-danger" id="removeBtn" type="button">
+                                    Remove
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-sm btn-md btn-primary" id="addBtn" onclick="popupEmployee()" type="button">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-2 mx-1">
+                    <table id="item-table" class="detailTable" style="width:100%">
+                        <thead>
+                            <tr class="toolbar-row">
+                                <th class="d-none isEditable" style="width: 3%; text-align: center;">
+                                    <input id="trCheckbox" type="checkbox" class=" dt-checkboxes select-all form-check-input" style="margin-top:5.5px;">
+                                </th>
+                                <th>Employee Name</th>
+                                <th>Employee ID</th>
+                                <th>Email</th>
+                                <th>Department</th>
+                                <th>Section</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                            @{ var count = 0; }
+                            @if (Model.AppRoleEmpLstModel != null && Model.AppRoleEmpLstModel.Count > 0)
+                            {
+                                foreach (var item in Model.AppRoleEmpLstModel)
+                                {
+                                    count++;
+                            <tr id="R_@count" data-did="@count">
+                                <td class="d-none isEditable text-center">
+                                    <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_@count" onClick="handleCheckboxClick(this)">
+                                </td>
+                                <td>
+                                    <input type="text" class="isItemDisabled form-control" id="item_empname_@count" value="@item.EMP_NAME" placeholder="" style="border:none; box-shadow: none;" readonly>
+                                </td>
+                                <td>
+                                    <input type="text" class="isItemDisabled form-control" id="item_empid_@count" value="@item.EMP_ID" placeholder="" style="border:none; box-shadow: none;" readonly>
+                                </td>
+                                <td>
+                                    <input type="text" class="isItemDisabled form-control" id="item_email_@count" value="@item.EMP_EMAIL" placeholder="" style="border:none; box-shadow: none;" readonly>
+                                </td>
+                                <td>
+                                    <input type="text" class="isItemDisabled form-control" id="item_dept_@count" value="@item.EMP_DEPT" placeholder="" style="border:none; box-shadow: none;" readonly>
+                                </td>
+                                <td>
+                                    <input type="text" class="isItemDisabled form-control" id="item_sect_@count" value="@item.EMP_SECTION" placeholder="" style="border:none; box-shadow: none;" readonly>
+                                </td>
+                                <td class="d-none">
+                                    <input type="text" class="form-control" id="item_stat_@count" value="0">
+                                    <input type="text" class="form-control" id="item_dbid_@count" value="@item.MM_APPROLE_D_ID">
+                                </td>
+                            </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                    <input type="hidden" id="item-count" value="@count" />
+                </div>
+
+                <div class="hideInfo">
+                    <hr />
+
+                    <div class="row row-cols-2 mt-4">
+                        <div class="col align-self-center">
+                            <h6 style="float: left" class="text-muted">Entry Details</h6>
+                        </div>
+                        <div class="col">
+
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Updated By<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.UPDATED_BY">
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="text-muted">Created By<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.CREATED_BY">
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Updated Date<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.UPDATED_DATE">
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="text-muted">Created Date<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.CREATED_DATE">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row tr-btm-btn-area">
+                @if (Model.RECORD_TYP != null)
+                {
+                    if (@Model.RECORD_TYP != "5")
+                    {
+                        <div class="col"><button id="btnDeleteView" type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#delete-confirmation-modal">Delete</button></div>
+                    }
+
+                }
+                <div class="col">
+                    <div class="row row-cols-auto justify-content-end isNotEditable" style="padding-right: 20px">
+                        <div class="col"><button id="btnCancelView" type="button" class="btn btn-sm btn-secondary">Back</button></div>
+                    </div>
+
+                    <div class="row row-cols-auto justify-content-end isEditable g-1" style="display:none; padding-right: 20px">
+                        <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-back-confirmation-modal">Back</button></div>
+                        <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+                    </div>
+                </div>
+        </div>
+
+    </div>
+</div>
+
+
+
+@section scripts {
+    <script>
+    var idh = '@Model.MM_APPROLE_H_ID';
+
+    $(document).ready(function () {
+        checkboxChecking();
+
+        var listingURL = '/MM_APP_ROLE/MM_APP_ROLE_LST';
+
+        //REMOVE D
+        $('#removeBtn').on('click', function () {
+            $('#item-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                var row = $(ele).closest('tr');
+                var itemStatInput = row.find('input[id^="item_stat_"]');
+                var item_stat = itemStatInput.val();
+
+                if (item_stat != '1') {
+                    itemStatInput.val('5');
+                    row.hide();
+                } else {
+                    row.remove();
+                }
+            });
+
+            checkboxChecking();
+        });
+
+        //SUBMIT
+        $('#btnConfirmSubmit').on('click', function () {
+            $('.invalid-feedback').remove();
+            $('.is-invalid').removeClass('is-invalid');
+
+            var cont = true;
+            var message = "";
+
+            var ddlRoleName = $("#ddlRoleName").val();
+            var txtremark = $("#txtremark").val();
+
+            if (ddlRoleName == undefined || ddlRoleName == null || ddlRoleName == 0 || ddlRoleName == "" || ddlRoleName == "Select an option..") {
+                cont = false;
+                message += 'Please select Approval Role Name. <br>';
+            }
+
+            $('.required-field').each(function (e) {
+                var input_val = $(this).val().trim();
+                if (input_val == null || input_val == undefined || input_val === "") {
+                    cont = false;
+                    $(this).addClass('is-invalid');
+                    inputError(this);
+                }
+            });
+
+            var hasItem = false;
+            var hasError = false;
+            var hasDuplicate = false;
+            var existedItem = [];
+
+            var emplist = [];
+
+            $("#item-table tbody tr").each(function () {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat = $('#item_stat_' + did).val();
+                    var item_dbid = $('#item_dbid_' + did).val();
+
+                    var item_empname = $('#item_empname_' + did).val();
+                    var item_empid = $('#item_empid_' + did).val();
+                    var item_email = $('#item_email_' + did).val();
+                    var item_dept = $('#item_dept_' + did).val();
+                    var item_sect = $('#item_sect_' + did).val();
+
+                    if (item_stat != '5') {
+                        if (item_empid !== "" && item_empid != '0') {
+                            hasItem = true;
+                            if (existedItem.includes(item_empid)) {
+                                hasDuplicate = true;
+                                return false;
+                            } else {
+                                existedItem.push(item_empid);
+                            }
+                        } else {
+                            hasError = true;
+                        }
+                    }
+
+                    emplist.push({
+                        'MM_APPROLE_D_ID': item_dbid,
+                        'RECORD_TYP': item_stat,
+
+                        'EMP_NAME': item_empname,
+                        'EMP_ID': item_empid,
+                        'EMP_EMAIL': item_email,
+                        'EMP_DEPT': item_dept,
+                        'EMP_SECTION': item_sect
+                    });
+                }
+            });
+
+            if (cont && !hasItem) {
+                cont = false;
+                message = "Please add at least one Employee Listing.";
+            }
+
+            if (cont && hasDuplicate) {
+                cont = false;
+                message = "Duplicate employee name and ID selected.";
+            }
+
+            if (cont) {
+
+                var model = {
+
+                    MM_APPROLE_H_ID: idh,
+                    RECORD_TYP: '3',
+
+                    ROLE_NAME_ID: ddlRoleName,
+                    REMARKS: txtremark,
+
+                    AppRoleEmpLstModel: emplist
+                };
+
+                console.log(model)
+
+                $.ajax({
+                    url: "/MM_APP_ROLE/InsertUpdateAppRole",
+                    type: 'POST',
+                    data: {
+                        model: model
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data save successfully");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+
+        });
+
+        // BUTTON DELETE
+        $('#btnConfirmDel').on('click', function () {
+
+            var lstid = [];
+            lstid.push(idh)
+
+            $.ajax({
+                url: "/MM_APP_ROLE/deleteAppRole",
+                type: 'POST',
+                data: {
+                    lstid: lstid
+                },
+                beforeSend: function () {
+                    loadings();
+                },
+                success: function (response) {
+                    loadings(false);
+                    if (response.success) {
+                        displayToast("s", "Data successfully deleted");
+
+                        setTimeout(function () {
+                            window.location.href = listingURL;
+                        }, 2000);
+
+                    } else {
+                        displayToast("error", response.message)
+                    }
+                },
+                error: function () {
+                    displayToast("error", response.responseText)
+                }
+            });
+
+        });
+
+        //BUTTON CANCEL/BACK
+        $('#btnCancelView').on('click', function () {
+                var del = '0';
+                if (@Model.RECORD_TYP != null && @Model.RECORD_TYP  == '5') {
+                    del = '1';
+                }
+                window.location.href = listingURL + '?Deleted=' + del;
+        });
+
+        $('#btnBackEdit').on('click', function () {
+            window.location.href = listingURL;
+        });
+    });
+
+    //ADD EMP LIST
+        function addEmployeeList(data) {
+        var cont = true;
+        var message = "";
+
+        var hasDuplicate = false;
+        for (var i = 0; i < data.length; i++) {
+
+            var rowIdx = $('#item-count').val();
+
+            if (rowIdx != '0') {
+                $("#item-table tbody tr").each(function () {
+                    var empid = data[i].EMP_ID;
+
+                    var did = $(this).data('did');
+                    if (did != '' && did != null && did != undefined) {
+                        var item_stat = $('#item_stat_' + did).val();
+                        var item_empid = $('#item_empid_' + did).val();
+
+                        if (data[i].INSERT != 'N') {
+                            if (item_stat != '5' && item_empid == empid) {
+                                hasDuplicate = true;
+                                data[i].INSERT = 'N';
+                            } else {
+                                data[i].INSERT = 'Y';
+                            }
+                        }
+
+                    }
+                });
+            } else {
+                data[i].INSERT = 'Y';
+            }
+
+
+        }
+
+        //if (cont && hasDuplicate) {
+        //    cont = false;
+        //    message = "Duplicate property and property items selected.";
+        //}
+
+        if (cont) {
+            var rowIdx = $('#item-count').val();
+
+            for (var i = 0; i < data.length; i++) {
+
+                if (data[i].INSERT == 'Y') {
+                    rowIdx++;
+                    $('#item-count').val(rowIdx);
+
+                    $("#item-table tbody").append(`
+                    <tr id="R_${rowIdx}" data-did="${rowIdx}">
+                        <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_${rowIdx}" onClick="handleCheckboxClick(this)"></td>
+                        <td><input type="text" class="form-control" value="${data[i].EMP_NAME}"  id="item_empname_${rowIdx}" placeholder="" disabled></td>
+                        <td><input type="text" class="form-control" value="${data[i].EMP_ID}"  id="item_empid_${rowIdx}" placeholder="" disabled></td>
+                        <td><input type="text" class="form-control" value="${data[i].EMP_EMAIL}"  id="item_email_${rowIdx}" placeholder="" disabled></td>
+                        <td><input type="text" class="form-control" value="${data[i].EMP_DEPT}"  id="item_dept_${rowIdx}" placeholder="" disabled></td>
+                        <td><input type="text" class="form-control" value="${data[i].EMP_SECTION}"  id="item_sect_${rowIdx}" placeholder="" disabled></td>
+                        <td class="d-none">
+                            <input type="text" id="item_stat_${rowIdx}" value="1">
+                            <input type="text" id="item_dbid_${rowIdx}" value="0">
+                        </td>
+                    </tr>`);
+
+                    checkboxChecking();
+                }
+            }
+
+        } else {
+            if (message != "") {
+                displayToast("error", message)
+            }
+        }
+    }
+
+    //POPUP
+    function popupEmployee() {
+        var isDisabled = $('#searchEmployee').hasClass('tr-disabled');
+
+        if (!isDisabled) {
+            var id = idh;
+            var popup;
+            var url = '@Url.Action("MM_APP_ROLE_EMP_POPOUT", "MM_APP_ROLE")';
+
+            url = url + '?id=' + id;
+            popup = window.open(url, "Popup", "directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width=1000,height=800");
+            popup.focus();
+        }
+    }
+    </script>
+}
+

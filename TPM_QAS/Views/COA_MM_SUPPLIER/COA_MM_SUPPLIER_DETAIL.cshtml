@@ -1,0 +1,395 @@
+﻿@using TPM_QAS.Models
+@model COASupplierModel
+
+
+@{
+    ViewBag.Title = "Supplier Raw Material Specifications MM - Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row g-0 px-3 tr-listing-header">
+    <div class="col-sm-6 align-self-center">
+        <p class="text-muted m-0 tr-listing-header-title main-title">View Form - Supplier Raw Material Specifications</p>
+    </div>
+    <div class="col-sm-6 text-end align-self-center">
+        <div class="d-flex justify-content-end">
+            <div id="customDTButton"></div>
+        </div>
+    </div>
+</div>
+
+<div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+        <div class="card mt-3 mb-2 card-height">
+            <div class="card-body">
+                <div class="row align-items-baseline">
+                    <div class="col"><h6 class="card-title text-muted">Supplier Details - Key Information</h6></div>
+                    @if (Model.RECORD_TYP != null)
+                    {
+                        if (Model.RECORD_TYP != "5")
+                        {
+                            <div class="col text-end"><button class="btn btn-sm btn-primary" id="btnEdit" type="button" data-behaviour="toggle">Edit</button></div>
+                        }
+
+                    }
+                </div>
+
+                <hr />
+
+                <div class="row align-items-baseline">
+                    <div class="col-sm-2">
+                        <p class="text-muted">Supplier Name <span class="isEditable d-none text-danger">*</span><span style="float:right">:</span></p>
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(model => model.SUPPLIER_NAME, new { @class = "isEditable form-control required-field", id = "txtname", @maxlength = "100", disabled = "disabled" })
+
+                    </div>
+                </div>
+
+                <div class="row row-cols-2 mt-4">
+                    <div class="a1 col align-self-center">
+                        <h6 class="text-muted" style="float: left">Key Information</h6>
+                    </div>
+                    <div class="a2 d-none isEditable col">
+                @*<div class="row row-cols-auto justify-content-end g-1">
+                    <div class="col">
+                        <button class="btn btn-sm btn-md btn-danger" id="removeBtn" type="button">
+                            Remove
+                        </button>
+                    </div>
+                    <div class="col">
+                        <button class="btn btn-sm btn-md btn-primary" id="addBtn" type="button">
+                            Add
+                        </button>
+                    </div>
+                </div>*@
+            </div>
+                </div>
+
+                <div class="row mt-2 mx-1">
+                    <table id="item-table" class="detailTable" style="width:100%">
+                        <thead>
+                            <tr class="toolbar-row">
+                                <th>Key Type <span class="isEditable text-danger d-none">*</span></th>
+                                <th>Key Information <span class="isEditable text-danger d-none">*</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                            @{ var count = 0; }
+                            @foreach (var item in Model.SupplierLstModel)
+                            {
+                                count++;
+                                <tr id="R_@count" data-did="@count">
+                                    <td>
+                                        <input type="text" class="isItemDisabled form-control" id="item_keytype_@count" value="@item.KEY_TYPE" placeholder="" style="border:none;box-shadow: none;" readonly>
+                                    </td>
+                                    <td>
+                                        <input type="text" class="isEditable form-control" id="item_suppkey_@count" value="@item.SUPPLIER_KEY" placeholder="" style="border:none;box-shadow: none;" readonly>
+                                    </td>
+                                    <td class="d-none">
+                                        <input type="text" class="form-control" id="item_stat_@count" value="0">
+                                        <input type="text" class="form-control" id="item_dbid_@count" value="@item.MM_SUPPLIER_D_ID">
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <input type="hidden" id="item-count" value="@count" />
+                </div>
+
+                <div class="hideInfo">
+                    <hr />
+
+                    <div class="row row-cols-2 mt-4">
+                        <div class="col align-self-center">
+                            <h6 style="float: left" class="text-muted">Entry Details</h6>
+                        </div>
+                        <div class="col">
+
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Updated By<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.UPDATED_BY">
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="text-muted">Created By<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.CREATED_BY">
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Updated Date<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.UPDATED_DATE">
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="text-muted">Created Date<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.CREATED_DATE">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row tr-btm-btn-area">
+            @if (Model.RECORD_TYP != null)
+            {
+                if (@Model.RECORD_TYP != "5")
+                {
+                    <div class="col"><button id="btnDeleteView" type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#delete-confirmation-modal">Delete</button></div>
+                }
+
+            }
+            <div class="col">
+                <div class="row row-cols-auto justify-content-end isNotEditable" style="padding-right: 20px">
+                    <div class="col"><button id="btnCancelView" type="button" class="btn btn-sm btn-secondary">Back</button></div>
+                </div>
+
+                <div class="row row-cols-auto justify-content-end isEditable g-1" style="display:none; padding-right: 20px">
+                    <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-back-confirmation-modal">Back</button></div>
+                    <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+        $(document).ready(function () {
+            checkboxChecking();
+
+            var listingURL = '/COA_MM_SUPPLIER/COA_MM_SUPPLIER_LST';
+            var idh = '@Model.MM_SUPPLIER_H_ID';
+
+            ////ADD
+            //$('#addBtn').on('click', function () {
+
+            //    var rowIdx = $('#item-count').val();
+            //    rowIdx++;
+            //    $('#item-count').val(rowIdx);
+
+            //    $('#item-table tbody').append(`
+            //      <tr id="R_${rowIdx}" data-did="${rowIdx}">
+            //          <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_${rowIdx}" onClick="handleCheckboxClick(this)"></td>
+            //          <td><input type="text" class="form-control " id="item_suppkey_${rowIdx}" placeholder=""></td>
+            //          <td class="d-none">
+            //              <input type="text" id="item_stat_${rowIdx}" value="1">
+            //              <input type="text" id="item_dbid_${rowIdx}" value="0">
+            //          </td>
+            //      </tr> `);
+
+            //    checkboxChecking();
+
+            //});
+
+            ////REMOVE
+            //$('#removeBtn').on('click', function () {
+            //        $('#item-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+            //            var row = $(ele).closest('tr');
+            //            var itemStatInput = row.find('input[id^="item_stat_"]');
+            //            var item_stat = itemStatInput.val();
+
+            //            if (item_stat != '1') {
+            //                itemStatInput.val('5');
+            //                row.hide();
+            //            } else {
+            //               row.remove();
+            //            }
+            //        });
+
+            //        checkboxChecking();
+            //});
+
+            //SUBMIT
+            $('#btnConfirmSubmit').on('click', function () {
+                $('.invalid-feedback').remove();
+                $('.is-invalid').removeClass('is-invalid');
+
+
+                var cont = true;
+                var message = "";
+
+                var txtname = $("#txtname").val();
+
+                if (txtname == undefined || txtname == null || txtname == "") {
+                    cont = false;
+                    message += 'Missing Supplier Name value. <br>';
+                }
+
+                $('.required-field').each(function (e) {
+                    var input_val = $(this).val().trim();
+                    if (input_val == null || input_val == undefined || input_val === "") {
+                        cont = false;
+                        message += 'Please fill in required field. <br>';
+                        $(this).addClass('is-invalid');
+                        inputError(this);
+                    }
+                });
+
+                var hasItem = false;
+                var hasError = false;
+                var hasDuplicate = false;
+                var existedItem = [];
+
+                var list = [];
+
+                $("#item-table tbody tr").each(function () {
+                    var did = $(this).data("did");
+                    if (did != '' && did != null && did != undefined) {
+                        var item_stat = $('#item_stat_' + did).val();
+                        var item_dbid = $('#item_dbid_' + did).val();
+                        
+                        var item_keytype = $('#item_keytype_' + did).val();
+                        var item_suppkey = $('#item_suppkey_' + did).val();
+
+                        if (item_stat != '5') {
+                            if (item_suppkey !== "") {
+                                hasItem = true;
+                                if (existedItem.includes(item_suppkey)) {
+                                   // hasDuplicate = true;
+                                    return false;
+                                } else {
+                                    existedItem.push(item_suppkey);
+                                }
+                            } else {
+                                hasError = true;
+                            }
+                        }
+
+                        list.push({
+                            'MM_SUPPLIER_D_ID': item_dbid,
+                            'RECORD_TYP': item_stat,
+                            'KEY_TYPE': item_keytype,
+                            'SUPPLIER_KEY': item_suppkey
+                        });
+                    }
+                });
+
+                if (cont && !hasItem) {
+                    cont = false;
+                    message = "Please add at least one Key Information.";
+                }
+                if (cont && hasError) {
+                    cont = false;
+                    message = "Please make sure required field in Key Information is not empty.";
+                }
+                //if (cont && hasDuplicate) {
+                //    cont = false;
+                //    message = "Duplicate Key Information.";
+                //}
+
+                if (cont) {
+
+                    var model = {
+                        MM_SUPPLIER_H_ID: idh,
+                        SUPPLIER_NAME: txtname,
+                        RECORD_TYP: '3',
+                        SupplierLstModel: list
+                    };
+
+                    console.log(model)
+
+                    $.ajax({
+                        url: "/COA_MM_SUPPLIER/InsertUpdateSupplier",
+                        type: 'POST',
+                        data: {
+                            model: model
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            });
+
+            // BUTTON DELETE
+            $('#btnConfirmDel').on('click', function () {
+
+                var lstid = [];
+                lstid.push(idh)
+
+                $.ajax({
+                    url: "/COA_MM_SUPPLIER/deleteSupplier",
+                    type: 'POST',
+                    data: {
+                        lstid: lstid
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data successfully deleted");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            });
+
+            //BUTTON CANCEL/BACK
+            $('#btnCancelView').on('click', function () {
+                var del = '0';
+                if (@Model.RECORD_TYP != null && @Model.RECORD_TYP  == '5') {
+                    del = '1';
+                }
+                window.location.href = listingURL + '?Deleted=' + del;
+            });
+
+            $('#btnBackEdit').on('click', function () {
+                 window.location.href = listingURL;
+            });
+
+        });
+
+    </script>
+}
+

@@ -1,0 +1,1615 @@
+﻿@using TPM_QAS.Helpers;
+<!DOCTYPE html>
+<html class="h-100">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>@System.Configuration.ConfigurationManager.AppSettings["SystemName"]</title>
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/fontawesome")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/Scripts/Main.js")
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/js")
+    @Scripts.Render("~/Scripts/vendor")
+
+    @RenderSection("VendorCSS", required: false)
+    @Scripts.Render("~/bundles/vendorscripts.bundle.js")
+    @Scripts.Render("~/bundles/mainscripts.bundle.js")
+
+    @section VendorCSS {
+        <link rel="stylesheet" href="~/Content/c3.min.css" />
+    }
+
+    <script src="~/Scripts/js/canvasjs/jquery.canvasjs.min.js"></script>
+    <script src="~/Scripts/d3.min.js"></script>
+    <script src="~/Scripts/c3.min.js"></script>
+    <style>
+
+        .margin-top-20 {
+            margin-top: -20px;
+        }
+        #overlay {
+            position: fixed;
+            z-index: 99999;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+            #overlay img {
+                width: 600px;
+                height: 400px;
+            }
+
+            #overlay .text-center {
+                font-size: 25px;
+                font-weight: bold;
+                color: black;
+                opacity: 0.7;
+            }
+
+        .multiselect-search {
+            padding-left: 2rem !important;
+        }
+
+        #pathtitle a {
+
+            color: #54575A !important;
+            text-decoration: none !important;
+        }
+
+            #pathtitle a:hover {
+                text-decoration: underline !important;
+            }
+
+        .page-container {
+            overflow: auto;
+            padding-bottom: 2rem;
+            padding-right: 1rem !important;
+            padding-left: 1rem !important;
+        }
+
+        .nav-tabs {
+            --bs-nav-tabs-border-width: 0px;
+        }
+
+        .viewfilecss {
+            color: #212529;
+            padding-left: 26px;
+            font: 15px Roboto, sans-serif;
+        }
+
+        #firstOCRtable thead tr th {
+            text-align: center;
+            text-transform: none;
+            font-size: 16px;
+        }
+
+        .tr-tab .nav-link {
+            min-width: 250px;
+            text-align: left;
+            background-color: #F0F0F0 !important;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+            .tr-tab .nav-link:not(:first-child) {
+                margin-left: 5px;
+            }
+
+        .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+            box-shadow: inset 0 0px 0 transparent !important;
+        }
+
+        .tr-tab .nav-link.active {
+            color: #54575A !important;
+            background-color: #EBF3FF !important;
+            font-weight: bold;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .nav-tabs .nav-link {
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+            border-width: 0px !important;
+        }
+
+        .status-select {
+            border: 0px;
+        }
+
+        .tr-text {
+            text-align: end;
+        }
+
+        .toolbar {
+            float: right;
+        }
+
+        .toolbar-pop {
+            float: left;
+        }
+
+        .tr-pop-line {
+            border-top: 1px solid #F0F0F0;
+            margin: 0px;
+        }
+
+        .tr-input-group {
+            background-color: #057EE6;
+            border-color: #057EE6;
+        }
+
+            .tr-input-group.tr-disabled {
+                background-color: #54575A;
+                border-color: #54575A;
+            }
+
+        a.tr-disabled {
+            pointer-events: none;
+        }
+
+        #txtSearch {
+            max-width: 300px;
+        }
+
+        .popup-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .form-switch {
+            padding-right: 20px;
+        }
+
+        .sort-handle:hover {
+            cursor: grab;
+        }
+
+        .day-box {
+            padding: 10px 10px 10px 10px;
+        }
+
+        .highlight {
+            border: 2px solid blue;
+        }
+
+        /* Style for the popup button */
+        .popup-button {
+            background-color: dodgerblue;
+            border: none;
+            cursor: pointer;
+        }
+
+            .popup-button a {
+                color: #fff;
+                text-decoration: none;
+                display: block;
+            }
+
+        /* Style for the popup content */
+        .popup-content {
+            display: none;
+            position: absolute;
+            background-color: #fff;
+            border: 1px solid dodgerblue;
+            padding: 10px;
+            z-index: 1;
+        }
+
+        /* Show the popup content when the button is clicked */
+        .popup-button:hover + .popup-content {
+            display: block;
+        }
+
+        /**JH230712 - Custom**/
+
+        .isHide {
+            display: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .tr-input-group {
+            background-color: #057EE6;
+            border-color: #057EE6;
+        }
+
+        .multiselect-container.dropdown-menu {
+            max-height: 400px;
+            overflow: auto;
+        }
+
+        .table-control {
+            width: 100%;
+            overflow: auto;
+        }
+
+        .sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .arrowinv {
+            width: 3% !important;
+        }
+
+        .radioh {
+            padding-top: 20px;
+        }
+
+        .disabled-div {
+            background-color: #ccc !important;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+
+        .varinput {
+            height: 40px;
+            width: 40px;
+            text-align: center;
+            line-height: 1;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+        }
+
+        .varerase {
+            height: 40px;
+            width: 100px;
+            text-align: center;
+            line-height: 1;
+            margin: 10px 10px;
+            border: 1px solid #ced4da;
+        }
+
+        .varian {
+            height: 40px;
+            width: 65px;
+            text-align: center;
+            line-height: 1;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ced4da;
+        }
+
+
+        .modalform {
+            height: 40px; /* Match the height of varinput buttons */
+        }
+
+        a.tr-disabled {
+            pointer-events: none;
+        }
+
+        .status-select {
+            border: 0px;
+        }
+
+        .tr-text {
+            text-align: end;
+        }
+
+        .toolbar {
+            float: right;
+        }
+
+        .toolbar-pop {
+            float: left;
+        }
+
+        .tr-pop-line {
+            border-top: 1px solid #F0F0F0;
+            margin: 0px;
+        }
+
+        .tr-input-group {
+            background-color: #057EE6;
+            border-color: #057EE6;
+        }
+
+            .tr-input-group.tr-disabled {
+                background-color: #54575A;
+                border-color: #54575A;
+            }
+
+        @@keyframes shake-anim {
+            0% {
+                transform: rotate(-35deg);
+            }
+
+            25% {
+                transform: rotate(25deg);
+            }
+
+            50% {
+                transform: rotate(-15deg);
+            }
+
+            75% {
+                transform: rotate(10deg);
+            }
+
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+
+        /**Overwrite site.css**/
+        .detail-frame {
+            overflow: hidden;
+        }
+
+        /*select.form-control {
+            -webkit-appearance: menulist !important;
+            -moz-appearance: menulist !important;
+        }*/
+        body {
+            overflow: hidden;
+        }
+
+
+        .toasts {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            z-index: 999;
+        }
+
+        #sidebar, #sidebar-nav {
+            width: 300px !important;
+        }
+
+        #sidebar-nav {
+            position: fixed;
+            overflow-y: auto;
+            height: calc(100vh - 55px - 42px - 42px - 25px - 19px) !important;
+        }
+
+        .inc-tooltips {
+            width: fit-content;
+        }
+
+        .inc-tooltip {
+            position: absolute;
+            background-color: #fff;
+            color: rgba(0,0,0,0.9);
+            padding: 5px;
+            border: 1px solid #000;
+            border-radius: 3px;
+            z-index: 10;
+            white-space: nowrap;
+        }
+
+        .inc-tooltip-table {
+            border-collapse: collapse;
+        }
+
+            .inc-tooltip-table td {
+                font-size: 14px;
+                padding: 2px 5px;
+            }
+
+        #chgpassword_btn {
+            color: inherit !important;
+            font-weight: bold;
+            position: fixed;
+            bottom: 68px;
+            margin-top: auto;
+            width: 330px;
+            padding: 10px;
+            text-decoration: none;
+        }
+
+            #chgpassword_btn:hover {
+                color: dodgerblue !important;
+                cursor: pointer;
+            }
+
+        @@media only screen and (min-device-width: 1280px) and (max-device-width: 1599px) {
+            /*laptop*/
+            .select2.select2-container .select2-selection {
+                height: 28px;
+                padding-bottom: 29px;
+            }
+
+            .select2-selection__rendered {
+                color: #54575A !important;
+                font: 14px Roboto, sans-serif;
+            }
+
+            .select2.select2-container .select2-selection .select2-selection__arrow {
+                padding: 1.9rem 1.5rem 0.5rem 1rem;
+            }
+
+            .modal-header {
+                margin-bottom: -15px;
+                margin-top: -10px;
+            }
+
+            .custom-toolbar {
+                margin-right: 2px;
+            }
+
+            .modal-xl-ocr {
+                --bs-modal-width: 1220px;
+            }
+
+            .content-center-p {
+                padding-left: 90px !important;
+                padding-top: 5px !important;
+            }
+
+            #chgpassword_btn {
+                width: 200px;
+            }
+
+            #sidebar, #sidebar-nav {
+                width: 220px !important;
+            }
+
+            #sidebar-nav {
+                height: calc(100vh - 55px - 42px - 42px - 25px) !important;
+            }
+            /*.tr-text {
+                text-align: start;
+            }*/
+            .tr-pop-line {
+                border-top: 1px solid #F0F0F0;
+                margin: 10px 0px;
+            }
+        }
+
+        @@media (min-width: 1599px) {
+            /*monitor*/
+            
+
+            .height-override {
+                height: calc(100vh - 58px - 70px - 75px - 25px) !important;
+            }
+
+            .tr-btm-size {
+                padding-top: 2px !important;
+            }
+
+            .modal-header {
+                margin-bottom: -25px;
+                margin-top: -10px;
+            }
+
+            .custom-toolbar-add-margin {
+                margin-right: 2px;
+            }
+
+            .content-center-p {
+            }
+
+            .modal-lg, .modal-xl {
+                --bs-modal-width: 1024px;
+            }
+
+            .modal-seq {
+                --bs-modal-width: 700px;
+            }
+
+            .modal-xl-ocr {
+                --bs-modal-width: 1524px;
+            }
+
+            .select2.select2-container .select2-selection {
+                height: 40px;
+                padding-top: 3px;
+            }
+
+                .select2.select2-container .select2-selection .select2-selection__arrow {
+                    padding: 1.9rem 1.5rem 0.5rem 1rem;
+                }
+        }
+
+        @@media (max-width: 576px) {
+            .tr-text {
+                text-align: start;
+            }
+        }
+
+        .nav-tabs {
+            --bs-nav-tabs-border-width: 0px;
+        }
+
+        .tr-tab .nav-link {
+            min-width: 250px;
+            text-align: left;
+            background-color: #F0F0F0 !important;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+            .tr-tab .nav-link:not(:first-child) {
+                margin-left: 5px;
+            }
+
+        .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+            box-shadow: inset 0 0px 0 transparent !important;
+        }
+
+        .tr-tab .nav-link.active {
+            color: #54575A !important;
+            background-color: #EBF3FF !important;
+            font-weight: bold;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        .nav-tabs .nav-link {
+            padding-top: 10px !important;
+            padding-bottom: 10px !important;
+            border-width: 0px !important;
+        }
+
+        .label-input-group {
+            background-color: inherit !important;
+            border-color: #ced4da !important;
+        }
+
+        .btn-info {
+            color: #ffffff !important;
+            background-color: #3459e6;
+            border-color: #46b8da;
+        }
+
+        .select2.select2-container {
+            width: 100% !important;
+        }
+
+            .select2.select2-container .select2-selection {
+                border: 1px solid #ccc;
+                -webkit-border-radius: 3px;
+                -moz-border-radius: 3px;
+                border-radius: 0.375rem;
+              /*  height: 40px;*/
+                outline: none !important;
+                transition: all .15s ease-in-out;
+            }
+
+                .select2.select2-container .select2-selection .select2-selection__rendered {
+                    color: #333;
+                    line-height: 32px;
+                    padding-right: 33px;
+                }
+
+
+            .select2.select2-container.select2-container--open .select2-selection.select2-selection--single {
+                /*background: #f8f8f8;*/
+            }
+
+                .select2.select2-container.select2-container--open .select2-selection.select2-selection--single .select2-selection__arrow {
+                    -webkit-border-radius: 0 3px 0 0;
+                    -moz-border-radius: 0 3px 0 0;
+                    border-radius: 0 3px 0 0;
+                }
+
+            .select2.select2-container.select2-container--open .select2-selection.select2-selection--multiple {
+                border: 1px solid #34495e;
+            }
+
+            .select2.select2-container .select2-selection--multiple {
+                height: auto;
+                min-height: 34px;
+            }
+
+                .select2.select2-container .select2-selection--multiple .select2-search--inline .select2-search__field {
+                    margin-top: 0;
+                    height: 32px;
+                }
+
+                .select2.select2-container .select2-selection--multiple .select2-selection__rendered {
+                    display: block;
+                    padding: 0 4px;
+                    line-height: 29px;
+                }
+
+                .select2.select2-container .select2-selection--multiple .select2-selection__choice {
+                    background-color: #f8f8f8;
+                    border: 1px solid #ccc;
+                    -webkit-border-radius: 3px;
+                    -moz-border-radius: 3px;
+                    border-radius: 3px;
+                    margin: 4px 4px 0 0;
+                    padding: 0 6px 0 22px;
+                    height: 24px;
+                    line-height: 24px;
+                    font-size: 12px;
+                    position: relative;
+                }
+
+                    .select2.select2-container .select2-selection--multiple .select2-selection__choice .select2-selection__choice__remove {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        height: 22px;
+                        width: 22px;
+                        margin: 0;
+                        text-align: center;
+                        color: #e74c3c;
+                        font-weight: bold;
+                        font-size: 16px;
+                    }
+
+        .select2-container .select2-dropdown {
+            background: transparent;
+            border: none;
+        }
+
+        .select2-results__option {
+            padding: 0px 10px;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .select2-container .select2-dropdown .select2-search {
+            padding: 0;
+        }
+
+            .select2-container .select2-dropdown .select2-search input {
+                outline: none !important;
+                border-bottom: none !important;
+            }
+
+        .select2-container .select2-dropdown .select2-results {
+            padding: 0;
+        }
+
+            .select2-container .select2-dropdown .select2-results ul {
+                background: #fff;
+                border: 1px solid #ced4da;
+            }
+
+                .select2-container .select2-dropdown .select2-results ul .select2-results__option--highlighted[aria-selected] {
+                    background-color: #3498db;
+                }
+
+    </style>
+</head>
+
+<body class="theme-cyan">
+    <div class="tr-tooltips-container"></div>
+    <div class="sticky-top">
+        <header class="navbar navbar-dark sticky-top flex-md-nowrap p-0 shadow tr-navbar">
+            <div class="row row-cols-auto align-items-center">
+                <a href="#" class="col" style="margin-left: 10px; margin-top: -5px">
+                    <img class="p-0 tr-navbar-logo" src="~/Images/Toray Logo.png" />
+                </a>
+                <div class="tr-nav-divider"></div>
+                <div id="accountMenu" class="d-md-none collapse">
+                    <div class="row mb-2">
+                        <p class="h4 text-secondary m-0 px-4">@System.Configuration.ConfigurationManager.AppSettings["SystemName"]</p>
+                    </div>
+                    <div class="row mb-2">
+                        @if (Session["AclUser"] != null)
+                        {
+                            <p class="h6 text-secondary m-0 px-4"><i class="fa-solid fa-user px-2"></i>@((Session["AclUser"] as ACL_UserObj).EMP_NAME)</p>
+                        }
+                        else
+                        {
+                            <p class="h6 text-secondary m-0 px-4"><i class="fa-solid fa-user px-2"></i>Anonymous</p>
+                        }
+                    </div>
+                    <div class="row mb-2">
+                        <a href="#" class="text-reset" style="color:#fff !important"><i class="fa-solid fa-right-from-bracket px-2"></i>LOGOUT</a>
+                    </div>
+                </div>
+            </div>
+            <div class="me-auto d-none d-md-block">
+                <p class="m-0 px-4 tr-navbar-title">@System.Configuration.ConfigurationManager.AppSettings["SystemName"]</p>
+            </div>
+            <div class="navbar-nav d-none d-md-block">
+                <div class="nav-item text-nowrap">
+                    <form class="d-flex align-items-center">
+                        <div class="mx-2 text-uppercase">
+                            @if (Session["AclUser"] != null)
+                            {
+                                <a id="btnProfile" href="#" class="m-0 px-1 text-reset tr-navbar-logout">
+                                    <i class="fa-solid fa-user px-2"></i>@((Session["AclUser"] as ACL_UserObj).EMP_NAME)
+                                </a>
+                            }
+                            else
+                            {
+                                <a id="btnProfile" href="#" class="m-0 px-1 text-reset tr-navbar-logout">
+                                    <i class="fa-solid fa-user px-2"></i>Anonymous
+                                </a>
+                            }
+                        </div>
+                        <div class="tr-nav-divider"></div>
+                        <div>
+                            <a id="btnLogout" href="#" class="px-1 text-reset tr-navbar-logout"><i class="fa-solid fa-right-from-bracket px-2"></i>&nbsp;LOGOUT</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            @*<button class="navbar-toggler position-absolute d-md-none collapsed" style="top:0.5em; right:1em" type="button" data-bs-toggle="collapse" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="true" aria-label="Toggle navigation">
+                    <span><i class="fa-solid fa-bars"></i></span>
+                </button>*@
+            <button class="navbar-toggler position-absolute d-md-none collapsed" style="top:0.5em; right:4em" type="button" data-bs-toggle="collapse" data-bs-target="#accountMenu" aria-controls="accountMenu" aria-expanded="false" aria-label="Toggle navigation">
+                <span><i class="fa-solid fa-user"></i></span>
+            </button>
+        </header>
+    </div>
+
+    <div class="container-fluid d-flex flex-column">
+        <div class="row flex-nowrap">
+            <div class="col-auto px-0">
+                <div id="sidebar" class="collapse collapse-horizontal show border-end sidebar h-100">
+                    <div id="sidebar-nav" class="list-group border-0 rounded-0 text-sm-start h-100">
+                        <div class="w-100 tr-sidebar-menu">
+                            <p class="h-100 tr-navbar-menu-item">
+                                <a href="#" data-bs-target=".sidebar" aria-controls="sidebar sidebar2" data-bs-toggle="collapse" class="border-0 w-100 p-1 text-decoration-none text-black">
+                                    <i class="fa-solid fa-bars"></i>
+                                </a>
+                                <b>Menu</b>
+                            </p>
+                        </div>
+
+                        @*acl*@
+                        <ul class="nav flex-column mb-2" id="sidebarcontent"></ul>
+
+                        <a id="chgpassword_btn" href="/Home/ChangePassword">Change Password</a>
+                        <div class="tr-help" style="padding-bottom:0.4%;">
+                            <div class="center">
+                                <span class="tr-help-txt">
+                                    Help
+                                    <button id="btnHelp" class="btn btn-link p-0 m-0 text-muted" style="margin-left: 5px !important; min-width: 15px; vertical-align: top">
+                                        <i class="fa-solid fa-question text-center" style="font-size:10px; border: 1.5px solid #6C757D; border-radius:30px; padding: 3px; width: 20px; vertical-align: top;"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="sidebar2" class="collapse collapse-horizontal hide border-end sidebar h-100">
+                    <div id="sidebar-nav2" class="list-group border-0 rounded-0 text-sm-start">
+                        <div class="w-100 tr-sidebar-menu">
+                            <p class="h-100 tr-navbar-menu-item">
+                                <a href="#" data-bs-target=".sidebar" aria-controls="sidebar sidebar2" data-bs-toggle="collapse" class="border-0 w-100 p-1 text-decoration-none text-black">
+                                    <i class="fa-solid fa-bars"></i>
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <main class="col ps-md-2 mx-2 detail-frame">
+                @RenderBody()
+                <!-- Loading Indicator -->
+                @*<div class="overlay align-self-center"></div>*@
+                <div id="progressBar" class="spanner align-self-center">
+                    <img id="loadingImage" src="~/assets/loading12.gif" alt="Loading" style="width: 85px; height: auto;" />
+                </div>
+            </main>
+        </div>
+    </div>
+    <div class="tr-footer d-flex flex-row" style="z-index:999;">
+        <div class="flex-column px-1 text-black-50 tr-footer-text" style="margin:auto">
+            <span>@System.Configuration.ConfigurationManager.AppSettings["VersionText"]</span>
+        </div>
+        <div class="flex-column flex-grow-1 text-center text-black-50 tr-footer-text" style="margin:auto; margin-left: -80px">
+            @TPM_QAS.Helpers.Copyright.GetCopyrightText()
+        </div>
+    </div>
+    @*<div class="w-100" style="height:35px; position: absolute">
+            <p class="text-center p-1 text-black-50">@System.Configuration.ConfigurationManager.AppSettings["CopyrightText"]</p>
+        </div>*@
+
+    <!--Popup message delete-->
+    <div class="modal fade" id="delete-confirmation-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmation</h5>
+                </div>
+                <hr />
+                <div class="modal-body">
+                    <h6>Are you sure to delete this record?</h6>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="btnConfirmDel">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Popup message submit-->
+    <div class="modal fade" id="submit-confirmation-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmation</h5>
+                </div>
+
+                <hr />
+
+                <div class="modal-body">
+                    <h6>Are you sure to submit this record?</h6>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal" id="btnConfirmSubmit">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Popup message back in add mode-->
+    <div class="modal fade" id="back-confirmation-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmation</h5>
+                </div>
+
+                <hr />
+
+                <div class="modal-body">
+                    <h6>Are you sure to leave the current page?</h6>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal" id="btnConfirmBack">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Popup message back in edit mode-->
+    <div class="modal fade" id="edit-back-confirmation-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmation</h5>
+                </div>
+
+                <hr />
+
+                <div class="modal-body">
+                    <h6>Are you sure to exit this page without saving?</h6>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal" id="btnBackEdit">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--General error message toast-->
+    @*<div class="toast-container toasts" style=" padding-bottom:2%;">
+            <div id="SuccessMessageToast" class="toast bg-primary-tr" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header bg-primary-tr">
+                    <strong class="me-auto">Success Message</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    <span id="success-message-body"> </span>
+                </div>
+            </div>
+        </div>*@
+    @*<div class="toast-container toasts" style=" padding-bottom:2%;">
+            <div id="ErrorMessageToast" class="toast bg-danger text-white" role="alert" aria-live="assertive" aria-atomic="true" data-autohide="false">
+                <div class="toast-header bg-danger text-white">
+                    <strong class="me-auto">Error Message</strong>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    <span id="error-message-body"> </span>
+                </div>
+            </div>
+        </div>*@
+
+    <div class="position-fixed translate-middle-x p-3 tr-toast-alert">
+        <div id="SuccessMessageToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" style="border: 1px solid #00A251">
+            <div class="toast-header" style="background-color: #E9FFF8">
+                <strong class="me-auto" style="color: #00A251">Successful!</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body text-muted" style="background-color: #E9FFF8; border-top: 1px solid #E9FFF8; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit">
+                <span id="success-message-body"> </span>
+            </div>
+        </div>
+    </div>
+    <div class="position-fixed translate-middle-x p-3 tr-toast-alert">
+        <div id="ErrorMessageToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" style="border: 1px solid #B1003C">
+            <div class="toast-header" style="background-color: #FFF0EE">
+                <strong class="me-auto text-danger">Warning!</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body text-muted" style="background-color: #FFF0EE; border-top: 1px solid #FFF0EE; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit">
+                <span id="error-message-body"> </span>
+            </div>
+        </div>
+    </div>
+
+
+    @RenderSection("scripts", required: false)
+<script>
+
+        $(document).ready(function () {
+            $(".ddloption option:contains('Select an option')").hide();
+
+            $(".select-ddl-item").on("mousedown", function (event) {
+                event.preventDefault(); // Prevent the default mousedown behavior
+            });
+
+            //JH230712
+            $("#sidebarcontent").load('@Url.Content("/Home/SideBar")', function () {
+                setActiveSidebar();
+            });
+
+            var del = '@ViewBag.Deleted';
+            if (del == '1') {
+                $("#cbCheckDeleted").prop('checked', true);
+            } else {
+                $("#cbCheckDeleted").prop('checked', false);
+            }
+
+            $(document).on('click', "#sidebarcontent li a.nav-header", function () {
+                $("#sidebarcontent li ul.list-unstyled").collapse('hide');
+                $("#sidebarcontent").find(".active").removeClass("active");
+                $(this).find(".fas").addClass("active");
+                $(this).addClass("active");
+            });
+
+            var collapseElement = document.querySelector('#sidebar');
+            collapseElement.addEventListener('shown.bs.collapse', function () {
+                // This event is triggered when the collapse animation ends and the element is fully shown
+                if (typeof table !== 'undefined') {
+                    table.columns.adjust().draw();
+                }
+            });
+            collapseElement.addEventListener('hidden.bs.collapse', function () {
+                // This event is triggered when the collapse animation ends and the element is fully hidden
+                if (typeof table !== 'undefined') {
+                    table.columns.adjust().draw();
+                }
+            });
+
+
+            //$("#sidebar-nav .nav-item a").on("click", function () {
+            //    $("#sidebar-nav").find(".active").removeClass("active");
+            //    $(this).parentsUntil(".nav").find(".nav-header").addClass("active");
+            //    $(this).addClass("active");
+            //});
+
+            $('#btnLogout').on('click', function () {
+                var url = '@Url.Action("Login", "Home")';
+                window.location.href = url;
+            });
+
+            $(".file-upload").fileinput({
+                showPreview: false,
+                showUpload: false,
+                showRemove: false,
+                showUploadStats: false,
+                browseClass: 'btn btn-sm btn-outline-secondary',
+                browseLabel: 'Choose File',
+                buttonLabelClass: 'file-input-browse-label'
+            });
+
+            $('#btnHelp').on('click', function () {
+                var url = '@Url.Action("Help", "Home")';
+                window.location.href = url;
+            });
+        });
+
+
+        //NISA230825 - FUNCTION TO CALL TOAST
+        function displayToast(type, message) {
+            if (type == 'success' || type == 's') {
+                const successToast = document.getElementById('SuccessMessageToast');
+                const toast = new bootstrap.Toast(successToast);
+                document.getElementById('success-message-body').innerHTML = message;
+                toast.show();
+            } else { // error
+                const errorToast = document.getElementById('ErrorMessageToast');
+                const toast = new bootstrap.Toast(errorToast);
+                document.getElementById('error-message-body').innerHTML = message;
+                toast.show();
+            }
+        }
+
+        //JH230712
+        $(window).on('beforeunload', function () {
+            loadings();
+        });
+        $(window).on('unload', function () {
+            loadings(false);
+        });
+
+        //Input control - JH230613
+        $(document).on('input', '.numericInput', function () {
+            var inputElement = $(this)[0]; // Get the raw DOM element
+            var inputValue = inputElement.value;
+            var cursorPositionStart = inputElement.selectionStart;
+            var cursorPositionEnd = inputElement.selectionEnd;
+            // Remove any non-digit or non-decimal characters
+            inputValue = inputValue.replace(/(?!^-)[^0-9.]/g, '');
+            // Remove leading zeros, except for zero before the decimal point
+            inputValue = inputValue.replace(/^0+(?=\d)(?!$)/, '');
+            // Add trailing zeros if the input does not contain a decimal point
+            if (!inputValue.includes('.')) {
+                inputValue += '.000';
+            } else {
+                // Pad the decimal part with zeros to ensure three decimal places
+                var decimalIndex = inputValue.indexOf('.');
+                var decimalPart = inputValue.substring(decimalIndex + 1);
+                if (decimalPart.length === 0) {
+                    inputValue += '000';
+                } else if (decimalPart.length === 1) {
+                    inputValue += '00';
+                } else if (decimalPart.length === 2) {
+                    inputValue += '0';
+                }
+            }
+            // Limit to a maximum of 3 decimal places while typing
+            var decimalIndex = inputValue.indexOf('.');
+            if (decimalIndex !== -1) {
+                var decimalPart = inputValue.substring(decimalIndex + 1);
+                if (decimalPart.length > 3) {
+                    inputValue = inputValue.slice(0, decimalIndex + 4);
+                }
+            }
+            // Update the input value
+            inputElement.value = inputValue;
+            // Restore the cursor position
+            inputElement.selectionStart = cursorPositionStart;
+            inputElement.selectionEnd = cursorPositionEnd;
+        });
+
+        $(document).ready(function () {
+            var existingDiv = $('.detail-frame');
+            existingDiv.removeClass('ps-md-2 mx-2').addClass('px-0');
+            resizeContainer();
+            $(window).on('resize', resizeContainer);
+
+            var def = $('.tr-select').select2({
+                theme: "bootstrap-5",
+                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+                placeholder: $(this).data('placeholder'),
+                minimumResultsForSearch: Infinity,
+                templateSelection: function formatState(state) {
+                    return 'Status : ' + state.element.value;
+                },
+                dropdownCssClass: 'tr-select2-container',
+                selectionCssClass: 'tr-no-border'
+            });
+
+            var abc = $('.tr-select2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+
+            // Add a placeholder option
+            //abc.append('<option value="" selected disabled = "disabled">Select an option</option>');
+
+            //// Refresh the multiselect after adding the option
+            //abc.multiselect('rebuild');
+
+
+            $('.multiselectpicker').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                includeSelectAllOption: true,
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.multiselect-native-select > .btn-group').addClass("w-100");
+            $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+            $('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-100");
+
+            $('.select-all').on('change', function () {
+                var isChecked = $(this).prop('checked');
+                $('#item-table .dt-checkboxes').prop('checked', isChecked);
+            });
+
+            $('.select2-all').on('change', function () {
+                var isChecked = $(this).prop('checked');
+                $('#item2-table .dt-checkboxes').prop('checked', isChecked);
+            });
+
+            $('.select3-all').on('change', function () {
+                var isChecked = $(this).prop('checked');
+                $('#item3-table .dt-checkboxes').prop('checked', isChecked);
+            });
+        });
+
+        function resizeContainer() {
+            var windowHeight = $(window).height();
+            var headerHeight = $('header.sticky-top').outerHeight();
+            var titleHeight = $('.tr-listing-header').outerHeight();
+            var footerHeight = $('.tr-footer').outerHeight();
+            var footerHeight1 = $('.tr-btm-btn-margin').outerHeight();
+            var newHeight = windowHeight - (headerHeight + titleHeight + footerHeight);
+
+            $('.page-container').css('height', newHeight + 'px');
+        }
+
+        function trselect2Refresh() {
+            $('.tr-select2').multiselect('destroy');
+            $('.tr-select2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.multiselect-native-select > .btn-group').addClass("w-100");
+            $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+            $('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-100");
+        }
+
+        function reinitializeMultiselect() {
+
+            $('.multiselectpicker').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                includeSelectAllOption: true,
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.multiselect-native-select > .btn-group').addClass("w-100");
+            $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+            $('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-100");
+        }
+
+
+        var ExcludedNavBarPage = ['/Home/ChangePassword'];
+        function setActiveSidebar() {
+            var page_url = window.location.pathname;
+            var page_controller = 'Home';
+            var page_view = '';
+            var page_url_part = page_url.split('/');
+            if (page_url_part.length >= 2) {
+                page_controller = page_url_part[1];
+                page_view = page_url_part[2];
+                page_view = page_view.split('?')[0];
+            }
+            //console.log('Page Url:' + page_url);
+            //console.log('Page Controller:' + page_controller);
+            //console.log('Page View:' + page_view);
+            var hasExactUrl = false;
+            if (page_view == 'DE_IDS_TRANS_DETAIL_ARC') { //Special Grouping
+                page_view = 'DE_IDS_TRANS_LST_ARC';
+            }
+            if (!ExcludedNavBarPage.includes('/' + page_controller + '/' + page_view)) {
+                $("#sidebarcontent li.nav-item a.nav-link").each(function () {
+                    var nav_url = $(this).attr("href");
+                    var nav_controller = '';
+                    var nav_view = '';
+                    var nav_url_part = nav_url.split('/');
+                    if (nav_url_part.length >= 2) {
+                        nav_controller = nav_url_part[1];
+                        nav_view = nav_url_part[2];
+                        nav_view = nav_view.split('?')[0];
+                    }
+                    if (page_controller == nav_controller && page_view == nav_view) {
+                        hasExactUrl = true;
+                        var submenu_id = $(this).closest("ul").attr('id');
+                        $('#' + submenu_id).collapse('show');
+                        $('#sidebarcontent a.nav-header[href="#' + submenu_id + '"]').find(".fas").addClass("active");
+                        $('#sidebarcontent a.nav-header[href="#' + submenu_id + '"]').addClass("active");
+                        $(this).addClass('active');
+                        return false;
+                    }
+                });
+                if (!hasExactUrl) {
+                    $("#sidebarcontent li.nav-item a.nav-link").each(function () {
+                        var nav_url = $(this).attr("href");
+                        var nav_controller = '';
+                        var nav_view = '';
+                        var nav_url_part = nav_url.split('/');
+                        if (nav_url_part.length >= 2) {
+                            nav_controller = nav_url_part[1];
+                            nav_view = nav_url_part[2];
+                            nav_view = nav_view.split('?')[0];
+                        }
+                        if (page_controller == nav_controller) {
+                            var submenu_id = $(this).closest("ul").attr('id');
+                            $('#' + submenu_id).collapse('show');
+                            $('#sidebarcontent a.nav-header[href="#' + submenu_id + '"]').find(".fas").addClass("active");
+                            $('#sidebarcontent a.nav-header[href="#' + submenu_id + '"]').addClass("active");
+                            $(this).addClass('active');
+                            return false;
+                        }
+
+                    });
+                }
+            }
+        }
+
+        function alertError(message) {
+            $('#ErrorMessageToast .toast-body').text(message);
+            new bootstrap.Toast(document.getElementById('ErrorMessageToast')).show();
+        }
+        function alertSuccess(message) {
+            $('#SuccessMessageToast .toast-body').text(message);
+            new bootstrap.Toast(document.getElementById('SuccessMessageToast')).show();
+        }
+
+        //--New Standard--------------------------------//
+        function calcDataTableHeight() {
+            var winWidth = $(window).width();
+            if (winWidth >= 1280 && winWidth <= 1599) {
+                return $(window).height() * 43 / 100;
+            } else {
+                return $(window).height() * 50 / 100;
+            }
+        };
+
+
+
+        //function isNumberKeyDecimal(evt) {
+        //    var charCode = (evt.which) ? evt.which : evt.keyCode;
+        //    if (charCode != 46 && charCode > 31
+        //        && (charCode < 48 || charCode > 57))
+        //        return false;
+
+        //    return true;
+        //}
+
+        //NISA-20230907- ALLOW ONLY NUMERIC INPUT + DECIMAL + NEGATIVE
+
+        function isNumberKeyDecimal(evt) {
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode === 45) {
+                if (evt.target.selectionStart !== 0 || evt.target.value.includes("-")) {
+                    return false;
+                }
+                return true;
+            }
+
+            if (charCode !== 46 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+
+            return true;
+        }
+
+
+
+        //function isNumberKey(evt) {
+        //    var charCode = (evt.which) ? evt.which : evt.keyCode;
+        //    if (charCode < 48 || charCode > 57)
+        //        return false;
+
+        //    return true;
+        //}
+
+        //NISA-20230907- ALLOW ONLY NUMERIC INPUT ONLY + NEGATIVE
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+
+            if (charCode === 45) {
+                if (evt.target.selectionStart !== 0 || evt.target.value.includes("-")) {
+                    return false;
+                }
+                return true;
+            }
+
+            if (charCode < 48 || charCode > 57) {
+                return false;
+            }
+
+            return true;
+        }
+
+        //Show deleted record
+        function CheckDeleted(ref) {
+
+            var deleted = "0";
+
+            if ($("#cbCheckDeleted").is(':checked')) {
+                deleted = "1";
+            }
+
+            var url = ref + '?Deleted=' + deleted;
+            window.location.href = url;
+        }
+
+        //NISA-20231207- ITEM CHECKBOX CHECKING
+        function handleCheckboxClick(checkbox) {
+            checkboxChecking();
+        }
+
+        function checkboxChecking() {
+            var rowCount = $('#item-table tbody tr').length;
+            if (rowCount > 0) {
+                $('#removeBtn').show();
+                $('#trCheckbox').show();
+            } else {
+                $('#trCheckbox').hide();
+            }
+
+            if (areAllCheckboxesChecked()) {
+                $('#trCheckbox').prop('checked', true);
+                console.log('All checkboxes are checked');
+            } else {
+                $('#trCheckbox').prop('checked', false);
+                console.log('Not all checkboxes are checked');
+            }
+        }
+
+        function areAllCheckboxesChecked() {
+            var allCheckboxes = $('#item-table tbody input[type="checkbox"]');
+            for (var i = 0; i < allCheckboxes.length; i++) {
+                if (!allCheckboxes[i].checked) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function handleCheckbox2Click(checkbox) {
+            checkbox2Checking();
+        }
+
+        function checkbox2Checking() {
+            var rowCount = $('#item2-table tbody tr').length;
+            if (rowCount > 0) {
+                $('#removeBtn2').show();
+                $('#trCheckbox2').show();
+            } else {
+                $('#trCheckbox2').hide();
+            }
+
+            if (areAllCheckboxes2Checked()) {
+                $('#trCheckbox2').prop('checked', true);
+                console.log('All checkboxes are checked');
+            } else {
+                $('#trCheckbox2').prop('checked', false);
+                console.log('Not all checkboxes are checked');
+            }
+        }
+
+        function areAllCheckboxes2Checked() {
+            var allCheckboxes = $('#item2-table tbody input[type="checkbox"]');
+            for (var i = 0; i < allCheckboxes.length; i++) {
+                if (!allCheckboxes[i].checked) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        function handleCheckbox3Click(checkbox) {
+            checkbox3Checking();
+        }
+
+        function checkbox3Checking() {
+            var rowCount = $('#item3-table tbody tr').length;
+            if (rowCount > 0) {
+                $('#removeBtn3').show();
+                $('#trCheckbox3').show();
+            } else {
+                $('#trCheckbox3').hide();
+            }
+
+            if (areAllCheckboxes3Checked()) {
+                $('#trCheckbox3').prop('checked', true);
+                console.log('All checkboxes are checked');
+            } else {
+                $('#trCheckbox3').prop('checked', false);
+                console.log('Not all checkboxes are checked');
+            }
+        }
+
+        function areAllCheckboxes3Checked() {
+            var allCheckboxes = $('#item3-table tbody input[type="checkbox"]');
+            for (var i = 0; i < allCheckboxes.length; i++) {
+                if (!allCheckboxes[i].checked) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+    function viewBlobFile(filename, path) {
+
+        if (path != null && path != '') {
+            var contentType = "application/pdf"; // Default content type for unsupported file types
+            var fileExtension = filename.split('.').pop().toLowerCase();
+
+            if (fileExtension === "jpg" || fileExtension === "jpeg" || fileExtension === "png") {
+                contentType = "image/jpeg"; // Adjust content type for image formats
+            } else if (fileExtension === "pdf") {
+                contentType = "application/pdf"; // Content type for PDF files
+            } else {
+                // Unsupported file type
+                alert("Unsupported file type.");
+                return;
+            }
+
+
+            var newWindow = window.open('', '_blank', 'width=800,height=800');
+            if (fileExtension === "pdf") {
+                newWindow.document.write('<embed src="' + path + '" type="application/pdf" width="100%" height="100%" />');
+            } else {
+                newWindow.document.write('<img src="' + path + '" style="max-width: 100%; max-height: 100%;" />');
+            }
+        } else {
+            alert("File not found or cannot be accessed.");
+        }
+    }
+
+        // BUTTON EDIT
+        $('#btnEdit').on('click', function () {
+
+            var tittle = '@ViewBag.Tittle'
+
+            var rowCount = $('#item-table tbody tr').length;
+            if (rowCount > 0) {
+                $('#removeBtn').css("display", "");
+            } else {
+                $('#removeBtn').css("display", "none");
+            }
+
+            var rowCount2 = $('#item2-table tbody tr').length;
+            if (rowCount2 > 0) {
+                $('#removeBtn2').css("display", "");
+            } else {
+                $('#removeBtn2').css("display", "none");
+            }
+
+            var rowCount3 = $('#item3-table tbody tr').length;
+            if (rowCount3 > 0) {
+                $('#removeBtn3').css("display", "");
+            } else {
+                $('#removeBtn3').css("display", "none");
+            }
+
+            if (tittle == null || tittle == undefined || tittle === "") {
+                $('.main-title').html("Edit Form");
+            } else {
+                $('.main-title').html("Edit Form - " + tittle);
+            }
+
+            $('.isEditable').removeAttr("disabled");
+            $('.isEditable').removeAttr("readonly");
+            $('.isEditable').css("display", "");
+            $('.isEditable').removeClass("d-none");
+            $(".select-ddl-item").off("mousedown");
+            $('.isEditable').css("border", "");
+            $('.isReadonly').css("display", "");
+            $('.isAfterReadonly').removeAttr("disabled");
+            $('.isAfterReadonly').removeClass("item-modal");
+            $('.isAfterReadonly').css("border", "");
+            $('.isItemDisabled').css("border", "");
+            $('.isItemDisabled').removeAttr("readonly");
+            $('.isItemDisabled').attr("disabled", "disabled");
+            $('.isNotEditable').css("display", "none");
+            $('.multiselectpicker').multiselect('enable');
+            $('.file-upload').fileinput('enable');
+            $('#btnCancelView').text("Cancel");
+            $('#btnDeleteView').hide();
+            $('#btnSubmit').show();
+            $('#btnEdit').hide();
+            $('.title').html("Edit Form");
+            $('.tr-is-invalid').addClass('is-invalid');
+            $('a.tr-disabled').css("pointer-events", "auto");
+            $('.tr-input-group').removeClass("tr-disabled");
+            //$('.hideInfo').css("display", "none");
+            $('.isEditable').removeClass("viewmode");
+
+            $('#adddescBtn').show();
+            var isManager = '@ViewBag.isManager';
+            if (isManager  == "Y")
+            {
+                $('.lotnofield').removeAttr("disabled");
+            }
+
+        });
+
+        // BUTTON RESET MODAL
+        $('#btnResetModal').on('click', function () {
+
+            $("#txt_modal_1").val("");
+            $("#txt_modal_2").val("");
+            $("#txt_modal_3").val("");
+            $("#txt_modal_4").val("");
+            $("#txt_modal_5").val("");
+            $("#txt_modal_6").val("");
+            $("#txt_modal_7").val("");
+            $("#txt_modal_8").val("");
+            $("#txt_modal_9").val("");
+            $("#txt_modal_10").val("");
+            $("#txt_modal_11").val("");
+            $("#txt_modal_12").val("");
+
+        });
+
+        // REQUIRED FIELD MESSAGE
+        function inputError(inputElement) {
+            $(inputElement).addClass('is-invalid');
+            var errorDiv = $('<div>').addClass('text-danger invalid-feedback');
+            errorDiv.text("Field cannot be empty.");
+            $(inputElement).after(errorDiv);
+        }
+
+        // REQUIRED FIELD MESSAGE
+        function inputCustomError(inputElement, errmsg) {
+            $(inputElement).addClass('is-invalid');
+            var errorDiv = $('<div>').addClass('text-danger invalid-feedback');
+            errorDiv.text(errmsg);
+            $(inputElement).after(errorDiv);
+        }
+
+        function addTableButtons() {
+            const moduleName = $('.export-section').data('modulename') || 'TPM QAS Datalink Phase 3';
+            new $.fn.dataTable.Buttons(table, {
+                name: "export",
+                buttons: [
+                    {
+                        text: 'Export to Excel',
+                        extend: 'excelHtml5',
+                        filename: moduleName + '_' + new Date().toISOString().slice(0, 10),
+                        className: 'btn-sm btn-primary tr-btn-primary',
+                        init: function (api, node, config) {
+                            $(node).removeClass('btn-secondary')
+                        },
+                        customize: function (xlsx) {
+                            var sheet = xlsx.xl.worksheets['sheet1.xml'];
+
+                            $('row c[r^="D3"]', sheet).each(function () {
+                                $(this).css('s', '0');
+                            });
+
+                        },
+                        exportOptions: {
+                            columns: ':not(:first-child):not(:last-child)'
+                        }
+                    }
+                ]
+            });
+
+            table.buttons("export", null).containers().appendTo('.export-section');
+        }
+
+</script>
+
+
+
+    @{
+        if (ViewBag.Result != "" && ViewBag.Result != null)
+        {
+            <script type="text/javascript" language="javascript">
+            alert("@ViewBag.Result");
+            </script>
+        }
+
+        if (ViewBag.Error != "" && ViewBag.Error != null)
+        {
+            <script type="text/javascript" language="javascript">
+            alert("@ViewBag.Error");
+            </script>
+        }
+    }
+</body>
+</html>

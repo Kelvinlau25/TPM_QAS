@@ -1,0 +1,294 @@
+﻿
+@using TPM_QAS.Models
+@model COASupplierModel
+@{
+    ViewBag.Title = "SUPPLIER RAW MATERIAL SPECIFICATIONS MM - Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Html.BeginForm("COA_MM_SUPPLIER_ADD", "COA_MM_SUPPLIER", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">New Form - Supplier Raw Material Specifications</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">Supplier Details - Key Information</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+                    <hr />
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Supplier Name </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.TextBoxFor(Model => Model.SUPPLIER_NAME, new { @class = "form-control required-field", id = "txtname", @maxlength = "100" })
+                        </div>
+                    </div>
+
+                    <div class="row row-cols-2 mt-4">
+                        <div class="a1 col align-self-center">
+                            <h6 class="text-muted" style="float: left">Key Information</h6>
+                        </div>
+                        @*<div class="a2 col">
+                            <div class="row row-cols-auto justify-content-end g-1">
+                                <div class="col">
+                                    <button class="btn btn-sm btn-md btn-danger" id="removeBtn" type="button">
+                                        Remove
+                                    </button>
+                                </div>
+                                <div class="col">
+                                    <button class="btn btn-sm btn-md btn-primary" id="addBtn" type="button">
+                                        Add
+                                    </button>
+                                </div>
+                            </div>
+                        </div>*@
+                    </div>
+
+                    <div class="row mt-2 mx-1">
+                        <table id="item-table" class="detailTable" style="width:100%">
+                            <thead>
+                                <tr class="toolbar-row">
+                                    @*<th style="width: 3%; text-align: center;">
+                                        <input id="trCheckbox" type="checkbox" class="dt-checkboxes select-all form-check-input" style="margin-top:5.5px; display:none">
+                                    </th>*@
+                                    <th>Key Type <span class="text-danger">*</span></th>
+                                    <th>Key Information <span class="text-danger">*</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{ var count = 0; }
+                                @if (Model.SupplierLstModel != null && Model.SupplierLstModel.Count > 0)
+                                {
+                                    foreach (var item in Model.SupplierLstModel)
+                                    {
+                                        count++;
+                                        <tr id="R_@count" data-did="@count">
+                                            @*<td class="text-center">
+                                                <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_@count" onClick="handleCheckboxClick(this)">
+                                            </td>*@
+                                            <td>
+                                                <input type="text" class="required-field form-control" id="item_keytype_@count" value="@item.KEY_TYPE" placeholder="" disabled>
+                                            </td>
+                                            <td>
+                                                <input type="text" class="required-field form-control" id="item_suppkey_@count" value="@item.SUPPLIER_KEY" placeholder="">
+                                            </td>
+                                            <td class="d-none">
+                                                <input type="text" class="form-control" id="item_stat_@count" value="1">
+                                                <input type="text" class="form-control" id="item_dbid_@count" value="0">
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                        <input type="hidden" id="item-count" value="@count" />
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary mx-1 my-button" data-bs-toggle="modal" data-bs-target="#back-confirmation-modal">Back</button></div>
+                <div class="col"><button hidden id="btnDraft" type="button" class="btn btn-sm btn-primary">Save As Draft</button></div>
+                <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+            </div>
+        </div>
+    </div>
+
+}
+
+
+@section scripts{
+
+    <script>
+        $(document).ready(function () {
+            checkboxChecking();
+
+            var listingURL = '/COA_MM_SUPPLIER/COA_MM_SUPPLIER_LST';
+            var idh = '@Model.MM_SUPPLIER_H_ID' != 0 ? '@Model.MM_SUPPLIER_H_ID' : 0;
+
+            ////ADD
+            //$('#addBtn').on('click', function () {
+
+            //    var cont = true;
+            //    var message = "";
+
+            //    var rowIdx = $('#item-count').val();
+            //    rowIdx++;
+            //    $('#item-count').val(rowIdx);
+
+            //    $('#item-table tbody').append(`
+            //    <tr id="R_${rowIdx}" data-did="${rowIdx}">
+            //        <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_${rowIdx}" onClick="handleCheckboxClick(this)"></td>
+            //        <td><input type="text" class="form-control" id="item_suppkey_${rowIdx}" placeholder=""></td>
+            //        <td class="d-none">
+            //            <input type="text" id="item_stat_${rowIdx}" value="1">
+            //            <input type="text" id="item_dbid_${rowIdx}" value="0">
+            //        </td>
+            //    </tr> `);
+
+            //    checkboxChecking();
+            //});
+
+            ////REMOVE
+            //$('#removeBtn').on('click', function () {
+            //    $('#item-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+            //        var row = $(ele).closest('tr');
+            //        var itemStatInput = row.find('input[id^="item_stat_"]');
+            //        var item_stat = itemStatInput.val();
+
+            //        if (item_stat != '1') {
+            //            itemStatInput.val('5');
+            //            row.hide();
+            //        } else {
+            //            row.remove();
+            //        }
+            //    });
+
+            //    checkboxChecking();
+            //});
+
+            //SUBMIT
+            $('#btnConfirmSubmit').on('click', function () {
+                $('.invalid-feedback').remove();
+                $('.is-invalid').removeClass('is-invalid');
+
+                var cont = true;
+                var message = "";
+
+                var txtname = $("#txtname").val();
+
+                if (txtname == undefined || txtname == null || txtname == "") {
+                    cont = false;
+                    message += 'Missing Supplier Name value. <br>';
+                }
+
+                $('.required-field').each(function (e) {
+                    var input_val = $(this).val().trim();
+                    if (input_val == null || input_val == undefined || input_val === "") {
+                        cont = false;
+                        $(this).addClass('is-invalid');
+                        inputError(this);
+                    }
+                });
+
+                var hasItem = false;
+                var hasError = false;
+                var hasDuplicate = false;
+                var existedItem = [];
+
+                var list = [];
+
+                $("#item-table tbody tr").each(function () {
+                    var did = $(this).data("did");
+                    if (did != '' && did != null && did != undefined) {
+                        var item_stat = $('#item_stat_' + did).val();
+                        var item_dbid = $('#item_dbid_' + did).val();
+                        
+                        var item_keytype = $('#item_keytype_' + did).val();
+                        var item_suppkey = $('#item_suppkey_' + did).val();
+
+                        if (item_stat != '5') {
+                            if (item_suppkey !== "") {
+                                hasItem = true;
+                                if (existedItem.includes(item_suppkey)) {
+                                    //hasDuplicate = true;
+                                    return false;
+                                } else {
+                                    existedItem.push(item_suppkey);
+                                }
+                            } else {
+                                hasError = true;
+                            }
+                        }
+
+                        list.push({
+                            'MM_SUPPLIER_D_ID': item_dbid,
+                            'RECORD_TYP': item_stat,
+                            'KEY_TYPE': item_keytype,
+                            'SUPPLIER_KEY': item_suppkey
+                        });
+                    }
+                });
+
+                if (cont && !hasItem) {
+                    cont = false;
+                    message = "Please add at least one Key Information.";
+                }
+                if (cont && hasError) {
+                    cont = false;
+                    message = "Please make sure required field in Key Information is not empty.";
+                }
+                //if (cont && hasDuplicate) {
+                //    cont = false;
+                //    message = "Duplicate Key Information.";
+                //}
+
+                if (cont) {
+
+                    var model = {
+                        MM_SUPPLIER_H_ID: idh,
+                        RECORD_TYP: '1',
+
+                        SUPPLIER_NAME: txtname,
+                        SupplierLstModel: list
+                    };
+
+                    console.log(model)
+
+                    $.ajax({
+                        url: "/COA_MM_SUPPLIER/InsertUpdateSupplier",
+                        type: 'POST',
+                        data: {
+                            model: model
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            });
+
+            $('#btnConfirmBack').on('click', function () {
+                window.location.href = listingURL;
+            });
+
+        });
+
+    </script>
+}

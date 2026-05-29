@@ -1,0 +1,54 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>MachineDataIntegrationSch</title>
+    <title>RawDataIntegrationSch</title>
+    @Styles.Render("~/Content/font-awesome.min.css")
+    @Styles.Render("~/Content/site.css")
+    @*<link href="~/Content/Site.css" rel="stylesheet" />*@
+    @Styles.Render("~/Content/css")
+    @*@Styles.Render("~/Content/bootstrap-select.css")
+        @Styles.Render("~/Content/bootstrap.min.css")*@
+    @Styles.Render("~/Content/Main.css")
+    @Scripts.Render("~/Scripts/jquery-3.3.1.min.js")
+    @Scripts.Render("~/Scripts/jquery-ui-1.12.1.min.js")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/Scripts/jquery.validate.min.js")
+    @Scripts.Render("~/Scripts/jquery.validate.unobtrusive.min.js")
+    @*@Scripts.Render("~/bundles/bootstrap")*@
+    @*@Scripts.Render("~/Scripts/bootstrap-select.js")*@
+    @*@Scripts.Render("~/Scripts/script-bootstrap-select.js")*@
+    @*@Scripts.Render("~/bundles/bootstrap-select")*@
+    @*@Scripts.Render("~/Scripts/Main.js")*@
+    @*<script src="~/Scripts/bootstrap-datepicker.js"></script>*@
+    <script src="~/Scripts/DataTables/jquery.dataTables.min.js"></script>
+</head>
+<body>
+    <div>
+        @using (Html.BeginForm("MachineDataIntegrationSch", "DATA_INT", FormMethod.Post, new { @id = "IntegrationForm" })) { }
+    </div>
+</body>
+</html>
+<script>
+    //submit search, display loading message
+    $(document).ready(function () {
+        $('#IntegrationForm').submit();
+    });
+    //window.open('', '_top');
+    //top.window.close();
+</script>
+
+
+@if (ViewBag.Result != null)
+{
+    <script type="text/javascript" language="javascript">
+        alert("@ViewBag.Result");
+    </script>
+}

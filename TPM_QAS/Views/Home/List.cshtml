@@ -1,0 +1,1330 @@
+﻿
+@{
+    ViewBag.Title = "List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>    
+    .status-select {
+        border: 0px;
+    }
+
+    .tr-text {
+        text-align: end;
+    }
+
+    @@media (max-width: 576px) {
+        .tr-text {
+            text-align: start;
+        }
+    }
+
+    .toolbar {
+        float: right;
+    }
+
+    /* Override -2px, form some reason the non-bootstrap is -6px */
+    table.dataTable tbody td.select-checkbox::before,
+    table.dataTable tbody th.select-checkbox::before {
+        margin-top: -6px;
+    }
+
+    /**, *:before, *:after {
+        box-sizing: border-box;
+        font-size: 14px;
+    }*/
+
+    .styled-select {
+        position: relative;
+        display: flex;
+        align-items: center;
+        width: 300px;
+        /*margin: 100px auto 0 auto;*/
+        font-family: "Helvetica", "Arial", sans-serif;
+    }
+
+        .styled-select label {
+            flex: 1 1 60px;
+        }
+
+        .styled-select .select-wrapper {
+            border: none;
+            flex: 1 1 100%;
+            background: white;
+            border-radius: 5px;
+            position: relative;
+        }
+
+    .select-wrapper[data-prefix]:before {
+        content: attr(data-prefix);
+        display: flex;
+        align-items: center;
+        position: absolute;
+        z-index: 0;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        padding: 0 5px 0 10px;
+        /*color: #b3b3b3;*/
+    }
+
+    .styled-select .select-wrapper[data-suffix]:after {
+        content: attr(data-suffix);
+        display: flex;
+        align-items: center;
+        position: absolute;
+        z-index: 0;
+        right: 23px;
+        top: 0;
+        bottom: 0;
+        padding: 0 10px 0 5px;
+        /*color: #b3b3b3;*/
+    }
+
+    /*.styled-select .select-wrapper:focus-within {
+                border-color: #00a7e1;
+            }*/
+
+    /*.styled-select .select-wrapper:focus-within:before, .styled-select .select-wrapper:focus-within:after, .styled-select .select-wrapper:focus-within .fas {
+                    color: #00a7e1;
+                }*/
+
+    .styled-select .select-wrapper select {
+        display: block;
+        padding-top: 10px;
+        padding-bottom: 10px;
+        width: 100%;
+        border: none;
+        outline: none;
+        -webkit-appearance: none;
+        position: relative;
+        z-index: 1;
+        background: transparent;
+        font-size: 16px;
+    }
+
+    /*.styled-select .select-wrapper select.default-value {
+                    color: #b3b3b3;
+                }*/
+
+    .styled-select .select-wrapper .fas {
+        display: flex;
+        align-items: center;
+        font-size: 14px;
+        position: absolute;
+        z-index: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        padding: 0 10px 0 0;
+        width: 23px;
+        /*color: #b3b3b3;*/
+    }
+
+    .tr-no-border {
+        border: 0px !important;
+    }    
+</style>
+
+<div class="tr-btm-btn-margin">
+    <div class="row g-0 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">Data Table Listing 1</p>
+        </div>
+        <div class="col-sm-6 text-end align-self-center">
+            <div class="d-flex justify-content-end">
+                <div id="customDTButton"></div>
+            </div>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="row pt-3 pb-2">
+        <div class="col-12 col-sm-8">
+            <div class="accordion" id="accordionExample">
+                <div class="accordion-item" style="border-radius: 0px !important">
+                    <div class="row align-items-center">
+                        <select class="tr-select" id="select-id" style="color: #FCFCFC; border: 0px">
+                            <option selected>All</option>
+                            <option>Draft</option>
+                            <option>Pending Approval</option>
+                            <option>In Progress</option>
+                            <option>Completed</option>
+                            <option>Rejected</option>
+                        </select>
+                        @*<div class="styled-select">
+                                <div class="select-wrapper" data-prefix="Status :" data-suffix="">
+                                    <select class="form-select form-select-lg">
+                                        <option selected>All</option>
+                                        <option>Draft</option>
+                                        <option>Pending Approval</option>
+                                        <option>In Progress</option>
+                                        <option>Completed</option>
+                                        <option>Rejected</option>
+                                    </select>
+                                    <div class="fas fa-chevron-down"></div>
+                                </div>
+                            </div>*@
+                    </div>
+                    @*<h2 class="accordion-header" id="headingOne">
+                            <button class="accordion-button remove-bg-color" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne1" aria-expanded="true" aria-controls="collapseOne">
+                                Status :
+                            </button>
+                        </h2>*@
+                    <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="border-top: 1px solid #F0F0F0">
+                        <div class="accordion-body text-center">
+                            <p class="h6 m-0 p-2" style="color: #00A251">120</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-4 align-self-end tr-text pb-0 mb-0" id="action-bar">
+            @*<button type="button" class="btn btn-link m-0 p-0" id="btnAuditTrail">Audit Trail</button>*@
+        </div>
+    </div>
+
+    <div class="row">
+        <table id="tr-datatable" class="table table-hover table-bordered compact" style="width:100%; margin-top: 0px !important">
+            <thead>
+                <tr style="background-color: #FCFCFC">
+                    <th></th>
+                    <th>Name</th>
+                    <th>Position</th>
+                    <th>Salary</th>
+                    <th>Office</th>
+                    <th>View</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div class="row tr-btm-btn-area">
+        <div class="col">
+            <div class="aud export-section"></div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="confirmation-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmation</h5>
+            </div>
+
+            <hr />
+
+            <div class="modal-body">
+                <h6>Are you sure to delete this record?</h6>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="btnConfirm2">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="advance-search-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Advanced Search</h5>
+            </div>
+
+            <hr />
+
+            <div class="modal-body">
+                <div class="container-fluid">
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel">Text Box:</div>
+                        <div class="col-md-4"><input class="form-control" type="text" /></div>
+                        <div class="col-md-2 isLabel">Single Select</div>
+                        <div class="col-md-4">
+                            <select class="tr-select2" id="select-id" data-placeholder="&nbsp;">
+                                <option>&nbsp;</option>
+                                <option>Sample 1</option>
+                                <option>Sample 2</option>
+                                <option>Sample 3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel">Single Select:</div>
+                        <div class="col-md-4">
+                            <select class="tr-select2" id="select-id" data-placeholder="&nbsp;">
+                                <option>&nbsp;</option>
+                                <option>Sample 1</option>
+                                <option>Sample 2</option>
+                                <option>Sample 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 isLabel">Multiple Select</div>
+                        <div class="col-md-4">
+                            <select class="multiselectpicker form-control" multiple="multiple" data-placeholder="&nbsp;">
+                                <option value="sample1">Sample 1</option>
+                                <option value="sample2">Sample 2</option>
+                                <option value="sample3">Sample 3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel">Multiple Select:</div>
+                        <div class="col-md-4">
+                            <select class="multiselectpicker form-control" multiple="multiple" data-placeholder="&nbsp;">
+                                <option value="sample1">Sample 1</option>
+                                <option value="sample2">Sample 2</option>
+                                <option value="sample3">Sample 3</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 isLabel">Disabled Input:</div>
+                        <div class="col-md-4">
+                            <select class="multiselectpicker2 form-control" multiple="multiple" data-placeholder="&nbsp;" disabled>
+                                <option value="Disabled input example" selected>Disabled input example</option>
+                                <option value="sample2">Sample 2</option>
+                                <option value="sample3">Sample 3</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="reset" id="btnReset" class="btn btn-sm btn-secondary" style="margin-right: auto;">Reset</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-sm btn-primary" id="btnSearchAS" data-bs-dismiss="modal">Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+<script type="text/javascript">
+    var table;
+
+    $(document).ready(function () {
+        //var abc = $('.tr-select2').select2({
+        //    theme: "bootstrap-5",
+        //    width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+        //    placeholder: $(this).data('placeholder'),
+        //    minimumResultsForSearch: Infinity
+        //});
+
+   
+        //var def = $('.tr-select').select2({
+        //    theme: "bootstrap-5",
+        //    width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+        //    placeholder: $(this).data('placeholder'),
+        //    minimumResultsForSearch: Infinity,
+        //    templateSelection: function formatState(state) {
+        //        return 'Status : ' + state.element.value;
+        //    },
+        //    dropdownCssClass: 'test',
+        //    selectionCssClass: 'tr-no-border'
+        //});
+
+        var abc = $('.tr-select2').multiselect({
+            buttonClass: 'form-select form-control text-start',
+            templates: {
+                button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+            }
+        });
+
+
+        var def = $('.tr-select').select2({
+            theme: "bootstrap-5",
+            width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+            placeholder: $(this).data('placeholder'),
+            minimumResultsForSearch: Infinity,
+            templateSelection: function formatState(state) {
+                return 'Status : ' + state.element.value;
+            },
+            dropdownCssClass: 'tr-select2-container',
+            selectionCssClass: 'tr-no-border'
+        });
+        
+
+        
+
+        $('.multiselectpicker').multiselect({
+            buttonClass: 'form-select form-control text-start',
+            templates: {
+                button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+            }
+        });
+        $('.multiselectpicker2').multiselect({
+            buttonClass: 'form-select form-control text-start',
+            templates: {
+                button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+            }
+        });
+        $('.multiselect-native-select > .btn-group').addClass("w-100");
+        $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+        $('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-100");
+
+        loadDataTable();
+
+        $('#btnSearchAS').on('click', function () {
+            //$('#advance-search-modal').toggle();
+
+            $("div.spanner").addClass("show");
+            $("div.overlay").addClass("show");
+            console.log('here');
+            setTimeout(function () {
+                $("div.spanner").removeClass("show");
+                $("div.overlay").removeClass("show");
+            }, 2500);
+        });
+
+        $('#btnReset').on('click', function () {
+            $(':input').val('');
+
+
+            $('.tr-select2').multiselect('rebuild');
+            $('.multiselectpicker').multiselect('rebuild');
+        });
+    });
+
+    function loadDataTable() {
+        var data = [
+            {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }, {
+                "name": "Tiger Nixon",
+                "position": "System Architect",
+                "salary": "$3,120",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            },
+            {
+                "name": "Garrett Winters",
+                "position": "Director",
+                "salary": "$5,300",
+                "office": "Edinburgh"
+            }
+        ]
+
+        table = $('#tr-datatable').DataTable({
+            data: data,
+            pagingType: 'simple_numbers',
+            columns: [
+                { data: null, "defaultContent": "" },
+                { data: 'name' },
+                { data: 'position' },
+                { data: 'salary' },
+                { data: 'office' },
+                { data: null, "defaultContent": "" },
+            ],
+            columnDefs: [{
+                targets: 0,
+                render: function (data, type, row, meta) {
+                    if (type === 'display') {
+                        data = '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>';
+                    }
+
+                    return data;
+                },
+                checkboxes: {
+                    selectRow: true,
+                    selectAllRender: '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>'
+                }
+            }, {
+                targets: 5,
+                render: function (data, type, row, meta) {
+                    return '<a href="@Url.Action("Detail","Home")" class="name tr-icon-size" id=n-"' + meta.row + '" /><i class="fa-solid fa-eye"></i></a>';
+                }
+            }],
+            select: {
+                style: 'multi',
+                info: false,
+                selector: 'td:nth-child(1)'
+            },
+            order: [[1, 'asc']],
+            dom: "<'row toolbar-row g-0'<'col-sm-12 col-md-6 align-self-center'l><'col-sm-12 col-md-6'<'d-flex justify-content-end'<'toolbar'>>>>" +
+                "<'row'<'col-sm-12'tr>>" +
+                "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'<'d-flex justify-content-end'p<'go-to align-self-center mx-2'>>>>",// +
+                //"<'row'<'col-sm-12'<'export-section'>>>",
+            initComplete: function () {
+                //$("div.toolbar").html('<button type="button" data-bs-toggle="modal" data-bs-target="#advance-search-modal" id="btnAdvanceSearch" class="btn btn-outline-primary py-1 px-2"><i class="fa-solid fa-sliders" style="transform: rotate(90deg);"></i></button>');
+
+                $("div.toolbar").html('<div class="input-group input-group-sm">' +
+                    '<input type="text" id="txtSearch" class="form-control remove-right-border" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
+                    '<div class="input-group-text listing-search-icon">' +
+                    '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                    '</div>' +
+                    '<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#advance-search-modal" id="btnAdvanceSearch" style="min-width: 30px; background-color: #057FE5;"><i class="fa-solid fa-sliders" style="transform: rotate(90deg);"></i></button>' +
+                    '</div>');
+
+                @*$("#btnAuditTrail").on("click", function () {
+                    var url = '@Url.Action("AuditTrail", "Home")';
+                    window.location.href = url;
+                });*@
+
+                $("#btnSearch").on("click", function (e) {
+                    e.preventDefault();
+                });
+
+                $("#txtSearch").on("keyup", function (e) {
+                    table.search($('#txtSearch').val()).draw();
+                });
+
+                $("#btnConfirm2").on("click", function (e) {
+                    $("div.spanner").addClass("show");
+                    $("div.overlay").addClass("show");
+
+                    setTimeout(function () {
+                        $("div.spanner").removeClass("show");
+                        $("div.overlay").removeClass("show");
+                    }, 2500);
+                });
+            },
+            drawCallback: function (settings) {
+                var api = this.api();
+                $("#txtGoTo").val(api.page() + 1);
+            }
+        });
+
+        $("div.go-to").html('<div class="d-flex align-items-center p-0"><input class="form-control" type="text" id="txtGoTo" style="width:50px" value=1> &nbsp; <div class="page-info">of ' + table.page.info().pages + '</div></div>');
+        $("#txtGoTo").on('keyup', function (e) {
+            try {
+                var page = e.target.value;
+                if ($.isNumeric(page) && page > 0 && page <= table.page.info().pages) {
+                    table.page(page - 1).draw('page');
+                } else if (e.target.value.trim() == '') {
+
+                }
+                else {
+                    e.target.value = table.page() + 1;
+                }
+
+            } catch (ex) {
+                console.warn(ex.toString());
+                e.target.value = 1;
+            }
+        });
+        $("#txtGoTo").on('blur', function (e) {
+            try {
+                var page = e.target.value;
+                if (page.trim() == '') {
+                    $("#txtGoTo").val(1);
+                    table.page(0).draw('page');
+                    $("#txtGoTo").focus();
+                }
+            } catch (ex) {
+                console.warn(ex.toString());
+                e.target.value = 1;
+            }
+        });
+        $(".dataTables_length .form-select").on('change', function () {
+            $("#txtGoTo").val(table.page() + 1);
+            $("div.page-info").html('of ' + table.page.info().pages + '</div>');
+        });
+
+        table.on('select deselect', function (e, dt, type, indexes) {
+            var rowCnt = table.rows({ selected: true }).count();
+            console.log('count', rowCnt);
+            // do something with the number of selected rows
+            if (rowCnt > 0) {
+                console.log('show trash');
+                $(".tr-trash").removeClass('isHide');
+                $("#btnExport").prop('disabled', false);
+            } else {
+                console.log('hide trash');
+                $(".tr-trash").addClass('isHide');
+                $("#btnExport").prop('disabled', true);
+            }
+        });
+
+        addTableButtons();
+    }
+
+    function addTableButtons() {
+        new $.fn.dataTable.Buttons(table, {
+            name: "add",
+            buttons: [
+                {
+                    text: '<i class="fa-solid fa-plus text-primary"></i>&nbsp;&nbsp; Create Form',
+                    className: 'btn-sm btn-outline-secondary mt-1',
+                    init: function (api, node, config) {
+                        $(node).attr("id", "btnAdd");
+                        $(node).removeClass('btn-secondary');                        
+                    },
+                    action: function (e, dt, node, config) {
+                        // Add new action here
+                        var url = '@Url.Action("Create", "Home")';
+                        window.location.href = url;
+                    }
+                }
+            ]
+        });
+
+
+        new $.fn.dataTable.Buttons(table, {
+            name: "delete",
+            buttons: [
+                {
+                    text: '<i class="fa-solid fa-trash-can tr-icon-size tr-icon-del"></i>',
+                    className: 'tr-btn m-0 py-0 px-3 text-danger tr-trash isHide',
+                    init: function (api, node, config) {
+                        $(node).attr("id", "btnDelete");
+                        $(node).attr("data-bs-toggle", "modal");
+                        $(node).attr("data-bs-target", "#confirmation-modal");
+                        $(node).removeClass('btn btn-secondary');
+                    },
+                    action: function (e, dt, node, config) {
+                        // Delete action here
+                        //$("div.spanner").addClass("show");
+                        //$("div.overlay").addClass("show");
+
+                        //setTimeout(function () {
+                        //    $("div.spanner").removeClass("show");
+                        //    $("div.overlay").removeClass("show");                        
+                        //}, 2500);                        
+                    }
+                }
+            ]
+        });
+
+        new $.fn.dataTable.Buttons(table, {
+            name: "export",
+            buttons: [
+                {
+                    text: 'Export to Excel',
+                    extend: 'excel',
+                    className: 'btn-sm btn-primary tr-btn-primary',
+                    init: function (api, node, config) {
+                        $(node).removeClass('btn-secondary')
+                    }
+                }
+            ]
+        });
+
+        new $.fn.dataTable.Buttons(table, {
+            name: "audit",
+            buttons: [
+                {
+                    text: 'Audit Trail',
+                    className: 'm-0 p-0 tr-btn',
+                    attr: {
+                        id: 'btnAuditTrail'
+                    },
+                    init: function (api, node, config) {
+                        $(node).removeClass('btn btn-secondary')
+                    },
+                    action: function (e, dt, node, config) {
+                        var url = '@Url.Action("AuditTrail", "Home")';
+                        window.location.href = url;
+                    }
+                }
+            ]
+        });
+
+        table.buttons("add", null).containers().appendTo('#customDTButton');
+        table.buttons("export", null).containers().appendTo('.export-section');
+        table.buttons("audit, delete", null).containers().appendTo('#action-bar');
+    }
+
+    //// ui elements we need for the math
+    //const selectWrapper = document.querySelector('.select-wrapper');
+    //const select = document.querySelector('.select-wrapper select');
+    //const arrow = document.querySelector('.select-wrapper .fas');
+
+    //// style select if default option is selected
+    //select.onchange = function () {
+    //    var selectedOption = select.value;
+    //    if (selectedOption != '') {
+    //        select.classList.remove('default-value')
+    //    } else {
+    //        select.classList.add('default-value')
+    //    }
+    //}
+
+    //// width of the prefix in the :before psuedo-element
+    //const prefixWidth = window.getComputedStyle(selectWrapper, ':before').width;
+
+    //// width of the suffix in the :before psuedo-element and the select arrow, added together
+    //const suffixWidth = parseFloat(window.getComputedStyle(selectWrapper, ':after').width.toString().replace('px', ''));
+    //const arrowWidth = arrow.getBoundingClientRect().width;
+    //var rightPadding = suffixWidth + arrowWidth;
+
+    //// add computed paddings to the select
+    //select.style.paddingLeft = prefixWidth;
+    //select.style.paddingRight = rightPadding + 'px';
+
+                    // now the prefix, suffix and arrow are accounted for and the entire styled select is clickable to trigger the select options!!
+    </script>
+}

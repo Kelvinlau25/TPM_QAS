@@ -1,0 +1,260 @@
+﻿@using TPM_QAS.Models
+@model MM_BIS_GRADE_VIEWMODEL
+
+@{
+    ViewBag.Title = "BIS Grade MM - Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("MM_BIS_GRADE_ADD", "MM_BIS_GRADE", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">New Form - BIS Grade Maintenance</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">Designation Code Grade</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+
+                    <hr />
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Bis Grade <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-5">
+                            @Html.TextBoxFor(Model => Model.BIS_GRADE_CODE, new { @class = "form-control", id = "BIS_GRADE_CODE" })
+                        </div>
+                    </div>
+                    <div id="desc-div"></div>
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Item Details <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-5" style="text-align:right;">
+                            <button id="btnRemove" type="button" class="btn btn-sm btn-danger m-1">Remove</button>
+                            <button id="add-item" type="button" class="btn btn-sm btn-primary m-1">Add</button>
+                        </div>
+                    </div>
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-7">
+                            <table id="item-table" class="table detailTable" style="width:100%">
+                                <thead>
+                                    <tr class="toolbar-row">
+                                        <th style='width:10%'></th>
+                                        <th style='width:45%; text-align:center'>Product Name</th>
+                                        <th style='width:45%; text-align:center'>Single Designation Code</th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                            <input type="hidden" id="item-count" value="0" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary mx-1 my-button" data-bs-toggle="modal" data-bs-target="#back-confirmation-modal">Back</button></div>
+                <div class="col"><button hidden id="btnDraft" type="button" class="btn btn-sm btn-primary">Save As Draft</button></div>
+                <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+            </div>
+        </div>
+    </div>
+
+}
+
+
+@section scripts {
+    <script>
+        // For adding item to table
+        $(document).ready(function () {
+
+            // Add row
+            $("#add-item").off("click").on("click", function (e) {
+                e.preventDefault();
+                var count = $('#item-count').val();
+                count++;
+                $('#item-count').val(count);
+
+                $("#item-table tbody").append(`
+                            <tr class="item-row" data-did="${count}">
+                                <td style="width:5%" class="text-center"><input type="checkbox" class="delete-check" value="${count}"/></td>
+                                <td style="width:30%" class="item-col"><input type="text" class="form-control item-input" data-did="${count}" id="item_product_${count}" value=""></td>
+                                <td style="width:25%" class="item-col"><input type="text" class="form-control item-input" data-did="${count}" id="item_single_${count}" value=""></td>
+                                <td class="d-none">
+                                    <input type="text" id="item_stat_${count}" value="1">
+                                    <input type="text" id="item_dbid_${count}" value="0">
+                                </td>
+                            </tr>
+                        `);
+            });
+
+            $(document).on('keyup', '#item-table .item-input', function (e) {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat = $('#item_stat_' + did).val();
+                    if (item_stat != '1') {
+                        $('#item_stat_' + did).val(3);
+                    }
+                }
+            });
+
+            $('#btnRemove').on('click', function (e) {
+                var cont = true;
+                var message = "";
+                if ($('#item-table .delete-check:checked').length == 0) {
+                    cont = false;
+                    message += "No item has been checked.\n";
+                }
+
+                if (cont) {
+                    //Loop all checked
+                    $('#item-table .delete-check:checked').each(function () {
+                        var did = $(this).val();
+                        if (did != '' && did != null && did != undefined) {
+                            var item_stat = $('#item_stat_' + did).val();
+                            if (item_stat != '1') {
+                                $('#item-table .item-row[data-did="' + did + '"]').hide();
+                                $('#item_stat_' + did).val(5);
+                            } else {
+                                $('#item-table .item-row[data-did="' + did + '"]').remove();
+                            }
+                        }
+                    });
+                    $('#item-table .delete-check').prop("checked", false);
+                } else {
+                    if (message != "") {
+                        alert(message);
+                    }
+                }
+            });
+
+        });
+
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            var submit_url = '@Url.Action("MM_BIS_GRADE_ADD", "MM_BIS_GRADE")';
+            var success_url = '@Url.Action("MM_BIS_GRADE_LST", "MM_BIS_GRADE")'
+
+            $('#btnConfirmBack').on('click', function () {
+                window.location.href = success_url;
+            });
+
+            $('#btnConfirmSubmit').on('click', function () {
+                var cont = true;
+                var message = "";
+
+                var ds_code = $('#BIS_GRADE_CODE').val();
+                if (ds_code.trim() == "") {
+                    cont = false;
+                    message += "BIS Grade cannot be empty.\n";
+                }
+
+                var hasItem = false;
+                var hasDuplicate = false;
+                var prodOccurrences = {};
+                var ItemDetails = [];
+                $("#item-table .item-row").each(function () {
+                    var did = $(this).data("did");
+                    if (did != '' && did != null && did != undefined) {
+                        var item_stat = $('#item_stat_' + did).val();
+                        var item_dbid = $('#item_dbid_' + did).val();
+                        var item_product = $('#item_product_' + did).val();
+                        var item_single = $('#item_single_' + did).val();
+
+                        if (item_stat != '5' && item_product.trim() !== "") {
+                            hasItem = true;
+                            if (prodOccurrences[item_product]) {
+                                hasDuplicate = true;
+                            } else {
+                                prodOccurrences[item_product] = true;
+                            }
+                        }
+
+                        var record_typ = item_stat;
+                        if (item_stat != '1' && item_product.trim() == "") { //If the record is not newly added, and input is empty, delete it
+                            record_typ = '5';
+                        }
+                        if (!(item_stat == '1' && item_product.trim() == "")) {
+                            ItemDetails.push({
+                                'ID_MM_BIS_GRADE_D': item_dbid,
+                                'BIS_GRADE_PROD_CODE': item_product,
+                                'RECORD_TYP': record_typ,
+                                'BIS_SINGLE_DESIGN_CODE': item_single
+                            });
+                        }
+                    }
+                });
+                if (!hasItem) {
+                    cont = false;
+                    message += "Require at least one item details\n";
+                }
+                if (hasDuplicate) {
+                    cont = false;
+                    message += "Duplicate item details detected\n";
+                }
+
+                if (cont) {
+                    //console.log(ItemDetails);
+                    $.ajax({
+                        url: submit_url,
+                        type: 'POST',
+                        data: {
+                            ds_code: ds_code,
+                            item_dtl: ItemDetails
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                alert("Data save successfully");
+                                var url = success_url;
+                                window.location.href = url;
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function () {
+                            alert("Error occured");
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        alert(message);
+                    }
+                }
+
+            });
+        });
+
+
+        function loadings(def) {
+            def = def || true;
+            if (def) {
+                $("div.spanner").addClass("show");
+                $("div.overlay").addClass("show");
+            } else {
+                $("div.spanner").removeClass("show");
+                $("div.overlay").removeClass("show");
+            }
+        }
+
+    </script>
+}

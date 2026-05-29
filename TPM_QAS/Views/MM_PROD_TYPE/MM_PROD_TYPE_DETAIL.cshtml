@@ -1,0 +1,832 @@
+﻿@using TPM_QAS.Models
+@model ProdTypeModel
+
+
+@{
+    ViewBag.Title = "PRODUCT TYPE MM - Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row g-0 px-3 tr-listing-header">
+    <div class="col-sm-6 align-self-center">
+        <p class="text-muted m-0 tr-listing-header-title main-title">View Form - Product Type</p>
+    </div>
+    <div class="col-sm-6 text-end align-self-center">
+        <div class="d-flex justify-content-end">
+            <div id="customDTButton"></div>
+        </div>
+    </div>
+</div>
+
+<div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+        <div class="card mt-3 mb-2 card-height">
+            <div class="card-body">
+                <div class="row align-items-baseline">
+                    <div class="col"><h6 class="card-title text-muted">Product Type</h6></div>
+                    @if (Model.RECORD_TYP != null)
+                    {
+                        if (@Model.RECORD_TYP != "5")
+                        {
+                            <div class="col text-end"><button class="btn btn-sm btn-primary" id="btnEdit" type="button" data-behaviour="toggle">Edit</button></div>
+                        }
+
+                    }
+                </div>
+
+                <hr />
+
+                <div class="row align-items-baseline">
+                    <div class="col-sm-2">
+                        <p class="text-muted">Product Type <span class="text-danger">*</span><span style="float:right">:</span></p>
+                    </div>
+                    <div class="col-sm-4">
+                        @Html.TextBoxFor(model => model.PROD_TYPE, new { @class = "isEditable form-control required-field", id = "txtprodtype", @maxlength = "100", disabled = "disabled" })
+
+                    </div>
+                    <div class="col-sm-4">
+                        <button class="btn btn-sm btn-md btn-primary d-none isEditable" id="prodtypeDuplBtn" type="button" onclick="popupProdTypeDuplicate()">
+                            Duplicate
+                        </button>
+                    </div>
+                </div>
+
+                <div class="row align-items-baseline">
+                    <div class="col-sm-2">
+                        <p class="text-muted">Company Group <span class="text-danger">*</span><span style="float:right">:</span></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="form-check form-check-inline">
+                            <input class="isEditable form-check-input" type="radio" name="compgroup" id="compounderRadio" value="COMPOUNDER"
+                                   @(Model.COMP_GROUP != null && Model.COMP_GROUP.ToString() == "COMPOUNDER" ? "checked" : "") disabled>
+                            <label class="form-check-label" for="compounderRadio">Compounder</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="isEditable form-check-input" type="radio" name="compgroup" id="tpmRadio" value="TPM"
+                                   @(Model.COMP_GROUP != null && Model.COMP_GROUP.ToString() == "TPM" ? "checked" : "") disabled>
+                            <label class="form-check-label" for="tpmRadio">TPM</label>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="row row-cols-2 mt-4">
+                    <div class="col-2 align-self-center">
+                        <h6 class="text-muted" style="float: left">Main Property</h6>
+                    </div>
+                    <div class="col-3">
+                        <div class="input-group">
+                            <div class="input-group-text tr-input-group tr-disabled" id="searchProperty" onclick="popupPropertyDetail()">
+                                <a href="#" class="text-reset vm isEditable" disabled><i class="fa-solid fa-ellipsis" aria-hidden="true" style="color: #fff"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-none isEditable col-7">
+                        <div class="row row-cols-auto justify-content-end g-1">
+                            <div class="col">
+                                <button class="btn btn-sm btn-md btn-danger" id="removeBtn" type="button">
+                                    Remove
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-sm btn-md btn-primary" id="addBtn" onclick="popupPropertyDetail()" type="button">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-2 mx-1">
+                    <table id="item-table" class="detailTable" style="width:100%">
+                        <thead>
+                            <tr class="toolbar-row">
+                                <th class="d-none isEditable" style="width: 3%; text-align: center;">
+                                    <input id="trCheckbox" type="checkbox" class=" dt-checkboxes select-all form-check-input" style="margin-top:5.5px;">
+                                </th>
+                                <th>Property</th>
+                                <th>Property Items</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                            @{ var count = 0; }
+                            @if (Model.ProdTypeMainPropLstModel != null && Model.ProdTypeMainPropLstModel.Count > 0)
+                            {
+                                foreach (var item in Model.ProdTypeMainPropLstModel)
+                                {
+                                    count++;
+                                    <tr id="R_@count" data-did="@count">
+                                        <td class="d-none isEditable text-center">
+                                            <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_@count" onClick="handleCheckboxClick(this)">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="isItemDisabled form-control" id="item_prop_@count" value="@item.PROPERTIES" placeholder="" style="border:none; box-shadow: none;" readonly>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="isItemDisabled form-control" id="item_propitem_@count" value="@item.PROP_ITEM" placeholder="" style="border:none; box-shadow: none;" readonly>
+                                        </td>
+                                        <td class="d-none">
+                                            <input type="text" class="form-control" id="item_stat_@count" value="0">
+                                            <input type="text" class="form-control" id="item_dbid_@count" value="@item.MM_PRODTYPE_D_ID">
+                                            <input type="text" class="form-control" id="item_propid_@count" value="@item.MM_PROPERTIES_H_ID">
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                    <input type="hidden" id="item-count" value="@count" />
+                </div>
+
+                <div class="row mt-4 align-items-center">
+                    <div class="col-auto">
+                        <h6 class="text-muted" style="float: left">Product Type Listing</h6>
+                    </div>
+                    <div class="col-auto d-none isEditable" >
+                        <input type="text" class="form-control" id="txtprodtypesearch">                
+                    </div>
+                    <div class="col-auto">
+                        <div class="input-group">
+                            <div class="input-group-text tr-input-group tr-disabled" id="searchProdItem" onclick="popupProdItemDetail()">
+                                <a href="#" class="text-reset vm isEditable" disabled><i class="fa-solid fa-ellipsis" aria-hidden="true" style="color: #fff"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-none isEditable col-auto ms-auto">
+                        <div class="row row-cols-auto justify-content-end g-1">
+                            <div class="col">
+                                <button class="btn btn-sm btn-md btn-danger" id="removeBtn2" type="button">
+                                    Remove
+                                </button>
+                            </div>
+                            <div class="col">
+                                <button class="btn btn-sm btn-md btn-primary" id="addBtn2" onclick="popupProdItemDetail()" type="button">
+                                    Add
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mt-2 mx-1">
+                    <table id="item2-table" class="detailTable" style="width:100%">
+                        <thead>
+                            <tr class="toolbar-row">
+                                <th class="d-none isEditable" style="width: 3%; text-align: center;">
+                                    <input id="trCheckbox2" type="checkbox" class=" dt-checkboxes select2-all form-check-input" style="margin-top:5.5px;">
+                                </th>
+                                <th>Property Type</th>
+                                <th>Property Type (Sub)</th>
+                                <th>Property Class</th>
+                                <th>Property Colour</th>
+                                <th>Property Pack</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tbody">
+                            @{ var count2 = 0; }
+                            @if (Model.ProdTypeProdItemLstModel != null && Model.ProdTypeProdItemLstModel.Count > 0)
+                            {
+                                foreach (var item in Model.ProdTypeProdItemLstModel)
+                                {
+                                    count2++;
+                                    <tr id="R2_@count2" data-did="@count2">
+                                        <td class="d-none isEditable text-center">
+                                            <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk2_@count2" onClick="handleCheckbox2Click(this)">
+                                        </td>
+                                        <td>
+                                            <input type="text" class="isItemDisabled form-control" id="item2_main_@count2" value="@item.PROP_TYPE_MAIN" style="border: none; box-shadow: none" placeholder="" readonly>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="isItemDisabled form-control" id="item2_sub_@count2" value="@item.PROP_TYPE_SUB" style="border: none; box-shadow: none" placeholder="" readonly>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="isItemDisabled form-control" id="item2_class_@count2" value="@item.PROP_CLASS" style="border: none; box-shadow: none" placeholder="" readonly>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="isItemDisabled form-control" id="item2_colour_@count2" value="@item.PROP_COLOUR" style="border: none; box-shadow: none " placeholder="" readonly>
+                                        </td>
+                                        <td>
+                                            <input type="text" class="isItemDisabled form-control" id="item2_pack_@count2" value="@item.PROP_PACK" style="border: none; box-shadow: none" placeholder="" readonly>
+                                        </td>
+                                        <td class="d-none">
+                                            <input type="text" class="form-control" id="item2_stat_@count2" value="0">
+                                            <input type="text" class="form-control" id="item2_dbid_@count2" value="@item.MM_PRODTYPE_D1_ID">
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                    <input type="hidden" id="item2-count" value="@count2" />
+                </div>
+
+                <div class="hideInfo">
+                    <hr />
+
+                    <div class="row row-cols-2 mt-4">
+                        <div class="col align-self-center">
+                            <h6 style="float: left" class="text-muted">Entry Details</h6>
+                        </div>
+                        <div class="col">
+
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Updated By<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.UPDATED_BY">
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="text-muted">Created By<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.CREATED_BY">
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Updated Date<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.UPDATED_DATE">
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="text-muted">Created Date<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.CREATED_DATE">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row tr-btm-btn-area">
+            @if (Model.RECORD_TYP != null)
+            {
+                if (@Model.RECORD_TYP != "5")
+                {
+                    <div class="col"><button id="btnDeleteView" type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#delete-confirmation-modal">Delete</button></div>
+                }
+
+            }
+            <div class="col">
+                <div class="row row-cols-auto justify-content-end isNotEditable" style="padding-right: 20px">
+                    <div class="col"><button id="btnCancelView" type="button" class="btn btn-sm btn-secondary">Back</button></div>
+                </div>
+
+                <div class="row row-cols-auto justify-content-end isEditable g-1" style="display:none; padding-right: 20px">
+                    <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-back-confirmation-modal">Back</button></div>
+                    <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@section scripts {
+    <script>
+    var idh = '@Model.MM_PRODTYPE_H_ID';
+
+    $(document).ready(function () {
+        checkboxChecking();
+        checkbox2Checking();
+
+        var listingURL = '/MM_PROD_TYPE/MM_PROD_TYPE_LST';
+
+        //REMOVE D
+        $('#removeBtn').on('click', function () {
+            $('#item-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                var tablerow = $('#item-count').val();
+                var row = $(ele).closest('tr');
+                var itemStatInput = row.find('input[id^="item_stat_"]');
+                var item_stat = itemStatInput.val();
+
+                //if (item_stat != '1') {
+                //    itemStatInput.val('5');
+                //    row.hide();
+                //} else {
+                //    row.remove();
+                //}
+
+                row.remove();
+                tablerow -= 1;
+
+                $('#item-count').val(tablerow);
+            });
+
+            checkboxChecking();
+        });
+
+        //REMOVE D1
+        $('#removeBtn2').on('click', function () {
+            $('#item2-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                var tablerow = $('#item2-count').val();
+                var row = $(ele).closest('tr');
+                var itemStatInput = row.find('input[id^="item2_stat_"]');
+                var item2_stat = itemStatInput.val();
+
+                //if (item2_stat != '1') {
+                //    itemStatInput.val('5');
+                //    row.hide();
+                //} else {
+                //    row.remove();
+                //}
+
+                row.remove();
+                tablerow -= 1;
+
+                $('#item2-count').val(tablerow);
+            });
+
+            checkbox2Checking();
+        });
+
+        //SUBMIT
+        $('#btnConfirmSubmit').on('click', function () {
+            $('.invalid-feedback').remove();
+            $('.is-invalid').removeClass('is-invalid');
+
+            var cont = true;
+            var message = "";
+
+            var txtprodtype = $("#txtprodtype").val();
+            var comp_group = $("input[name='compgroup']:checked").val();
+
+            if (txtprodtype == undefined || txtprodtype == null || txtprodtype == "") {
+                cont = false;
+                message += 'Product Type field cannot empty. <br>';
+            }
+
+            if (comp_group == undefined || comp_group == null || comp_group == "") {
+                cont = false;
+                message += 'Please select Company Group. <br>';
+            }
+
+            $('.required-field').each(function (e) {
+                var input_val = $(this).val().trim();
+                if (input_val == null || input_val == undefined || input_val === "") {
+                    cont = false;
+                    $(this).addClass('is-invalid');
+                    inputError(this);
+                }
+            });
+
+            var hasItem = false;
+            var hasError = false;
+            var hasDuplicate = false;
+            var existedItem = [];
+
+            var prodhasItem = false;
+            var prodhasError = false;
+            var prodhasDuplicate = false;
+            var prodexistedItem = [];
+
+            var propertylist = [];
+            var proditemlist = [];
+            $("#item-table tbody tr").each(function () {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat = $('#item_stat_' + did).val();
+                    var item_dbid = $('#item_dbid_' + did).val();
+
+                    var item_prop = $('#item_prop_' + did).val();
+                    var item_propitem = $('#item_propitem_' + did).val();
+                    var item_propid = $('#item_propid_' + did).val();
+
+                    if (item_stat != '5') {
+                        if (item_propid !== "" && item_propid != '0') {
+                            hasItem = true;
+                            if (existedItem.includes(item_propid)) {
+                                hasDuplicate = true;
+                                return false;
+                            } else {
+                                existedItem.push(item_propid);
+                            }
+                        } else {
+                            hasError = true;
+                        }
+                    }
+
+                    propertylist.push({
+                        'MM_PRODTYPE_D_ID': item_dbid,
+                        'RECORD_TYP': 1, //item_stat,
+
+                        'PROPERTIES': item_prop,
+                        'PROP_ITEM': item_propitem,
+                        'MM_PROPERTIES_H_ID': item_propid
+                    });
+                }
+            });
+
+            if (cont && !hasItem) {
+                cont = false;
+                message = "Please add at least one Main Property.";
+            }
+            if (cont && hasError) {
+                cont = false;
+                message = "Please make sure Property field in Main Property is not empty.";
+            }
+            if (cont && hasDuplicate) {
+                cont = false;
+                message = "Duplicate property and property items selected.";
+            }
+
+            if (cont) {
+
+                $("#item2-table tbody tr").each(function () {
+                    var did = $(this).data("did");
+                    if (did != '' && did != null && did != undefined) {
+                        var item2_stat = $('#item2_stat_' + did).val();
+                        var item2_dbid = $('#item2_dbid_' + did).val();
+
+                        var item2_main = $('#item2_main_' + did).val();
+                        var item2_sub = $('#item2_sub_' + did).val();
+                        var item2_class = $('#item2_class_' + did).val();
+                        var item2_colour = $('#item2_colour_' + did).val();
+                        var item2_pack = $('#item2_pack_' + did).val();
+
+                        if (item2_stat != '5') {
+                            if (item2_main !== "") {
+                                prodhasItem = true;
+                                if (prodexistedItem.includes(item2_main)) {
+                                    prodhasDuplicate = true;
+                                    return false;
+                                } else {
+                                    prodexistedItem.push(item2_main);
+                                }
+                            } else {
+                                prodhasError = true;
+                            }
+                        }
+
+                        proditemlist.push({
+                            'MM_PRODTYPE_D1_ID': item2_dbid,
+                            'RECORD_TYP': 1, //item2_stat,
+
+                            'PROP_TYPE_MAIN': item2_main,
+                            'PROP_TYPE_SUB': item2_sub,
+                            'PROP_CLASS': item2_class,
+                            'PROP_COLOUR': item2_colour,
+                            'PROP_PACK': item2_pack
+                        });
+                    }
+                });
+
+                if (cont && !prodhasItem) {
+                    cont = false;
+                    message = "Please add at least one Product Type Listing.";
+                }
+                if (cont && prodhasError) {
+                    cont = false;
+                    message = "Please make sure Property Type field in Product Type Listing is not empty.";
+                }
+                if (cont && prodhasDuplicate) {
+                    cont = false;
+                    message = "Duplicate property type selected.";
+                }
+            }
+
+            if (cont) {
+
+                var model = {
+
+                    MM_PRODTYPE_H_ID: idh,
+                    RECORD_TYP: '3',
+
+                    PROD_TYPE: txtprodtype,
+                    COMP_GROUP: comp_group,
+                    ProdTypeMainPropLstModel: propertylist,
+                    ProdTypeProdItemLstModel: proditemlist
+                };
+
+                console.log(model)
+
+                $.ajax({
+                    url: "/MM_PROD_TYPE/InsertUpdateProdType",
+                    type: 'POST',
+                    data: {
+                        model: model
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data save successfully");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+
+        });
+
+        // BUTTON DELETE
+        $('#btnConfirmDel').on('click', function () {
+
+            var lstid = [];
+            lstid.push(idh)
+
+            $.ajax({
+                url: "/MM_PROD_TYPE/deleteProdType",
+                type: 'POST',
+                data: {
+                    lstid: lstid
+                },
+                beforeSend: function () {
+                    loadings();
+                },
+                success: function (response) {
+                    loadings(false);
+                    if (response.success) {
+                        displayToast("s", "Data successfully deleted");
+
+                        setTimeout(function () {
+                            window.location.href = listingURL;
+                        }, 2000);
+
+                    } else {
+                        displayToast("error", response.message)
+                    }
+                },
+                error: function () {
+                    displayToast("error", response.responseText)
+                }
+            });
+
+        });
+
+        //BUTTON CANCEL/BACK
+        $('#btnCancelView').on('click', function () {
+            var del = '0';
+            if (@Model.RECORD_TYP != null && @Model.RECORD_TYP  == '5') {
+                del = '1';
+            }
+            window.location.href = listingURL + '?Deleted=' + del;
+        });
+
+        $('#btnBackEdit').on('click', function () {
+                window.location.href = listingURL;
+        });
+    });
+
+        function prodtypeDuplicate(idh) {
+            if (idh != null && idh != '' && idh != '0') {
+                $.ajax({
+                    url: "/MM_PROD_TYPE/getDuplicateProdType",
+                    type: 'POST',
+                    data: {
+                        id: idh
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            var model = response.modelh;
+                            var d1 = response.d1;
+                            var d2 = response.d2;
+
+                            $("#txtprodtype").val(model.PROD_TYPE);
+
+                            //d1
+                            $('#item-table tbody').empty();
+                            $('#item-count').val(0);
+                            addPropertiesList(d1)
+
+                            //d2
+                            $('#item2-table tbody').empty();
+                            $('#item2-count').val(0);
+                            addProdList(d2)
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+            } else {
+                displayToast("error", "Please select grading to duplicate")
+            }
+
+        }
+
+    //ADD PROPERTIES LIST
+    function addPropertiesList(data) {
+        var cont = true;
+        var message = "";
+
+        var hasDuplicate = false;
+        for (var i = 0; i < data.length; i++) {
+
+            var rowIdx = $('#item-count').val();
+
+            if (rowIdx != '0') {
+                $("#item-table tbody tr").each(function () {
+                    var propid = data[i].MM_PROPERTIES_H_ID;
+
+                    var did = $(this).data('did');
+                    if (did != '' && did != null && did != undefined) {
+                        var item_stat = $('#item_stat_' + did).val();
+                        var item_propid = $('#item_propid_' + did).val();
+
+                        if (data[i].INSERT != 'N') {
+                            if (item_stat != '5' && item_propid == propid) {
+                                hasDuplicate = true;
+                                data[i].INSERT = 'N';
+                            } else {
+                                data[i].INSERT = 'Y';
+                            }
+                        }
+
+                    }
+                });
+            } else {
+                data[i].INSERT = 'Y';
+            }
+
+
+        }
+
+        //if (cont && hasDuplicate) {
+        //    cont = false;
+        //    message = "Duplicate property and property items selected.";
+        //}
+
+        if (cont) {
+            var rowIdx = $('#item-count').val();
+
+            for (var i = 0; i < data.length; i++) {
+
+                if (data[i].INSERT == 'Y') {
+                    rowIdx++;
+                    $('#item-count').val(rowIdx);
+
+                    $("#item-table tbody").append(`
+                    <tr id="R_${rowIdx}" data-did="${rowIdx}">
+                        <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_${rowIdx}" onClick="handleCheckboxClick(this)"></td>
+                        <td><input type="text" class="form-control" value="${data[i].PROPERTIES}"  id="item_prop_${rowIdx}" placeholder="" disabled></td>
+                        <td><input type="text" class="form-control" value="${data[i].PROP_ITEM}"  id="item_propitem_${rowIdx}" placeholder="" disabled></td>
+                        <td class="d-none">
+                            <input type="text" id="item_stat_${rowIdx}" value="1">
+                            <input type="text" id="item_dbid_${rowIdx}" value="0">
+                            <input type="text" id="item_propid_${rowIdx}" value="${data[i].MM_PROPERTIES_H_ID}">
+                        </td>
+                    </tr>`);
+
+                    checkboxChecking();
+                }
+            }
+
+        } else {
+            if (message != "") {
+                displayToast("error", message)
+            }
+        }
+    }
+
+    //ADD PRODUCT ITEM LIST
+        function addProdList(data) {
+            
+        var cont = true;
+        var message = "";
+
+        var hasDuplicate = false;
+        for (var i = 0; i < data.length; i++) {
+
+            var rowIdx = $('#item2-count').val();
+            if (rowIdx != '0') {
+                $("#item2-table tr").each(function () {
+                    var PROP_TYPE_MAIN = data[i].PROP_TYPE_MAIN;
+
+                    var did = $(this).data('did');
+                    if (did != '' && did != null && did != undefined) {
+                        var item2_stat = $('#item2_stat_' + did).val();
+                        var item2_main = $('#item2_main_' + did).val();
+
+                        if (data[i].INSERT != 'N') {
+                            if (item2_stat != '5' && item2_main == PROP_TYPE_MAIN) {
+                                hasDuplicate = true;
+                                data[i].INSERT = 'N';
+                            } else {
+                                data[i].INSERT = 'Y';
+                            }
+                        }
+
+                    }
+                });
+            } else {
+                data[i].INSERT = 'Y';
+            }
+
+        }
+
+        //if (cont && hasDuplicate) {
+        //    cont = false;
+        //    message = "Duplicate property type selected.";
+        //}
+
+        if (cont) {
+            var rowIdx = $('#item2-count').val();
+
+            for (var i = 0; i < data.length; i++) {
+
+                if (data[i].INSERT == 'Y') {
+                    rowIdx++;
+                    $('#item2-count').val(rowIdx);
+
+                    $("#item2-table tbody").append(`
+                    <tr id="R2_${rowIdx}" data-did="${rowIdx}">
+                        <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk2_${rowIdx}" onClick="handleCheckboxClick(this)"></td>
+                            <td><input type="text" class="form-control" value="${data[i].PROP_TYPE_MAIN}"  id="item2_main_${rowIdx}" placeholder="" disabled></td>
+                            <td><input type="text" class="form-control" value="${data[i].PROP_TYPE_SUB}"  id="item2_sub_${rowIdx}" placeholder="" disabled></td>
+                            <td><input type="text" class="form-control" value="${data[i].PROP_CLASS}"  id="item2_class_${rowIdx}" placeholder="" disabled></td>
+                            <td><input type="text" class="form-control" value="${data[i].PROP_COLOUR}"  id="item2_colour_${rowIdx}" placeholder="" disabled></td>
+                            <td><input type="text" class="form-control" value="${data[i].PROP_PACK}"  id="item2_pack_${rowIdx}" placeholder="" disabled></td>
+                        <td class="d-none">
+                            <input type="text" id="item2_stat_${rowIdx}" value="1">
+                            <input type="text" id="item2_dbid_${rowIdx}" value="0">
+                        </td>
+                    </tr>`);
+
+                    checkbox2Checking();
+                }
+
+            }
+
+        } else {
+            if (message != "") {
+                displayToast("error", message)
+            }
+        }
+    }
+
+    //POPUP 1
+    function popupPropertyDetail() {
+        var isDisabled = $('#searchProperty').hasClass('tr-disabled');
+
+        if (!isDisabled) {
+            var id = idh;
+            var popup;
+            var url = '@Url.Action("MM_PROD_TYPE_PROPERTY_POPOUT", "MM_PROD_TYPE")';
+
+            url = url + '?id=' + id;
+            popup = window.open(url, "Popup", "directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width=800,height=800");
+            popup.focus();
+        }
+    }
+
+    //POPUP 2
+    function popupProdItemDetail() {
+        var isDisabled = $('#searchProdItem').hasClass('tr-disabled');
+
+        if (!isDisabled) {
+            var txtprodtypesearch = $("#txtprodtypesearch").val();
+            var id = idh;
+            var popup;
+            var url = '@Url.Action("MM_PROD_TYPE_PROD_ITEM_POPOUT", "MM_PROD_TYPE")';
+
+            url = url + '?id=' + id + '&search=' + txtprodtypesearch;
+            popup = window.open(url, "Popup", "directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width=800,height=800");
+            popup.focus();
+        }
+        }
+
+        function popupProdTypeDuplicate() {
+        var popup;
+        var url = '@Url.Action("MM_PROD_TYPE_DUPLICATE_POPOUT", "MM_PROD_TYPE")';
+
+        popup = window.open(url, "Popup", "directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width=800,height=800");
+        popup.focus();
+
+    }
+    </script>
+}
+

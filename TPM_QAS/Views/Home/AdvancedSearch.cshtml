@@ -1,0 +1,205 @@
+﻿@model DTEntryModel.DailyJobEntry
+
+@{
+    Layout = null;
+    @Styles.Render("~/Content/Main.css")
+    //@Styles.Render("~/Content/bootstrap.min.css")
+
+}
+
+<body>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" style="float:left;" id="exampleModalLabel">Advanced Search</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="modal-body blueiconcolor" id="searchSourceBody">
+            <table style="width:100%;">
+                @if (ViewData["SearchSource"] != null)
+                {
+                    foreach (var search in (ViewData["SearchSource"] as string[]))
+                    {
+                        string[] c = search.Split(new Char[] { '/' });
+                        <tr>
+                            <td>
+                                <div style="width:150px; padding-right:15px;">
+                                    <label>@c[0].ToString()</label>
+                                </div>
+
+                            </td>
+                            <td>
+                                <div style="width:300px; padding: 3px 0px;">
+                                    @*<input class="form-control" id="@c[1].ToString()" type="text" onchange="GetSearchValueData(this.value);" />*@
+
+                                    @*maryam - 01032023*@
+                                    @if (c[1].ToString().Contains("DATE"))
+                                    {
+                                        <input class="form-control" id="@c[1].ToString()" type="date" />
+                                    }
+                                    else if (c[1].ToString().Contains("MONTH"))
+                                    {
+                                        <input class="form-control" id="@c[1].ToString()" type="month" />
+                                    }
+                                    else if (c[1].ToString().Equals("SECTION"))  /*maryam - 16032023 *For section field*/
+                                    {
+                                        // Get the dropdown items from ViewBag
+                                        var dropdownItems = ViewBag.DropdownSection as List<SelectListItem>;
+
+                                        @Html.DropDownList("MyDropdown", dropdownItems, "All", new { @class = "form-control", id = c[1].ToString() })
+                                    }
+                                    else if (c[1].ToString().Equals("MODULE"))
+                                    {
+                                        // Get the dropdown items from ViewBag
+                                        var dropdownItems1 = ViewBag.DropdownModule as List<SelectListItem>;
+
+                                        @Html.DropDownList("MyDropdown", dropdownItems1, "All", new { @class = "form-control", id = c[1].ToString() })
+                                    }
+                                    else if (c[1].ToString().Equals("AREA"))
+                                    {
+                                        // Get the dropdown items from ViewBag
+                                        var dropdownItems2 = ViewBag.DropdownArea as List<SelectListItem>;
+
+                                        @Html.DropDownList("MyDropdown", dropdownItems2, "--Select--", new { @class = "form-control", id = c[1].ToString() })
+                                    }
+                                    else
+                                    {
+                                        <input class="form-control" id="@c[1].ToString()" type="text" />
+                                    }
+
+                                </div>
+                            </td>
+
+                        </tr>
+                    }
+                }
+                <tr>
+                    <td>
+                        <div style="width:150px; padding-right:15px;">
+
+                        </div>
+
+                    </td>
+                    <td>
+                        <div style="width:300px; padding: 3px 0px;">
+                            <button type="button" style="float:right; margin-left:3%" class="btn btn-primary" data-dismiss="modal">Close</button>
+                            <button type="button" style="float:right" class="btn btn-primary" onclick="action_clicked();" data-dismiss="modal">Search</button>
+
+                        </div>
+                    </td>
+
+                </tr>
+            </table>
+
+            <br />
+            <br />
+        </div>
+        @*<div class="modal-footer">
+                <button type="button" style="float:right" class="btn btn-secondary" onclick="action_clicked();" data-dismiss="modal">Search</button>
+            </div>*@
+    </div>
+</body>
+
+<script>
+
+    function action_clicked() {
+        let validated = false;
+        var searchValue = "str";
+        $('#searchSourceBody input[type="text"]').each(function () {
+            if (this.value != "") {
+
+                var tmp_string = ",";
+
+
+                tmp_string += this.value;
+
+                if (searchValue != "str") {
+                    searchValue += "AND " + this.id + " LIKE '%" + tmp_string.substring(1, tmp_string.length) + "%'";
+                }
+                else {
+                    searchValue = this.id + " LIKE '%" + tmp_string.substring(1, tmp_string.length) + "%' ";
+                }
+
+                validated = true;
+            }
+
+        });
+        //maryam - 01032023
+        $('#searchSourceBody input[type="date"]').each(function () {
+            if (this.value != "") {
+
+                var test = this.value.split('-')
+                var test2 = test[2] + "/" + test[1] + "/" + test[0];
+
+                if (searchValue != "str") {
+                    searchValue += "AND " + this.id + " LIKE '%" + test2 + "%'";
+                }
+                else {
+                    searchValue = this.id + " LIKE '%" + test2 + "%' ";
+                }
+
+                validated = true;
+            }
+
+        });
+
+        $('#searchSourceBody input[type="month"]').each(function () {
+            if (this.value != "") {
+
+                if (searchValue != "str") {
+                    searchValue += "AND " + this.id + " LIKE '%" + this.value + "%'";
+                }
+                else {
+                    searchValue = this.id + " LIKE '%" + this.value + "%' ";
+                }
+
+                validated = true;
+            }
+
+        });
+
+        /*maryam - 16032023 *For section dropdown*/
+        $('#searchSourceBody select[name = "MyDropdown"]').each(function () {
+            //debugger
+
+            if (this.value != "") {
+
+                var tmp_string = ",";
+
+
+                tmp_string += this.value;
+
+                if (searchValue != "str") {
+                    searchValue += "AND " + this.id + " LIKE '%" + tmp_string.substring(1, tmp_string.length) + "%'";
+                }
+                else {
+                    searchValue = this.id + " LIKE '%" + tmp_string.substring(1, tmp_string.length) + "%' ";
+                }
+
+                validated = true;
+            }
+            //debugger
+        });
+
+
+        if (!validated) {
+            alert("Please search at least one");
+            @* window.location.href = "@Url.Action(ViewData["Action"].ToString(), ViewData["Controller"].ToString())";*@
+        }
+        else {
+            $("#grid").hide();
+            $("#loadingDiv").show();
+            var url = new URL(window.location.href);
+            url.searchParams.set("searchValue", searchValue);
+            url.searchParams.set("isAdv", "Y");
+            window.location.href = url;
+
+        }
+    }
+
+
+
+
+</script>
+

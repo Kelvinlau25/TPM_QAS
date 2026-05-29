@@ -1,0 +1,2221 @@
+﻿@using TPM_QAS.Models
+@model TPM_QAS.Models.CommonModel<DailyIDSTransVM, DailyIDSTransVM>
+@{
+    ViewBag.Title = Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+
+    .tblAppearance {
+        /*width: 1000px !important;*/
+        margin: 20px 0 !important;
+        display: block;
+        overflow: auto;
+    }
+
+    .divuse {
+        border: 2px solid green;
+        margin-bottom: 20px;
+    }
+
+    u {
+        text-decoration: underline;
+        font-weight: bold;
+    }
+</style>
+@using (Html.BeginForm("DE_IDS_TRANS_REV_ADD", "DE_IDS_TRANS_REV", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">@ViewBag.Title - Add</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">Inspection Data Sheet (IDS)</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+
+                    <hr />
+                    <nav class="tr-tab">
+                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                            <button class="nav-link active" id="nav-summary-tab" data-bs-toggle="tab" data-bs-target="#nav-summary" type="button" role="tab" aria-controls="nav-summary" aria-selected="true">Summary</button>
+                            <button class="nav-link" id="nav-mold-tab" data-bs-toggle="tab" data-bs-target="#nav-mold" type="button" role="tab" aria-controls="nav-mold" aria-selected="false">Molding & Property</button>
+                            <button class="nav-link" id="nav-appr-tab" data-bs-toggle="tab" data-bs-target="#nav-appr" type="button" role="tab" aria-controls="nav-appr" aria-selected="false">Appearance</button>
+                        </div>
+                    </nav>
+                    <div class="tab-content p-2" id="nav-tabContent" style="border: 4px solid #EBF3FF; ">
+                        <div class="tab-pane fade show active" id="nav-summary" role="tabpanel" aria-labelledby="nav-summary-tab" tabindex="0">
+                            <h6 class="card-title text-muted pt-2"></h6>
+                            <div style="display:none">
+                                ProdGroup : @Html.TextBoxFor(m => m.ModelObj.prodgroup, new { @class = "form-control", @id = "txtProdGroup", @style = "height: 30px; " })
+                                ProdLine : @Html.TextBoxFor(m => m.ModelObj.prodline, new { @class = "form-control", @id = "txtProdLine", @style = "height: 30px; " })
+                            </div>
+                            <div class="row align-items-baseline">
+                                <div class="col-sm-2">
+                                    <p class="text-muted">
+                                        <span>@Html.LabelFor(a => a.ModelObj.PRODTYPE) </span>
+                                        <span class="text-danger">*</span>
+                                        <span style="float:right">:</span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 d-flex">
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.ModelObj.PRODTYPE, null, new { @id = "txtProdType", @class = "form-control" })
+                                        <button type="button" class="btn-info input-group-text tr-input-group fa-solid fa-ellipsis" data-bs-toggle="modal" data-bs-target="#ProdType" title="Choose Product Type" style="margin: 0;"></button>
+                                    </div>
+                                </div>
+                                <div class="col-sm-1">
+                                </div>
+
+                                <div class="col-sm-2">
+                                    <p class="text-muted">
+                                        <span>@Html.LabelFor(a => a.ModelObj.PACKEDDATE) </span>
+                                        <span class="text-danger">*</span>
+                                        <span style="float:right">:</span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 d-flex">
+                                    @Html.TextBoxFor(m => m.ModelObj.PACKEDDATE, null, new { @id = "txtInspecDate", @class = "form-control", @disabled = "disabled" })
+                                    @Html.ValidationMessageFor(m => m.ModelObj.PACKEDDATE, "", new { style = "color:red" })
+                                    @Html.HiddenFor(a => a.ModelObj.PACKEDDATE, new { @id = "moinspectdate" })
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row align-items-baseline">
+                                <div class="col-sm-2">
+                                    <p class="text-muted">
+                                        <span>@Html.LabelFor(a => a.ModelObj.LOTNO) </span>
+                                        <span class="text-danger">*</span>
+                                        <span style="float:right">:</span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 d-flex">
+                                    @Html.TextBoxFor(m => m.ModelObj.LOTNO, null, new { @id = "txtLotNo", @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.ModelObj.LOTNO, "", new { style = "color:red" })
+                                    @Html.HiddenFor(a => a.ModelObj.LOTNO, new { @id = "molotno" })
+                                </div>
+
+                                <div class="col-sm-1">
+
+                                </div>
+                                <div class="col-sm-2">
+                                    <p class="text-muted">
+                                        <span>@Html.LabelFor(a => a.ModelObj.PACKEDDATE2) </span>
+                                        <span class="text-danger">*</span>
+                                        <span style="float:right">:</span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 d-flex">
+                                    @Html.TextBoxFor(m => m.ModelObj.PACKEDDATE2, null, new { @id = "txtPackedDate", @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.ModelObj.PACKEDDATE2, "", new { style = "color:red" })
+                                    @Html.HiddenFor(a => a.ModelObj.PACKEDDATE2, new { @id = "mopackeddate" })
+                                </div>
+                            </div>
+                            <br />
+                            <div class="row align-items-baseline">
+                                @*<div class="col-sm-2">
+                                    <p class="text-muted">
+                                        <span>@Html.LabelFor(a => a.ModelObj.FullNG) </span>
+                                        <span class="text-danger">*</span>
+                                        <span style="float:right">:</span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 d-flex">*@
+                                    @Html.HiddenFor(a => a.ModelObj.FullNG, new { @id = "mofullng" })
+                                    @*<div class="input-group">
+                                        @Html.TextBoxFor(m => m.ModelObj.FullNG, null, new { @id = "txtFullNG", @class = "form-control" })
+                                        <span class="label-input-group input-group-text tr-input-group"> % </span>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-sm-1">
+                                </div>*@
+                                <div class="col-sm-2">
+                                    <p class="text-muted">
+                                        <span>@Html.LabelFor(a => a.ModelObj.QUANTITY) </span>
+                                        <span class="text-danger">*</span>
+                                        <span style="float:right">:</span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 d-flex">
+                                    @Html.TextBoxFor(m => m.ModelObj.QUANTITY, null, new { @id = "txtQty", @class = "form-control", @maxLength = "6" })
+                                    @Html.ValidationMessageFor(m => m.ModelObj.QUANTITY, "", new { style = "color:red" })
+                                    @Html.HiddenFor(a => a.ModelObj.QUANTITY, new { @id = "moqty" })
+                                </div>
+                            </div>
+
+                            <br />
+                            <div class="row align-items-baseline">
+                                <div class="col-sm-2">
+                                    <p class="text-muted">
+                                        <span>@Html.LabelFor(a => a.ModelObj.TESTEDBY) </span>
+                                        <span class="text-danger">*</span>
+                                        <span style="float:right">:</span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 d-flex">
+                                    @Html.TextBoxFor(m => m.ModelObj.TESTEDBY, null, new { @id = "txtTestedBy", @class = "form-control" })
+                                    @Html.ValidationMessageFor(m => m.ModelObj.TESTEDBY, "", new { style = "color:red" })
+                                    @Html.HiddenFor(a => a.ModelObj.TESTEDBY, new { @id = "motestedby" })
+                                </div>
+
+                                <div class="col-sm-1">
+                                </div>
+                                <div class="col-sm-2">
+                                    <p class="text-muted">
+                                        <span>@Html.LabelFor(a => a.ModelObj.UPDATEDBY) </span>
+                                        <span class="text-danger">*</span>
+                                        <span style="float:right">:</span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 d-flex">
+                                    @Html.TextBoxFor(m => m.ModelObj.UPDATEDBY, null, new { @id = "txtUpdatedBy", @class = "form-control", @maxLength = "6" })
+                                    @Html.ValidationMessageFor(m => m.ModelObj.UPDATEDBY, "", new { style = "color:red" })
+                                    @Html.HiddenFor(a => a.ModelObj.UPDATEDBY, new { @id = "moupdatedby" })
+                                </div>
+                            </div>
+
+                            <br />
+                            <div class="row align-items-baseline">
+                                <div class="col-sm-2">
+                                    <p class="text-muted">
+                                        <span>@Html.LabelFor(a => a.ModelObj.OVERWRITE) </span>
+                                        <span style="float:right">:</span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 d-flex">
+                                    <div class="input-group">
+                                        @Html.TextBoxFor(m => m.ModelObj.AFTERPRODTYPCHG, null, new { @id = "txtOverwrite", @class = "form-control" })
+                                        <span class="label-input-group input-group-text tr-input-group">/ set after</span>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-1">
+                                </div>
+                                <div class="col-sm-2">
+                                    <p class="text-muted">
+                                        <span>@Html.LabelFor(a => a.ModelObj.INSPECTION) </span>
+                                        <span style="float:right">:</span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 d-flex">
+                                    @Html.HiddenFor(a => a.ModelObj.INSPECTION, new { @id = "moinspection" })
+                                    <div class="form-check form-check-inline check">
+                                        @*<input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="Firstlot" checked>*@
+                                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="Full" name="FirstLotContainer">
+                                        <label class="form-check-label" for="inlineCheckbox1">First lot</label>
+                                    </div>
+                                    <div class="form-check form-check-inline check">
+                                        <input class="form-check-input" type="checkbox" id="mabs" value="Part" name="PartialContainer">
+                                        <label class="form-check-label" for="mabs">Partial (Only For MABS)</label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br />
+                            <div class="row align-items-baseline">
+                                <div class="col-sm-2">
+                                    <p class="text-muted">
+                                        <span>@Html.LabelFor(a => a.ModelObj.STATUS) </span>
+                                        <span style="float:right">:</span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 d-flex">
+                                    @Html.TextBoxFor(m => m.ModelObj.STATUS, null, new { @id = "txtStatus", @class = "form-control", @disabled = "disabled" })
+                                    @Html.ValidationMessageFor(m => m.ModelObj.STATUS, "", new { style = "color:red" })
+                                    @Html.HiddenFor(a => a.ModelObj.STATUS, new { @id = "mostatus" })
+                                </div>
+
+                                <div class="col-sm-1">
+                                </div>
+                                <div class="col-sm-2">
+                                    <p class="text-muted">
+                                        <span>@Html.LabelFor(a => a.ModelObj.GRADE) </span>
+                                        <span style="float:right">:</span>
+                                    </p>
+                                </div>
+                                <div class="col-sm-3 d-flex">
+                                    @Html.TextBoxFor(m => m.ModelObj.GRADE, null, new { @id = "txtGradeM", @class = "form-control", @maxLength = "6", @disabled = "disabled" })
+                                    @Html.ValidationMessageFor(m => m.ModelObj.GRADE, "", new { style = "color:red" })
+                                    @Html.HiddenFor(a => a.ModelObj.GRADE, new { @id = "mograde" })
+                                </div>
+                            </div>                            
+                        </div>
+
+                        <div class="tab-pane fade" id="nav-mold" role="tabpanel" aria-labelledby="nav-mold-tab" tabindex="0">
+
+                            <div class="row align-items-baseline">
+                                <div class="col-sm-12">
+                                    <div class="row mt-2 mx-1">
+                                        <div style="overflow-x: auto; width: 100%;">
+                                            <table id="tr-molding" class="table table-bordered compact detailTable" style="width:100%;">
+                                                <thead>
+                                                    <tr class="toolbar-row">
+                                                        <th>Property</th>@*0*@
+                                                        <th>Unit</th>@*1*@
+                                                        <th style="min-width:130px;">Machine Name</th>@*2*@
+                                                        <th style="min-width:130px;">Machine Result</th>@*3*@
+                                                        <th>Regression Result</th>@*4*@
+                                                        <th>COQ Adjust</th>@*5*@
+                                                        <th>Specification</th>@*6*@
+                                                        <th>Grade</th>@*7*@
+                                                        <th>Main Properties</th>@*8*@
+                                                        <th>Type</th>@*9*@
+                                                        <th>Mandatory</th>@*10*@
+                                                        @*<th></th>*@@*11*@
+                                                        <th>Status</th>@*12*@
+                                                        <th>Main Reading</th>@*13*@
+                                                        <th>Max Count</th>@*14*@
+                                                        <th style="text-align:center; display:none;">Reading1</th> @*15*@
+                                                        <th style="text-align:center; display:none;">Grade1</th> @*16*@
+                                                        <th style="text-align:center; display:none;">Reading2</th> @*17*@
+                                                        <th style="text-align:center; display:none;">Grade2</th> @*18*@
+                                                        <th style="text-align:center; display:none;">Reading3</th> @*19*@
+                                                        <th style="text-align:center; display:none;">Grade3</th> @*20*@
+                                                        <th style="text-align:center; display:none;">Reading4</th> @*21*@
+                                                        <th style="text-align:center; display:none;">Grade4</th> @*22*@
+                                                        <th style="text-align:center; display:none;">Reading5</th> @*23*@
+                                                        <th style="text-align:center; display:none;">Grade5</th> @*24*@
+                                                        <th style="text-align:center; display:none;">Reading6</th> @*25*@
+                                                        <th style="text-align:center; display:none;">Grade6</th> @*26*@
+                                                        <th style="text-align:center; display:none;">TypeInd</th> @*27*@
+                                                        <th style="text-align:center; display:none;">COQInd</th> @*28*@
+                                                        <th style="text-align:center; display:none;">RegressionInd</th> @*29*@
+                                                        <th style="text-align:center; display:none;">RegressionFormula</th> @*30*@
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="tab-pane fade" id="nav-appr" role="tabpanel" aria-labelledby="nav-appr-tab" tabindex="0">
+                            <div class="row align-items-baseline">
+                                <div class="col-sm-12">
+                                    <div class="row mt-2 mx-1" id="apprdescdiv">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary mx-1 my-button" data-bs-toggle="modal" data-bs-target="#back-confirmation-modal">Back</button></div>
+                <div class="col"><button id="btnDraft" type="button" class="btn btn-sm btn-primary">Save As Draft</button></div>
+                <div class="col">
+                    <div class="col"><button id="btnSave" type="button" class="btn btn-sm btn-primary">Submit</button></div>
+                    @*<button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button>*@
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+}
+
+<div class="modal fade" id="ProdType" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;">Product Type Listing</h5>
+            </div>
+            <hr />
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+                    <table id="tr-prodtypepopup" class="table table-hover table-bordered compacted" style="width:100%;">
+                        <thead>
+                            <tr class="toolbar-row">
+                                <th>Product Type</th>
+                                <th>Lot No</th>
+                                <th>Quantity</th>
+                                <th>Packed Date</th>
+                        </thead>
+                    </table>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Machine Name Modal -->
+<div class="modal fade" id="PP_MMIDS" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;">Machine Name Listing</h5>
+                @*<button type="button" class="close" data-bs-dismiss="modal">&times;</button>*@
+            </div>
+            <hr />
+            <!-- Modal body -->
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+                    <table class="table table-striped" id="machinename-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 10%;"></th>
+                                <th>Machine Name</th>
+                                <th>Result</th>
+                                <th>Update Date</th>
+                                <th hidden>Prop Item</th>
+                            </tr>
+                        </thead>
+                        <tbody style="overflow-y:auto;" id="machinename-tableb"></tbody>
+                    </table>
+                </div>
+
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-info" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-info" data-bs-dismiss="modal" id="confirm-machinename">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- The Modal PP_FISHEYE-->
+<div class="modal fade" id="PP_FishEye" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;"></h5>
+                @*<button type="button" class="close" data-bs-dismiss="modal">&times;</button>*@
+            </div>
+            <hr />
+            <!-- Modal body -->
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+                    <table class="table table-striped" id="example">
+                        <tr>
+                            <td style="width: 20%">
+                                @Html.Label("Reading#1")
+                                @Html.Label("*", new { style = "color:red" })
+                            </td>
+                            <td> : </td>
+                            <td>
+                                <div class="col-md-5" style="width:80%">
+                                    @Html.TextBoxFor(a => a.ModelObj.Reading1, new { @class = "form-control", @id = "Reading1", @style = "height: 30px", @onkeyup = "getAverageMold()" })
+                                    @Html.ValidationMessageFor(a => a.ModelObj.Reading1, "", new { @class = "red", @style = "color:red" })
+                                </div>
+                            </td>
+                            <td style="width: 20%">
+                                @Html.Label("Reading#4")
+                            </td>
+                            <td> : </td>
+                            <td>
+                                <div class="col-md-5" style="width:80%">
+                                    @Html.TextBoxFor(a => a.ModelObj.Reading4, new { @class = "form-control", @id = "Reading4", @style = "height: 30px", @onkeyup = "getAverageMold()" })
+                                    @Html.ValidationMessageFor(a => a.ModelObj.Reading4, "", new { @class = "red", @style = "color:red" })
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 20%">
+                                @Html.Label("Reading#2")
+                            </td>
+                            <td> : </td>
+                            <td>
+                                <div class="col-md-5" style="width:80%">
+                                    @Html.TextBoxFor(a => a.ModelObj.Reading2, new { @class = "form-control", @id = "Reading2", @style = "height: 30px", @onkeyup = "getAverageMold()" })
+                                    @Html.ValidationMessageFor(a => a.ModelObj.Reading2, "", new { @class = "red", @style = "color:red" })
+                                </div>
+                            </td>
+                            <td style="width: 20%">
+                                @Html.Label("Reading#5")
+                            </td>
+                            <td> : </td>
+                            <td>
+                                <div class="col-md-5" style="width:80%">
+                                    @Html.TextBoxFor(a => a.ModelObj.Reading5, new { @class = "form-control", @id = "Reading5", @style = "height: 30px", @onkeyup = "getAverageMold()" })
+                                    @Html.ValidationMessageFor(a => a.ModelObj.Reading5, "", new { @class = "red", @style = "color:red" })
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 20%">
+                                @Html.Label("Reading#3")
+                            </td>
+                            <td> : </td>
+                            <td>
+                                <div class="col-md-5" style="width:80%">
+                                    @Html.TextBoxFor(a => a.ModelObj.Reading3, new { @class = "form-control", @id = "Reading3", @style = "height: 30px", @onkeyup = "getAverageMold()" })
+                                    @Html.ValidationMessageFor(a => a.ModelObj.Reading3, "", new { @class = "red", @style = "color:red" })
+                                </div>
+                            </td>
+                            <td style="width: 20%">
+                                @Html.Label("Reading#6")
+                            </td>
+                            <td> : </td>
+                            <td>
+                                <div class="col-md-5" style="width:80%">
+                                    @Html.TextBoxFor(a => a.ModelObj.Reading6, new { @class = "form-control", @id = "Reading6", @style = "height: 30px", @onkeyup = "getAverageMold()" })
+                                    @Html.ValidationMessageFor(a => a.ModelObj.Reading5, "", new { @class = "red", @style = "color:red" })
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width: 20%">
+                                @Html.Label("Average")
+                            </td>
+                            <td> : </td>
+                            <td>
+                                <div class="col-md-5" style="width:80%">
+                                    @Html.TextBoxFor(a => a.ModelObj.averageMold, new { @class = "form-control", @id = "AverageMold", @style = "height: 30px" })
+                                    @Html.ValidationMessageFor(a => a.ModelObj.averageMold, "", new { @class = "red", @style = "color:red" })
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <input type="text" id="typeinds" hidden class="typeinds" />
+                <input type="text" id="prodtypes" hidden class="prodtypes" />
+                <input type="text" id="propitems" hidden class="propitems" />
+                <input type="text" id="mname" hidden class="mname" />
+                <input type="text" id="pgroup" hidden class="pgroup" />
+                <input type="text" id="mformula" hidden class="mformula" />
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" id="resetFisheye">Reset</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="confirm">Submit</button>
+
+                @*<input id="Reset" type="reset" name="ActionType" value="Reset" class="btn btn-primary" />*@
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- The Modal PP_PASSFAIL-->
+<div class="modal fade" id="PP_PassFail" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;"></h5>
+                @*<button type="button" class="close" data-bs-dismiss="modal">&times;</button>*@
+            </div>
+            <hr />
+            <!-- Modal body -->
+            @*@using (Html.BeginForm("MoldReading", "Entry"))
+                {*@
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+                    <table class="table table-striped" id="example">
+                        <tr>
+                            <td style="width: 200px">
+                                @Html.Label("Result")
+                            </td>
+                            <td> : </td>
+                            <td>
+                                <div class="col-md-5" style="width:40%">
+                                    @Html.DropDownList("passfail", new List<SelectListItem>
+                                        {
+                                            new SelectListItem{ Text="Pass", Value = "Pass" },
+                                            new SelectListItem{ Text="Fail", Value = "Fail" },
+
+                                        }, new {@class = "form-control", @id = "passfail"})
+                                    @Html.ValidationMessageFor(a => a.ModelObj.passfail, "", new { @class = "red", @style = "color:red" })
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <input type="text" id="prodtypepass" hidden class="prodtypepass" />
+                <input type="text" id="propitempass" hidden class="propitempass" />
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+
+                @*<input id="Reset" type="reset" name="ActionType" value="Reset" class="btn btn-primary" />*@
+                <button type="button" class="btn btn-secondary" id="resetPassFail">Reset</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="confirmPassFail">Confirm</button>
+            </div>
+            @*}*@
+        </div>
+    </div>
+</div>
+<!-- The Modal PP_FORMULA-->
+<div class="modal fade" id="PP_Formula" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;"></h5>
+                @*<button type="button" class="close" data-bs-dismiss="modal">&times;</button>*@
+            </div>
+            <hr />
+            <!-- Modal body -->
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+
+                    <table class="table table-striped" id="tblppformula" style="width:100%">
+                        <tr>
+                            <td style="width: 200px">
+                                @Html.Label("Formula")
+                            </td>
+                            <td id="txtcformula"></td>
+                        </tr>
+                        <tbody id="varc"></tbody>
+
+                    </table>
+
+                    <div class="col-sm-5">
+                        <button type="button" class="btn btn-info" id="btncformula">Calculate</button>
+                    </div>
+                    <br />
+                    <table class="table table-striped" style="width:100%">
+                        <tr>
+                            <td>
+                                @Html.Label("Result will be ", new { id = "cresult" })
+                                <span hidden id="txtfresult"></span>
+                            </td>
+                        </tr>
+                    </table>
+
+                </div>
+
+            </div>
+            <!-- Modal footer -->
+            <div class="modal-footer">
+
+                <button type="button" class="btn btn-secondary" id="resetFormula">Reset</button>
+                @*<input id="Reset" type="reset" name="ActionType" value="Reset" class="btn btn-primary" />*@
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="btnconfirm-formula">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+@section scripts {
+
+<script type="text/javascript">
+    var table;
+    var ListProdtype = @Html.Raw(ViewBag.SerializedProdType);
+    var sratioList = [];
+    var sdescriptionList = [];
+    var formulainput = 0;
+        var yiformula = '';
+
+        function searchSB(prodtype, lotno, pack) {
+            $('#ProdType').modal('hide');           //hide product type selection popup
+            loadings();
+
+            $.ajax({
+                url: "../DE_IDS_TRANS_REV/SetAfterSelProdType",
+                //string prodtype, string lotno, string packeddate
+                data: { prodtype: prodtype, lotno: lotno, packeddate: pack },
+                dataType: "json",
+                dataSrc: "",
+                success: function (data) {
+                    //console.log(data);
+                    $('#txtProdType').val(data.PRODTYPE);
+                    $('#txtLotNo').val(data.LOTNO);
+                    $('#txtPackedDate').val(data.PACKEDDATE2);
+                    $('#txtFullNG').val(data.FullNG);
+                    $('#txtInspecDate').val(data.PACKEDDATE);
+                    $('#txtTestedBy').val(data.TESTEDBY);
+                    $('#txtUpdatedBy').val(data.UPDATEDBY);
+                    $('#txtQty').val(data.QUANTITY);
+                    $('#txtProdGroup').val(data.prodgroup);
+                    changeprodgroup();
+                    $('#txtProdLine').val(data.prodline);
+
+                    if (data.MoldingList != null) {
+                        loadDataTableMold(data.MoldingList);
+                    }
+
+                    if (data.descriptionList != null) {
+                        loadDataTableApp(data.descriptionList);
+                    }
+                    loadings(false);
+
+                    sratioList = data.ratioList;
+                    sdescriptionList = data.descriptionList;
+                    yiformula = data.YIFORMULA;
+
+                    //calyifor(yiformula);
+                },
+                error: function (e) {
+                    console.log(e);
+                },
+                complete: function () {
+                    loadings(false);
+                }
+
+            });
+        }
+
+
+function hidesidebar() {
+    $('#sidebar2').collapse('toggle');
+    $('#sidebar').collapse('toggle');
+}
+
+$(document).ready(function () {
+    //hidesidebar();
+    loadDataTableProdtype(ListProdtype);
+
+    //$("#PP_MMIDS").on("hidden.bs.modal", function () {
+    //    $("#machinename-tableb").empty();
+    //});
+
+    var listingURL = '/DE_IDS_TRANS_REV/DE_IDS_TRANS_REV_LST';
+
+    $('#btnConfirmBack').on('click', function () {
+        window.location.href = listingURL;
+    });
+
+    $('#PP_FishEye').on('show.bs.modal', function (event) {
+        var myVal = $(event.relatedTarget).data('bsId');
+        $(this).find(".modal-title").text(myVal);
+        $(this).find(".propitems").val(myVal);
+
+        var prodtype = $(event.relatedTarget).data('bsProdtype');
+        $(this).find(".prodtypes").val(prodtype);
+
+        var typeind = $(event.relatedTarget).data('bsTypeind');
+        $(this).find(".typeinds").val(typeind);
+
+        var pgroup = $(event.relatedTarget).data('bsProdgroup');
+        var lotno = $(event.relatedTarget).data('bsLotno');
+
+        var orthis = $(this);
+
+        //populate back reading
+
+        $('#tr-molding tbody tr').each(function (row, tr) {
+            var averagemold = $.trim($(tr).find("td:eq(3) input[type='text']").val());
+            var reading1 = $(tr).find('td').eq(14).text();//$.trim($(tr).find("td:eq(3) input[type='text']").val());
+            var reading2 = $(tr).find('td').eq(16).text();
+            var reading3 = $(tr).find('td').eq(18).text();
+            var reading4 = $(tr).find('td').eq(20).text();
+            var reading5 = $(tr).find('td').eq(22).text();
+            var reading6 = $(tr).find('td').eq(24).text();
+            var mandatory = $(tr).find('td').eq(10).text();
+            var propItem = $(tr).find('td').eq(0).text();
+
+            if (propItem == myVal) {
+                orthis.find("#Reading1").val(reading1);
+                orthis.find("#Reading2").val(reading2);
+                orthis.find("#Reading3").val(reading3);
+                orthis.find("#Reading4").val(reading4);
+                orthis.find("#Reading5").val(reading5);
+                orthis.find("#Reading6").val(reading6);
+                orthis.find("#AverageMold").val(averagemold);
+            }
+        });
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetMachineName", "DE_IDS_TRANS_REV")',
+            contentType: "application/json; charset=utf-8",
+            data: { "propitem": myVal, "lotno": lotno, "prodgroup": pgroup },
+            datatype: "Json",
+            success: function (response) {
+                $.each(response, function (i, item) {
+                    $('#pgroup').val($('#pgroup').val() + item.ProdGroup);
+                    $('#mname').val($('#mname').val() + item.MachineName);
+
+                    var pgroup = $('#pgroup').val();
+                    var mname = $('#mname').val();
+
+                    if (response.length != 0) {
+                        $.ajax({
+                            type: "GET",
+                            url: '@Url.Action("GetFormula", "DE_IDS_TRANS_REV")',
+                            contentType: "application/json; charset=utf-8",
+                            data: { "machinename": mname, "propitem": myVal, "prodgroup": pgroup },
+                            datatype: "Json",
+                            success: function (response) {
+                                $('#mformula').val($('#mformula').val() + response);
+                            },
+                            error: function (ex) {
+                                console.log(ex);
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    });
+
+    $('#PP_Formula').on('show.bs.modal', function (event) {
+        var propitem = $(event.relatedTarget).data('bsPropitem');
+        var prodtype = $(event.relatedTarget).data('bsProdtype');
+
+        $(this).find(".modal-title").text(propitem);
+
+        formulainput = 0;
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetCalcFormula", "DE_IDS_TRANS_REV")',
+            contentType: "application/json; charset=utf-8",
+            data: { "propitem": propitem },
+            datatype: "Json",
+            success: function (response) {
+                var list = JSON.parse(response);
+                var varcnt = list[0].FORMULA.split('var');
+                $('#txtcformula').text(list[0].FORMULA);
+                $("#varc").empty();
+                $("#cresult").text("Result will be ");
+                formulainput = varcnt.length - 1;
+                for (var i = 1; i <= varcnt.length - 1; i++) {
+                    var row = $("<tr>");
+                    var lbl = "Var" + i;
+                    var lable = $("<td>").html(lbl);
+                    var txtbox = $("<td>").html('<input class="form-control" id="' + lbl + '" style="height:30px; background-color:white" type="text" value="">');
+                    row.append(lable);
+                    row.append(txtbox);
+                    $("#varc").append(row);
+                }
+            }
+        });
+
+        $("#btncformula").off("click").on("click", function (event) {
+            var formula = $('#txtcformula').text();
+            var input = [];
+            $('#varc input[type="text"]').each(function (value, j) {
+                input.push($(this).val());
+            });
+
+            for (var i = 1; i <= input.length; i++) {
+                formula = formula.replace("var" + i, input[i - 1]);
+            }
+            var result = eval(formula);
+            $("#cresult").text("Result will be " + result.toFixed(8));
+            $("#txtfresult").text(result.toFixed(8));
+        });
+
+        $("#btnconfirm-formula").off("click").on("click", function (event) {
+            loadings();
+            var model = {
+                AverageMold: document.getElementById("txtfresult").innerText,
+                prodtype: prodtype,
+                PropItem: propitem,
+                TypeInd: document.getElementById("typeinds").value,
+            }
+
+            $.ajax({
+                url: '@Url.Action("MoldingTab", "DE_IDS_TRANS_REV")',
+                type: 'POST',
+                datatype: 'application/json',
+                contentType: 'application/json',
+                data: JSON.stringify(model),
+                success: function (response) {
+                    var a = response.averageMold;
+                    var b = response.Grade;
+
+                    var mach = $("td").filter(function () {
+                        return $(this).text() == response.PropItem;
+                    }).closest("tr").find(".txtmcahineresult");
+                    $(mach).val(a.toString());
+
+                    var grd = $("td").filter(function () {
+                        return $(this).text() == response.PropItem;
+                    }).closest("tr").find("td#txtGrade");
+                    $(grd).html(b.toString());
+                },
+                error: function () {
+                    alert("Error occured");
+                },
+                complete: function () {
+                    loadings(false);
+                }
+            });
+        });
+    });
+
+    $('#PP_PassFail').on('show.bs.modal', function (event) {
+        var pi = $(event.relatedTarget).data('bsId');
+        $(this).find(".modal-title").text(pi);
+        $(this).find(".propitempass").val(pi);
+
+        var pt = $(event.relatedTarget).data('bsProdtypepass');
+        $(this).find(".prodtypepass").val(pt);
+
+    });
+
+});
+
+$(document).on('focusout', '.yidata', function (e) {
+    if (yiformula != "") {
+        var num = '';
+        var tonnage = '';
+        var rresult = ''
+
+        num = $(this).val();
+        tonnage = $(this).closest("tr").find("td:eq(0)").text();
+        rresult = $("td").filter(function () {
+            return $(this).text() == tonnage;
+        }).closest("tr").find("input.yidata");
+        yiformula = yiformula.replace(" ", "");
+        var formula2 = yiformula.replace("var1", num);
+        var rval = eval(formula2);
+
+        $(rresult).val(rval);
+        getAverageApp1();
+    }
+})
+
+function changeprodgroup() {
+    var prodgroup = $('#txtProdGroup').val();
+    if (prodgroup != "" && prodgroup != null) {
+        if (prodgroup.toString().includes('MABS') == true) {
+            $("#mabs").show();
+            $("#mabs").removeAttr('disabled');
+        }
+        else {
+            $("#mabs").hide();
+            $("#mabs").attr('disabled', 'disabled');
+        }
+    }
+}
+$(document).on('click', '.openModal', function (e) {
+    $('#PP_MMIDS').modal('hide');
+    $("#machinename-tableb").empty();
+    loadings();
+    var propitem = $(this).attr("data-bs-propitem");
+    var lotno = $(this).attr("data-bs-lotno");
+    var prodgroup = $(this).attr("data-bs-prodgroup");
+    var ok = false;
+    $.ajax({
+        type: "GET",
+        url: '@Url.Action("GetMachineName", "DE_IDS_TRANS_REV")',
+        contentType: "application/json; charset=utf-8",
+        data: { "propitem": propitem, "lotno": lotno, "prodgroup": prodgroup },
+        datatype: "Json",
+        success: function (response) {
+            var trHTML = '';
+            $.each(response, function (i, item) {
+                trHTML += '<tr><td><input type="checkbox" id="chk"/></td>' +
+                    '<td class="machname-col" > ' + item.MachineName + '</td>' +
+                    '<td class="result-col">' + item.Result + '</td>' +
+                    '<td>' + item.UpdateDate + '</td>' +
+                    '<td class="propitem-col" style="Display:none">' + propitem + '</td>' +
+                    '<td class="prodgroup-col" hidden > ' + item.ProdGroup + '</td ></tr > ';
+            });
+            $('#PP_MMIDS tbody').append(trHTML);
+            ok = true;
+        },
+        error: function (ex) {
+            ok = false;
+            console.log(ex.message);
+        },
+        complete: function () {
+            if (ok) {
+                OpenServiceQuoteModal();
+            }
+            loadings(false);
+        }
+    });
+})
+
+function OpenServiceQuoteModal() {
+    $('#PP_MMIDS').modal('show');
+}
+
+function loadDataTableProdtype(data) {
+    table = $('#tr-prodtypepopup').DataTable({
+        data: data,
+        pagingType: 'simple_numbers',
+        columns: [
+            { data: 'PRODTYPE' },
+            { data: 'LOTNO' },
+            { data: 'QUANTITY' },
+            { data: 'PACKEDDATE' }
+        ],
+        columnDefs: [{
+            targets: 0,
+            render: function (data, type, row, meta) {
+                var _prodtype = row.PRODTYPE;
+                var _lotno = row.LOTNO;
+                var _packeddate = row.PACKEDDATE;
+
+                data = `<a style="cursor:pointer; color:blue;" onclick="searchSB('` + _prodtype + `','` + _lotno + `','` + _packeddate + `');">` + _prodtype + `</a>`;
+                return data;
+            }
+        }],
+        select: {
+            style: 'multi',
+            info: false,
+            selector: 'td:nth-child(1)'
+        },
+        order: [1, 'asc'],
+        dom: "<'row toolbar-row g-0'<'col-sm-12 col-md-6 align-self-center'l><'col-sm-12 col-md-6'<'d-flex justify-content-end'<'toolbar'>>>>" +
+            "<'row'<'col-sm-12'tr>>" +
+            "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'<'d-flex justify-content-end'p<'go-to align-self-center mx-2'>>>>",
+        initComplete: function () {
+            $("div.toolbar").html(
+                '<div class="input-group input-group-sm">' +
+                '<input type="text" id="txtSearch" class="form-control remove-right-border" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
+                '<div class="input-group-text listing-search-icon">' +
+                '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                '</div>' +
+                '<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#ASModal" id="btnAS" style="min-width: 30px; background-color: #057FE5;"><i class="fa-solid fa-sliders" style="transform: rotate(90deg);"></i></button>' +
+                '</div>'
+            );
+        },
+        drawCallback: function (settings) {
+            var api = this.api();
+            $("#txtGoTo").val(api.page() + 1);
+        }
+    });
+}
+
+$(document).on('click', '#btnSearch', function (e) {
+    e.preventDefault();
+    as_exclude();
+    table.search($('#txtSearch').val()).draw();
+});
+
+$(document).on('keyup', '#txtSearch', function (e) {
+    as_exclude();
+    table.search($(this).val()).draw();
+});
+
+$(document).on('click', '#btnReset', function (e) {
+    e.preventDefault();
+    $('#AS_FIELD1').val('');
+    $('#AS_FIELD2').val('');
+    as_search();
+});
+
+function as_search() {
+    table.search("");
+    table.columns(1).search($('#AS_FIELD1').val().trim());
+    table.columns(2).search($('#AS_FIELD2').val().trim());
+    table.draw();
+}
+
+function as_exclude() {
+    table.columns(1).search("");
+    table.columns(2).search("");
+}
+
+
+function loadDataTableMold(data) {
+        // nisa
+    //console.log(data)
+    var tbody = $('#tr-molding tbody');
+    tbody.empty();
+    for (var i = 0; i < data.length; i++) {
+        var row = $("<tr>");
+        var lbl = "Var" + i;
+        var label1 = $("<td class='propitem'>").html(data[i].PropItem);
+        var lblunit2 = $("<td>").html(data[i].Unit);
+        if (data[i].TypeInd == "E") {
+            var txtbox3add = $("<td>").html('<input type="text" name="MoldingList[' + i + '].MachineName" class="form-control" id = "mc" value="' + data[i].MachineName + '" disabled /> ');
+            var txtbox4add = $("<td>").html('<div class="input-group"><input type="text" name="MoldingList[' + i + '].Average" class="form-control txtmcahineresult" id="txtmcahineresult" value="' + data[i].Average + '" disabled />' +
+                '<button type="button" class="btn btn-info input-group-text" data-bs-toggle="modal" data-bs-id="' + data[i].PropItem + '" data-bs-prodtype="' + data[i].prodtype + '" data-bs-typeind="' + data[i].TypeInd + '" data-bs-lotno="' + data[i].lotno + '" data-bs-propitem="' + data[i].PropItem + '" data-bs-prodgroup="' + data[i].ProdGroup + '" data-bs-target="#PP_FishEye" title="Choose Product Type"> .... </button></div>');
+        } else if (data[i].TypeInd == "P") {
+            var txtbox3add = $("<td>").html('<input type="text" name="MoldingList[' + i + '].MachineName" class="form-control" id = "mc" value="' + data[i].MachineName + '" disabled /> ');
+            var txtbox4add = $("<td>").html('<div class="input-group"><input type="text" name="MoldingList[' + i + '].Average" class="form-control txtmcahineresult" id = "txtmcahineresult" value="' + data[i].Average + '" disabled />' +
+                '<button type="button" class="btn btn-info input-group-text" data-bs-toggle="modal" data-bs-id="' + data[i].Properties + '" data-bs-prodtype="' + data[i].prodtype + '" data-bs-target="#PP_PassFail" title="Choose Product Type">....</button></div>');
+        } else if (data[i].TypeInd == "M") {
+            var txtbox3add = $("<td>").html('<div class="input-group"><input type="text" name="MoldingList[' + i + '].MachineName" class="form-control C_machinename" id = "mc" value="' + data[i].MachineName + '"  readonly /> ' +
+                '<button type="button" class="openModal btn btn-info input-group-text" data-bs-toggle="modal" data-bs-propitem="' + data[i].PropItem + '" data-bs-lotno="' + data[i].lotno + '" data-bs-prodgroup="' + data[i].ProdGroup + '" data-bs-target="#PP_MMIDS" title="Choose Machine Name">....</button></div>');
+            var txtbox4add = $("<td>").html('<input type="text" name="MoldingList[' + i + '].Average" class="form-control txtmcahineresult" id = "txtmcahineresult" value="' + data[i].Average + '" disabled />');
+        } else {
+            var txtbox3add = $("<td>").html('<input type="text" name="MoldingList[' + i + '].MachineName" class="form-control" id = "mc" value="' + data[i].MachineName + '" disabled /> ');
+            var txtbox4add = $("<td>").html('<div class="input-group"><input type="text" name="MoldingList[' + i + '].Average" class="form-control txtmcahineresult" id = "txtmcahineresult" value="' + data[i].Average + '" disabled />' +
+                '<button type="button" class="btn btn-info input-group-text" data-bs-toggle="modal" data-bs-id="' + data[i].Properties + '" data-bs-propitem="' + data[i].PropItem + '" data-bs-prodtype="' + data[i].prodtype + '" data-bs-target="#PP_Formula" title="Choose Product Type">....</button></div>');
+        }
+
+        //-------------------
+        var txtbox5 = $("<td>").html('<input type="text" name="ModelList[' + i + '].RegressionResult" id="txtregressionresult" class="regressresult form-control" value="' + data[i].RegressionResult + '" disabled />');
+        var lbl6 = $("<td>").html(data[i].COQAdj);
+        var lbl7 = $("<td>").html(data[i].Specification);
+        var txtbox8 = $("<td id='txtGrade'>").html(data[i].Grade);
+        var lbl9 = $("<td>").html(data[i].Properties);
+        var lbl10 = $("<td>").html(data[i].DataChecking);
+        var lbl11n = $("<td class='txtMandatory'>").html('0');
+        var lbl11 = $("<td class='txtMandatory'>").html(data[i].mandatory);
+        var lbl13 = $("<td>").html(data[i].StatusInd);
+        var lbl14 = $("<td id='mainreading'>").html(data[i].MainReading);
+        var lbl15 = $("<td>").html(data[i].Count);
+
+        var lblrd1 = $("<td style='display: none;' class='txtReading1'>");
+        var lblgr1 = $("<td style='display: none;' class='txtGrade1'>");
+        var lblrd2 = $("<td style='display: none;' class='txtReading2'>");
+        var lblgr2 = $("<td style='display: none;' class='txtGrade2'>");
+        var lblrd3 = $("<td style='display: none;' class='txtReading3'>");
+        var lblgr3 = $("<td style='display: none;' class='txtGrade3'>");
+        var lblrd4 = $("<td style='display: none;' class='txtReading4'>");
+        var lblgr4 = $("<td style='display: none;' class='txtGrade4'>");
+        var lblrd5 = $("<td style='display: none;' class='txtReading5'>");
+        var lblgr5 = $("<td style='display: none;' class='txtGrade5'>");
+        var lblrd6 = $("<td style='display: none;' class='txtReading6'>");
+        var lblgr6 = $("<td style='display: none;' class='txtGrade6'>");
+
+        var lbltypeind = $("<td style='display: none;'>").html(data[i].TypeInd);
+        var lblcoqind = $("<td style='display: none;'>").html(data[i].COQInd);
+        var lblregind = $("<td style='display: none;' class='indicator'>").html(data[i].RegressInd);
+        var lblformula = $("<td style='display: none;' id='formula'>").html(data[i].RegressFormula);
+
+        row.append(label1);
+        row.append(lblunit2);
+        row.append(txtbox3add);
+        row.append(txtbox4add);
+        row.append(txtbox5);
+        row.append(lbl6);
+        row.append(lbl7);
+        row.append(txtbox8);
+        row.append(lbl9);
+        row.append(lbl10);
+
+        if (data[i].mandatory == null) {
+            row.append(lbl11n);
+        } else {
+            row.append(lbl11);
+        }
+        row.append(lbl13);
+        row.append(lbl14);
+        row.append(lbl15);
+
+        row.append(lblrd1);
+        row.append(lblgr1);
+        row.append(lblrd2);
+        row.append(lblgr2);
+        row.append(lblrd3);
+        row.append(lblgr3);
+        row.append(lblrd4);
+        row.append(lblgr4);
+        row.append(lblrd5);
+        row.append(lblgr5);
+        row.append(lblrd6);
+        row.append(lblgr6);
+
+        row.append(lbltypeind);
+        row.append(lblcoqind);
+        row.append(lblregind);
+        row.append(lblformula);
+
+        tbody.append(row);
+    }
+}
+
+function loadDataTableApp(data) {
+
+    //id div = apprdescdiv
+    var divmain = $('#apprdescdiv');
+    divmain.empty();
+
+    var g = 0;
+    var cnttable = 0;
+    for (var i = 0; i < data[0].descList.length; i++) {
+        var ttlresult = 0;
+        var divuse = $("<div class='divuse'>");
+        var divdesc = $("<div class='desc'>").html('<b>' + data[0].descList[i].desc + '</b>');
+        var table = $("<table class='tblAppearance' id='tblAppearance" + cnttable + "' style='width:100%;'>");
+        cnttable = cnttable + 1;
+        var thead = $("<thead>");
+        var rowth = $("<tr>");
+        var thtagno = $("<th style='min-width:130px;'>").html('<u>Tag No</u>');
+        var thtonnage = $("<th style='min-width:100px;' class='text-center'>").html('<u>Tonnage</u>');
+        rowth.append(thtagno);
+        rowth.append(thtonnage);
+
+        for (var c = 0; c < data[0].fieldnameList[i].length; c++) {
+            //console.log(data[0].fieldnameList[i]);
+            var th = $("<th class='field'>").html('<u>' + data[0].fieldnameList[i][c].fieldname + '</u>');
+            rowth.append(th);
+        }
+
+        thead.append(rowth);
+        table.append(thead);
+
+        var tbody = $("<tbody>");
+        var td = $("<td>");
+        for (var d = 0; d < data[0].tagnoList[i].length; d++) {
+            var row = $("<tr class='approw'>");
+            if (!(data[0].tagnoList[i][d].tagno == "" || data[0].tagnoList[i][d].tagno == null)) {
+                td = $("<td>").html(data[0].tagnoList[i][d].tagno);
+                row.append(td);
+                if (data[0].descList[i].desc == "YI") {
+                    td = $("<td name='yitonnage' class='text-center'>").html(data[0].tagnoList[i][d].res7);
+                }
+                else if (data[0].descList[i].desc != "YI") {
+                    td = $("<td class='text-center'>").html(data[0].tagnoList[i][d].res7);
+                }
+                row.append(td);
+
+                for (var c = 0; c < data[0].fieldnameList[i].length; c++) {
+                    if (data[0].descList[i].desc != "YI") {
+                        td = $("<td class='tdRow'>").html('<input type="text" class="form-control tagno" onkeyup="getAverageApp1()" id="yiRead[' + g + ']" />');
+
+                    } else if (data[0].descList[i].desc == "YI") {
+                        td = $("<td class='tdRow'>").html('<input type="text" class="form-control tagno yidata" onkeyup="getAverageApp1()" data-formula="" data-tonnage="' + data[0].tagnoList[i][d].res7 + '" id="yiRead[' + g + ']" />');
+                    }
+                    row.append(td);
+
+                    g = g + 1;
+                }
+                row.append(td);
+                tbody.append(row);
+            }
+        }
+
+        var rowav = $("<tr class='lastrow'>");
+        if (data[0].descList[i].desc == "YI") {
+            td = $("<td>").html('<input type="button" id="btnMachineResult" class="btn btn-info button1" style="min-width:130px" value="Machine Result" />');
+            rowav.append(td);
+        }
+
+        td = $("<td>").html('<input type="button" id="btnAverage" class="btn btn-info button1" value="Average" />');
+        rowav.append(td);
+
+        if (data[0].descList[i].desc != "YI") {
+            td = $("<td>").html(' ');
+            rowav.append(td);
+        }
+
+
+        for (var f = 0; f < data[0].fieldnameList[i].length; f++) {
+            td = $("<td class='tdRow'>").html('<input type="text" class="form-control result' + ttlresult + '" id = "result" />');
+            ttlresult = ttlresult + 1;
+            rowav.append(td);
+        }
+        tbody.append(rowav);
+        table.append(tbody);
+
+        divuse.append(divdesc);
+        divuse.append(table);
+        divmain.append(divuse)
+    }
+}
+    </script>
+
+    <!--Machine Data-->
+    <script>
+//Grab data and map to Input field
+function getMachineData() {
+    var model = {
+        LOTNO: $("#txtLotNo").val(),
+    };
+    $.ajax({
+        url: '@Url.Action("GetMachineData", "DE_IDS_TRANS_REV")',
+        type: 'POST',
+        datatype: 'json',
+        contentType: 'application/json',
+        data: JSON.stringify(model),
+        success: function (data) {
+            var tmp = JSON.stringify(data);
+            var tmp1 = JSON.parse(tmp);
+            var txtbox = document.getElementsByClassName("form-control tagno yidata");
+            var formula = yiformula;
+            for (i = 0; i < tmp1.length; i++) {
+                if (i == 0) {
+                    for (j = 0; j < tmp1[i].length; j++) {
+                        var ton = document.getElementsByName("yitonnage")[j].innerText;
+                        if (tmp1[i][j].tonnage == ton) {
+                            if (formula != "") {
+                                formula = formula.replace(" ", "");
+                                var formula2 = formula.replace("var1", tmp1[i][j].machineData.toString());
+                                var rval = eval(formula2);
+                                txtbox[j].value = Number(rval).toFixed(1);
+                            }
+                            else {
+                                var rval = tmp1[i][j].machineData;
+                                txtbox[j].value = Number(rval).toFixed(1);
+                            }
+
+                        }
+                    }
+                }
+            }
+        },
+        error: function (e) {
+            console.log(e);
+        }
+    });
+}
+
+$(document).on('click', '#btnMachineResult', function (e) {
+    getMachineData();
+});
+
+$(document).on('click', '#btnAverage', function (e) {
+    getAverageApp1();
+});
+
+    </script>
+
+    <!-- pp_fisheye-->
+    <script>
+function getAverageApp1() {
+
+    var FinalIndex = [];
+    var indexs = [];
+    var count = '';
+    var indx = '';
+    var column = '';
+    var rt = '';
+    var sum = 0;
+    var average = '';
+    var g = 0;
+    var row = 0;
+
+    var ratioList = sratioList; @*@Html.Raw(Json.Encode(Model.ModelObj.ratioList));*@
+    var table = $('.tblAppearance').length;
+    for (var j = 0; j < ratioList.length; j++) {
+        for (var i = 0; i < table; i++) {
+            if (i == j) {
+
+                var indexs = [];
+                for (var k = 0; k < ratioList[j].length; k++) {
+
+                    var name = ratioList[j][k].name;
+                    var ratio = ratioList[j][k].ratio;
+
+                    var y = $("th:contains(" + name + ")", table[i]).index()
+                    var z = name
+                    indexs.push({ ind: y, txt: z, rat: ratio });
+                    if (z == 'YI') {
+                        indexs.push({ ind: y + 1, txt: "rresult", rat: ratio });
+                    }
+
+                }
+            }
+        }
+        FinalIndex.push(indexs);
+    }
+
+    for (var x = 0; x < FinalIndex.length; x++) {
+        g = 0;
+        for (var w = 0; w < FinalIndex[x].length; w++) {
+
+            indx = FinalIndex[x][w].ind;
+            column = FinalIndex[x][w].txt;
+            rt = FinalIndex[x][w].rat;
+
+            $("#tblAppearance" + x).each(function () {
+
+                row = $("tbody tr.approw", this).length;
+                $('tbody tr.approw', this).each(function () {
+
+                    var td = $.trim($('td:eq(' + indx + ') input[type="text"]', this).val());
+
+                    if (td != "") {
+                        sum = sum + parseFloat(td);
+                        count++;
+                    }
+                    average = (sum * rt) / row;
+                });
+                //HANA 080723 change for decimal point 1
+                if (w !== FinalIndex[x].length && x !== FinalIndex.length - 1) {
+                    $("#tblAppearance" + x + " tbody tr.lastrow td.tdRow .result" + g).val(parseFloat(average).toFixed(2));//.toFixed(2));
+                } else {
+                    $("#tblAppearance" + x + " tbody tr.lastrow td.tdRow .result" + g).val(parseFloat(average).toFixed(1));//.toFixed(1));
+                }
+
+            });
+            g++;
+            sum = 0;
+            count = 0;
+        }
+    }
+}
+function getAverageMold() {
+    var r1 = document.getElementById("Reading1").value;
+    var r2 = document.getElementById("Reading2").value;
+    var r3 = document.getElementById("Reading3").value;
+    var r4 = document.getElementById("Reading4").value;
+    var r5 = document.getElementById("Reading5").value;
+    var r6 = document.getElementById("Reading6").value;
+    var result = [];
+    if (r1 != '') { result.push(r1) }
+    if (r2 != '') { result.push(r2) }
+    if (r3 != '') { result.push(r3) }
+    if (r4 != '') { result.push(r4) }
+    if (r5 != '') { result.push(r5) }
+    if (r6 != '') { result.push(r6) }
+    document.getElementById('AverageMold').value = calculateAverage(result).toFixed(2);
+}
+
+function calculateAverage(array) {
+    var total = 0;
+    var count = 0;
+    array.forEach(function (item, index) {
+        total += parseFloat(item);
+        count++;
+    });
+    return total / count;
+}
+
+//pp fish eye
+$("#confirm").off("click").on("click", function () {
+    loadings();
+    if ($("#mformula").val() != '' && $("#mformula").val() != null) {
+        var rr = [];
+
+        var rr0 = $("#Reading1");
+        var rr1 = $("#Reading2");
+        var rr2 = $("#Reading3");
+        var rr3 = $("#Reading4");
+        var rr4 = $("#Reading5");
+        var rr5 = $("#Reading6");
+
+        if (rr0.val() != '') { rr.push(rr0) }
+        if (rr1.val() != '') { rr.push(rr1) }
+        if (rr2.val() != '') { rr.push(rr2) }
+        if (rr3.val() != '') { rr.push(rr3) }
+        if (rr4.val() != '') { rr.push(rr4) }
+        if (rr5.val() != '') { rr.push(rr5) }
+
+        for (var i = 0; i < rr.length; i++) {
+            var formula = $("#mformula").val();
+            if (formula == null || formula == "") break;
+            formula = formula.replace(" ", "");
+            var tmp = eval(formula.replace("var1", rr[i].val()));
+            var tmp2 = (Math.round(tmp * 100) / 100).toFixed(2);
+            rr[i].val(tmp2);
+        }
+        getAverageMold();
+    }
+
+    var model = {
+
+        Reading1: document.getElementById("Reading1").value,
+        Reading2: document.getElementById("Reading2").value,
+        Reading3: document.getElementById("Reading3").value,
+        Reading4: document.getElementById("Reading4").value,
+        Reading5: document.getElementById("Reading5").value,
+        Reading6: document.getElementById("Reading6").value,
+        AverageMold: document.getElementById("AverageMold").value,
+        prodtype: document.getElementById("prodtypes").value,
+        PropItem: document.getElementById("propitems").value,
+        TypeInd: document.getElementById("typeinds").value,
+    }
+
+    $.ajax({
+        url: '@Url.Action("MoldingTab", "DE_IDS_TRANS_REV")',
+        type: 'POST',
+        datatype: 'application/json',
+        contentType: 'application/json',
+        data: JSON.stringify(model),
+        success: function (response) {
+            var a = response.averageMold;
+            var b = response.Grade;
+            var R1 = response.Reading1 == null ? "" : response.Reading1;
+            var R2 = response.Reading2 == null ? "" : response.Reading2;
+            var R3 = response.Reading3 == null ? "" : response.Reading3;
+            var R4 = response.Reading4 == null ? "" : response.Reading4;
+            var R5 = response.Reading5 == null ? "" : response.Reading5;
+            var R6 = response.Reading6 == null ? "" : response.Reading6;
+            var G1 = response.Grade1 == null ? "" : response.Grade1;
+            var G2 = response.Grade2 == null ? "" : response.Grade2;
+            var G3 = response.Grade3 == null ? "" : response.Grade3;
+            var G4 = response.Grade4 == null ? "" : response.Grade4;
+            var G5 = response.Grade5 == null ? "" : response.Grade5;
+            var G6 = response.Grade6 == null ? "" : response.Grade6;
+
+            var mach = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find(".txtmcahineresult");
+            $(mach).val(a.toFixed(2))
+
+
+            var grd = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td#txtGrade")
+            $(grd).html(b.toString())
+
+            var Read1 = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td.txtReading1")
+            $(Read1).html(R1.toString())
+
+            var Read2 = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td.txtReading2")
+            $(Read2).html(R2.toString())
+
+            var Read3 = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td.txtReading3")
+            $(Read3).html(R3.toString())
+
+            var Read4 = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td.txtReading4")
+            $(Read4).html(R4.toString())
+
+            var Read5 = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td.txtReading5")
+            $(Read5).html(R5.toString())
+
+            var Read6 = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td.txtReading6")
+            $(Read6).html(R6.toString())
+
+            var Grade1 = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td.txtGrade1")
+            $(Grade1).html(G1.toString())
+
+            var Grade2 = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td.txtGrade2")
+            $(Grade2).html(G2.toString())
+
+            var Grade3 = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td.txtGrade3")
+            $(Grade3).html(G3.toString())
+
+            var Grade4 = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td.txtGrade4")
+            $(Grade4).html(G4.toString())
+
+            var Grade5 = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td.txtGrade5")
+            $(Grade5).html(G5.toString())
+
+            var Grade6 = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td.txtGrade6")
+            $(Grade6).html(G6.toString())
+
+            var indicator = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td.indicator")
+            $(indicator).html($("#mformula").val() == "" ? "" : "Y")
+
+            var formula = $("td").filter(function () {
+                return $(this).text() == response.PropItem;
+            }).closest("tr").find("td.formula")
+            $(formula).html($("#mformula").val())
+
+            $("#Reading1").val("");
+            $("#Reading2").val("");
+            $("#Reading3").val("");
+            $("#Reading4").val("");
+            $("#Reading5").val("");
+            $("#Reading6").val("");
+            $("#AverageMold").val("");
+            $("#mname").val("");
+            $("#pgroup").val("");
+            $("#mformula").val("");
+        },
+        error: function () {
+            alert("Error occured");
+        },
+        complete: function () {
+            loadings(false);
+        }
+    });
+});
+
+$(document).on('click', '#resetFisheye', function (e) {
+    $("#Reading1").val("");
+    $("#Reading2").val("");
+    $("#Reading3").val("");
+    $("#Reading4").val("");
+    $("#Reading5").val("");
+    $("#Reading6").val("");
+    $("#AverageMold").val("");
+})
+
+$(document).on('click', '#resetFormula', function (e) {
+    for (var i = 1; i <= formulainput; i++) {
+        $("#Var" + i).val("");
+    }
+    $("#cresult").text("Result will be ");
+})
+
+
+    </script>
+
+    <!-- PP_PASSFAIL-->
+    <script>
+        $("#confirmPassFail").off("click").on("click", function () {
+            var passfail = $("#passfail").val();
+            var propitempass = $("#propitempass").val();
+
+            var mach = $("td").filter(function () {
+                return $(this).text() == propitempass;
+            }).closest("tr").find(".txtmcahineresult");
+            $(mach).val(passfail)
+
+            var Read1 = $("td").filter(function () {
+                return $(this).text() == propitempass;
+            }).closest("tr").find("td.txtReading1")
+            $(Read1).html(passfail)
+
+        });
+    </script>
+
+    <!--for first lot and partial-->
+    <script>
+$('.check input:checkbox').change(function () {
+
+    var name = $(this).attr('name');
+    var packdate = $("#txtPackedDate").val();
+    var prodgroup = $("#txtProdGroup").val();
+    var prodtype = $("#txtProdType").val();
+    var prodline = $("#txtProdLine").val();
+    var moldingModel = [];
+    var model = '';
+
+    if (!(prodtype === "undefined" || prodtype == '')) {
+        $('#tr-molding tbody tr').each(function (row, tr) {
+            moldingModel.push({
+                PropItem: $(tr).find('td').eq(0).text().trim()
+            });
+        });
+
+        if (this.checked) {
+            $('.check input:checkbox').not(this).prop('checked', false);
+            if (name == 'FirstLotContainer') {
+                model = {
+                    PACKEDDATE2: packdate,
+                    prodgroup: prodgroup,
+                    PRODTYPE: prodtype,
+                    prodline: prodline,
+                    chkType: "Full",
+                    MoldingList: moldingModel,
+                };
+            }
+            else if (name == 'PartialContainer') {
+                model = {
+                    PACKEDDATE2: packdate,
+                    prodgroup: prodgroup,
+                    PRODTYPE: prodtype,
+                    prodline: prodline,
+                    chkType: "Part",
+                    MoldingList: moldingModel,
+                };
+            }
+
+        } else {
+            model = {
+                PACKEDDATE2: packdate,
+                prodgroup: prodgroup,
+                PRODTYPE: prodtype,
+                prodline: prodline,
+                chkType: "Uncheck",
+                MoldingList: moldingModel,
+            };
+        }
+
+        $.ajax({
+            url: '@Url.Action("UpdateMandatory", "DE_IDS_TRANS_REV")',
+            type: 'POST',
+            datatype: 'json',
+            contentType: 'application/json',
+            data: JSON.stringify(model),
+            success: function (response) {
+                //console.log(response.MoldingList);
+                var a = response.MoldingList;
+
+                for (var i = 0; i < a.length; i++) {
+                    var p = a[i].PropItem;
+                    var mach = $("td").filter(function () {
+                        return $(this).text() == p;
+                    }).closest("tr").find("td.txtMandatory");
+
+                    var mand = a[i].mandatory;
+
+                    if (mand == null) {
+                        mand = "0";
+                    }
+                    $(mach).text(mand);
+                }
+            },
+            error: function (e) {
+                console.log(e);
+            }
+        });
+    }
+});
+    </script>
+
+    <!--Get result and display regression result-->
+    <script>
+$("#confirm-machinename").off("click").on("click", function (e) {
+    var machinename = new Array();
+    var boolPRODTYPCHGIND = false;
+    $("#machinename-table tbody tr").each(function () {
+        var checkbox = $(this).find("#chk");
+        if (checkbox.prop("checked") == true) {
+            var obj = {
+                MachineName: $(this).find(".machname-col").first().text(),
+                Result: $(this).find(".result-col").first().text(),
+                PropItem: $(this).find(".propitem-col").first().text(),
+                ProdGroup: $(this).find(".prodgroup-col").first().text()
+            }
+            machinename.push(obj);
+        }
+    });
+
+    //only allow choose 1 machine
+
+    if (machinename.length > 1) {
+        alert("Please choose only 1 machine.");
+    } else {
+        if (machinename.length > 0) {
+            if ($("#txtOverwrite").val().trim = "") {
+                boolPRODTYPCHGIND = false;
+            } else {
+                boolPRODTYPCHGIND = true;
+            }
+
+            var model = {
+                PACKEDDATE: $("#txtInspecDate").val(),
+                PRODTYPE: $("#txtProdType").val(),
+                PACKEDDATE2: $("#txtPackedDate").val(),
+                LOTNO: $("#txtLotNo").val(),
+                QUANTITY: $("#txtQty").val(),
+                FullNG: $("#txtFullNG").val(),
+                TESTEDBY: $("#txtTestedBy").val(),
+                UPDATEDBY: $("#txtUpdatedBy").val(),
+                AFTERPRODTYPCHG: $("#txtOverwrite").val(),
+                PRODTYPCHGIND: boolPRODTYPCHGIND,//$("#chkoverwite").prop('checked'),
+                MoldingList: null,
+                descriptionList: sdescriptionList, //Html.Raw(Json.Encode(Model.descriptionList)),
+            }
+                $.ajax({
+                    //headers: { "RequestVerificationToken": $('input[name="__RequestVerificationToken"]', $("#product-type-form")).val() },
+                    url: '@Url.Action("CalculateResult", "DE_IDS_TRANS_REV")',
+                    type: 'POST',
+                    datatype: 'application/json',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ machinename: machinename, mod: model }),
+
+                    success: function (response) {
+                        response.forEach(item => {
+
+                            var m = item.MachineName.toString();
+                            var r = item.Result.toString();
+                            //var i = item.RegressInd.toString();
+                            var f = item.RegressFormula.toString();
+                            var g = item.Grade.toString();
+                            var rr = item.RegressionResult.toString();
+
+
+                            var machinename = $("td").filter(function () {
+                                return $(this).text() == item.PropItem;
+                            }).closest("tr").find("td #mc")
+                            $(machinename).val(m)
+
+                            var result = $("td").filter(function () {
+                                return $(this).text() == item.PropItem;
+                            }).closest("tr").find("td .txtmcahineresult")
+                            $(result).val(r)
+
+                            //var indicator = $("td").filter(function () {
+                            //    return $(this).text() == item.PropItem;
+                            //}).closest("tr").find("td.indicator")
+                            //$(indicator).html(i)
+
+                            var formula = $("td").filter(function () {
+                                return $(this).text() == item.PropItem;
+                            }).closest("tr").find("td#formula")
+                            $(formula).html(f)
+
+                            var grade = $("td").filter(function () {
+                                return $(this).text() == item.PropItem;
+                            }).closest("tr").find("td#txtGrade")
+                            $(grade).html(g);
+
+                            var regressresult = $("td").filter(function () {
+                                return $(this).text() == item.PropItem;
+                            }).closest("tr").find("td #txtregressionresult") //txtregressionresult
+                            $(regressresult).val(rr)
+
+                        });
+                    },
+                    error: function () {
+                        alert("Error occured");
+                    }
+                });
+
+        } else {
+            alert("Please select Machine Name");
+        }
+    }
+
+});
+
+
+    </script>
+
+
+    <!-- Saving data into database-->
+    <script>
+$("#btnSave").off("click").on("click", function (e) {
+    $("#btnSave").attr('disabled', 'disabled');
+    stopindicator = "";
+    e.preventDefault();
+    var action = $(this).attr('id');
+
+    if (confirm("Are you sure want to add the data?")) {
+
+        if ($("#txtProdType").val() == null || $("#txtProdType").val() == "") {
+            alert("Product Type cannot be empty");
+            stopindicator = "stop";
+            $("#btnSave").removeAttr('disabled');
+        }
+
+        if (stopindicator != "stop") {
+            if ($("#txtLotNo").val() == null || $("#txtLotNo").val() == "") {
+                alert("Lot No cannot be empty");
+                stopindicator = "stop";
+                $("#btnSave").removeAttr('disabled');
+            }
+
+            if (stopindicator != "stop") {
+                var msg = "";
+                $('#tr-molding tbody tr').each(function (row, tr) {
+                    var reading1 = $.trim($(tr).find("td:eq(3) input[type='text']").val());
+                    var mandatory = $(tr).find('td').eq(10).text();
+                    var propItem = $(tr).find('td').eq(0).text();
+
+                    if ((reading1 == 0) && mandatory == "1") {
+                        msg += "Please fill in for " + propItem + " machine result \n";
+                    }
+                });
+                if (msg != "") {
+                    alert(msg);
+                    $("#btnSave").removeAttr('disabled');
+                    stopindicator = "stop";
+                }
+
+                if (stopindicator != "stop") {
+                    $('.tblAppearance').each(function () {
+                        $('tbody tr:last', this).each(function (value, i) {
+                            $('td input[type="text"]', this).each(function (value, j) {
+                                var lr = $(this).val();
+                                //alert(lr)
+                                if (lr == null || lr == '') {
+                                    msg = "Please check Appearance Tab";
+                                    stopindicator = "stop";
+                                    //exit();
+
+                                }
+                            });
+                        });
+                    });
+
+                    if (msg != "") {
+                        alert(msg);
+                        $("#btnSave").removeAttr('disabled');
+                        stopindicator = "stop";
+                    }
+
+                    if (stopindicator != "stop") {
+                        loadings();
+                        console.log("in");
+                        var moldingModel = new Array();
+                        var appModel = new Array();
+
+                        //for fieldname
+                        var html_table_data = [];
+                        var arr = [];
+                        var bRowStarted = true;
+
+                        $('.tblAppearance').each(function () {
+                            $('thead tr', this).each(function (value, i) {
+                                console.log('no');
+                                $('th', this).each(function (value, k) {
+                                    var y = $(this).text();
+                                    arr.push({ fieldname: y.trim() })
+                                    bRowStarted = false;
+                                });
+                                html_table_data.push(arr);
+                                bRowStarted = true;
+                                arr = [];
+                            });
+                        });
+
+                        console.log(html_table_data);
+                        //for tagno
+                        var tagNo = [];
+                        var average = [];
+                        var arr2 = [];
+                        var bRowStarted2 = true;
+                        $('.tblAppearance').each(function () {
+                            $('tbody tr', this).each(function (value, i) {
+
+                                $('td', this).each(function (value, j) {
+                                    var y = "";
+
+                                    if (value == 0) {
+                                        if ($(this).text() != "") {
+                                            y = $(this).text();
+                                        }
+                                        arr2.push({ tagno: y })
+                                    }
+                                    else if (value == 1) {
+                                        var y = $(this).text();
+                                        arr2.push({ tonnage: y })
+                                    }
+                                    else {
+                                        var y = $(this).find("input[type='text']").val();
+                                        arr2.push({ avg: y })
+                                    }
+
+                                    //arr2.push(y)
+                                    bRowStarted2 = false;
+                                });
+                                average.push(arr2);
+                                bRowStarted2 = true;
+                                arr2 = [];
+                            });
+                            tagNo.push(average);
+                            average = [];
+
+                        });
+
+                        //for desc name
+                        var desc = [];
+                        var arr3 = [];
+                        $('.desc').each(function () {
+                            var x = $(this).text();
+                            arr3.push({ desc: x.trim() })
+                        });
+
+                        $('#tr-molding tbody tr').each(function (row, tr) {
+
+                            moldingModel.push({
+                                PropItem: $(tr).find('td').eq(0).text().trim(),
+                                Unit: $(tr).find('td').eq(1).text().trim(),
+                                MachineName: $(tr).find("td:eq(2) input[type='text']").val().trim(),
+                                Average: $(tr).find("td:eq(3) input[type='text']").val() === "0" ? "" : $(tr).find("td:eq(3) input[type='text']").val().trim(),
+                                RegressionResult: $(tr).find("td:eq(4) input[type='text']").val().trim(),
+                                COQAdj: $(tr).find('td').eq(5).text().trim(),
+                                Specification: $(tr).find('td').eq(6).text().trim(),
+                                Grade: $(tr).find('td').eq(7).text().trim(),
+                                Properties: $(tr).find('td').eq(8).text().trim(),
+                                DataChecking: $(tr).find('td').eq(9).text().trim(),
+                                Seq: $(tr).find('td').eq(10).text().trim(),
+                                StatusInd: $(tr).find('td').eq(11).text().trim(),
+                                MainReading: $(tr).find('td').eq(12).text().trim(),
+                                Reading1: $(tr).find('td').eq(14).text().trim(),
+                                Grade1: $(tr).find('td').eq(15).text().trim(),
+                                Reading2: $(tr).find('td').eq(16).text().trim(),
+                                Grade2: $(tr).find('td').eq(17).text().trim(),
+                                Reading3: $(tr).find('td').eq(18).text().trim(),
+                                Grade3: $(tr).find('td').eq(19).text().trim(),
+                                Reading4: $(tr).find('td').eq(20).text().trim(),
+                                Grade4: $(tr).find('td').eq(21).text().trim(),
+                                Reading5: $(tr).find('td').eq(22).text().trim(),
+                                Grade5: $(tr).find('td').eq(23).text().trim(),
+                                Reading6: $(tr).find('td').eq(24).text().trim(),
+                                Grade6: $(tr).find('td').eq(25).text().trim(),
+                                TypeInd: $(tr).find('td').eq(26).text().trim(),
+                                COQInd: $(tr).find('td').eq(27).text().trim(),
+                                RegressInd: $(tr).find('td').eq(28).text().trim(),
+                                RegressFormula: $(tr).find('td').eq(29).text().trim(),
+
+                            });
+                        });
+                        var flot = $("#inlineCheckbox1").is(":checked") == false ? 0 : 1;
+                        var part = $("#mabs").is(":checked") == false ? 0 : 1;
+                        if ($("#txtOverwrite").val().trim() == "") {
+                            boolPRODTYPCHGIND = false;
+                        } else {
+                            boolPRODTYPCHGIND = true;
+                        }
+
+                        var model = {
+                            FLOT: flot,
+                            MABS_P: part,
+                            PACKEDDATE: $("#txtInspecDate").val(),
+                            PRODTYPE: $("#txtProdType").val(),
+                            PACKEDDATE2: $("#txtPackedDate").val(),
+                            LOTNO: $("#txtLotNo").val(),
+                            QUANTITY: $("#txtQty").val(),
+                            FullNG: $("#txtFullNG").val(),
+                            TESTEDBY: $("#txtTestedBy").val(),
+                            UPDATEDBY: $("#txtUpdatedBy").val(),
+                            AFTERPRODTYPCHG: $("#txtOverwrite").val(),
+                            PRODTYPCHGIND: boolPRODTYPCHGIND,
+                            MoldingList: moldingModel,
+                            descriptionList: sdescriptionList,
+                        }
+
+                        console.log(tagNo);
+
+                        $.ajax({
+                            url: '@Url.Action("DE_IDS_TRANS_REV_ADD", "DE_IDS_TRANS_REV")',
+                            type: 'POST',
+                            datatype: 'application/json',
+                            contentType: 'application/json',
+                            data: JSON.stringify({ m: model, field: html_table_data, tag: tagNo, description: arr3, action: action }),
+                            success: function (response) {
+                                if (response == "Data save successfully") {
+                                    $("#btnSave").removeAttr('disabled');
+                                    alert(response);
+                                    var url = '@Url.Action("DE_IDS_TRANS_REV_LST", "DE_IDS_TRANS_REV")';
+                                    window.location.href = url;
+                                }
+                                else {
+                                    $("#btnSave").removeAttr('disabled');
+                                    alert(response);
+                                    loadings(false);
+                                }
+                            },
+                            error: function (ex) {
+                                $("#btnSave").removeAttr('disabled');
+                                console.log(ex);
+                                alert("Error occured");
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    }
+    else $("#btnSave").removeAttr('disabled');
+});
+    </script>
+
+    <script>
+$("#btnDraft").off("click").on("click", function (e) {
+    $("#btnDraft").attr('disabled', 'disabled');
+    var stopindicator = "";
+    e.preventDefault();
+
+    var action = $(this).attr('id');
+
+    if (confirm("Are you sure want to save the data as draft?")) {
+
+        if ($("#txtProdType").val() == null || $("#txtProdType").val() == "") {
+            alert("Product Type cannot be empty");
+            stopindicator = "stop";
+            $("#btnDraft").removeAttr('disabled');
+        }
+
+        if (stopindicator != "stop") {
+            if ($("#txtLotNo").val() == null || $("#txtLotNo").val() == "") {
+                alert("Lot No cannot be empty");
+                stopindicator = "stop";
+                $("#btnDraft").removeAttr('disabled');
+            }
+
+            if (stopindicator != "stop") {
+                $('.tblAppearance').each(function () {
+                    $('tbody tr:last', this).each(function (value, i) {
+                        $('td input[type="text"]', this).each(function (value, j) {
+                            var lr = $(this).val();
+                            if (lr == null || lr == '') {
+                                alert("Please check Appearance Tab");
+                                $("#btnDraft").removeAttr('disabled');
+                                stopindicator = "stop";
+                                return false;
+                            }
+                        });
+                    });
+                    if (stopindicator == "stop") {
+                        return false
+                    }
+                });
+
+                if (stopindicator != "stop") {
+                    loadings();
+                    var moldingModel = new Array();
+                    var appModel = new Array();
+
+                    var html_table_data = [];
+                    var arr = [];
+                    var bRowStarted = true;
+                    $('.tblAppearance thead tr').each(function () {
+
+                        $('th', this).each(function (value, k) {
+                            var y = $(this).text().trim();
+                            arr.push({ fieldname: y })
+                            bRowStarted = false;
+                        });
+                        html_table_data.push(arr);
+                        bRowStarted = true;
+                        arr = [];
+                    });
+
+                    var tagNo = [];
+                    var average = [];
+                    var arr2 = [];
+                    var bRowStarted2 = true;
+                    $('.tblAppearance').each(function () {
+                        $('tbody tr', this).each(function (value, i) {
+                            $('td', this).each(function (value, j) {
+                                var y = "";
+                                if (value == 0) {
+                                    if ($(this).text() != "") {
+                                        y = $(this).text();
+                                    }
+
+                                    arr2.push({ tagno: y })
+                                }
+                                else if (value == 1) {
+                                    var y = $(this).text();
+                                    arr2.push({ tonnage: y })
+                                }
+                                else {
+
+                                    var y = $(this).find("input[type='text']").val();
+                                    arr2.push({ avg: y })
+                                }
+                                //arr2.push(y)
+                                bRowStarted2 = false;
+                            });
+                            average.push(arr2);
+                            bRowStarted2 = true;
+                            arr2 = [];
+                        });
+                        tagNo.push(average);
+                        average = [];
+                    });
+                    // console.log(tagNo);
+                    //for desc name
+                    var desc = [];
+                    var arr3 = [];
+                    $('.desc').each(function () {
+                        var x = $(this).text();
+                        arr3.push({ desc: x.trim() })
+                    });
+                    //console.log(arr3);
+                    $('#tr-molding tbody tr').each(function (row, tr) {
+                        moldingModel.push({
+                            PropItem: $(tr).find('td').eq(0).text().trim(),
+                            Unit: $(tr).find('td').eq(1).text().trim(),
+                            MachineName: $(tr).find("td:eq(2) input[type='text']").val().trim(),
+                            Average: $(tr).find("td:eq(3) input[type='text']").val().trim(),
+                            RegressionResult: $(tr).find("td:eq(4) input[type='text']").val().trim(),
+                            COQAdj: $(tr).find('td').eq(5).text().trim(),
+                            Specification: $(tr).find('td').eq(6).text().trim(),
+                            Grade: $(tr).find('td').eq(7).text().trim(),
+                            Properties: $(tr).find('td').eq(8).text().trim(),
+                            DataChecking: $(tr).find('td').eq(9).text().trim(),
+                            Seq: $(tr).find('td').eq(10).text().trim(),
+                            StatusInd: $(tr).find('td').eq(11).text().trim(),
+                            MainReading: $(tr).find('td').eq(12).text().trim(),
+                            Reading1: $(tr).find('td').eq(14).text().trim(),
+                            Grade1: $(tr).find('td').eq(15).text().trim(),
+                            Reading2: $(tr).find('td').eq(16).text().trim(),
+                            Grade2: $(tr).find('td').eq(17).text().trim(),
+                            Reading3: $(tr).find('td').eq(18).text().trim(),
+                            Grade3: $(tr).find('td').eq(19).text().trim(),
+                            Reading4: $(tr).find('td').eq(20).text().trim(),
+                            Grade4: $(tr).find('td').eq(21).text().trim(),
+                            Reading5: $(tr).find('td').eq(22).text().trim(),
+                            Grade5: $(tr).find('td').eq(23).text().trim(),
+                            Reading6: $(tr).find('td').eq(24).text().trim(),
+                            Grade6: $(tr).find('td').eq(25).text().trim(),
+                            TypeInd: $(tr).find('td').eq(26).text().trim(),
+                            COQInd: $(tr).find('td').eq(27).text().trim(),
+                            RegressInd: $(tr).find('td').eq(28).text().trim(),
+                            RegressFormula: $(tr).find('td').eq(29).text().trim(),
+                        });
+                    });
+
+                    //console.log(moldingModel);
+
+                    var flot = $("#inlineCheckbox1").is(":checked") == false ? 0 : 1;
+                    var part = $("#mabs").is(":checked") == false ? 0 : 1;
+                    if ($("#txtOverwrite").val().trim() == "") {
+                        boolPRODTYPCHGIND = false;
+                    } else {
+                        boolPRODTYPCHGIND = true;
+                    }
+
+                    var modelr = {
+                        FLOT: flot,
+                        MABS_P: part,
+                        PACKEDDATE: $("#txtInspecDate").val(),
+                        PRODTYPE: $("#txtProdType").val(),
+                        PACKEDDATE2: $("#txtPackedDate").val(),
+                        LOTNO: $("#txtLotNo").val(),
+                        QUANTITY: $("#txtQty").val(),
+                        FullNG: $("#txtFullNG").val(),
+                        TESTEDBY: $("#txtTestedBy").val(),
+                        UPDATEDBY: $("#txtUpdatedBy").val(),
+                        AFTERPRODTYPCHG: $("#txtOverwrite").val(),
+                        PRODTYPCHGIND: boolPRODTYPCHGIND,
+                        MoldingList: moldingModel,
+                        descriptionList: sdescriptionList,
+                    }
+                    $.ajax({
+                        url: '@Url.Action("DE_IDS_TRANS_REV_ADD", "DE_IDS_TRANS_REV")',
+                        type: 'POST',
+                        datatype: 'application/json',
+                        contentType: 'application/json',
+                        data: JSON.stringify({
+                            m: modelr,
+                            field: html_table_data,
+                            tag: tagNo,
+                            description: arr3,
+                            action: action
+                        }),                        
+                        success: function (response) {
+                            console.log(response);
+                            if (response == "Data save successfully") {
+                                $("#btnDraft").removeAttr('disabled');
+                                alert(response);
+                                var url = '@Url.Action("DE_IDS_TRANS_REV_LST", "DE_IDS_TRANS_REV")';
+                                window.location.href = url;
+                            }
+                        },
+                        error: function (ex) {
+                            $("#btnDraft").removeAttr('disabled');
+                            console.log(ex);
+                            alert("Error occurded");
+                            //temp
+                            @*$("#btnDraft").removeAttr('disabled');
+                            alert("Data save successfully");
+                                var url = '@Url.Action("DE_IDS_TRANS_LST", "DE_IDS_TRANS")';
+                                window.location.href = url;*@
+                            
+                        },
+                        complete: function () {
+                            loadings(false);
+                            $("#btnDraft").removeAttr('disabled');
+                        }
+                    });
+                }
+            }
+        }
+    }
+    else $("#btnDraft").removeAttr('disabled');
+});
+    </script>
+
+}
+
+
+

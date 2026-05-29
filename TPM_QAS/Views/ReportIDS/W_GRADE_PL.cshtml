@@ -1,0 +1,148 @@
+﻿@using TPM_QAS.Models
+@model W_GRADE_PL
+
+@{
+    ViewBag.Title = "W Grade Production Listing";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .multiselect-container {
+        max-height: 230px !important;
+    }
+
+    th, td {
+        border: 1px solid black;
+    }
+</style>
+@using (Html.BeginForm("W_GRADE_PL", "ReportIDS", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">W Grade Production Listing</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="col"><button id="btnSubmit" type="submit" class="btn btn-sm btn-primary">View</button></div>
+                    <br />
+                    <br />
+                    @if (ViewBag.ShowReport == "TRUE")
+                    {
+                        <nav class="tr-tab">
+                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                <button class="nav-link active" id="nav-W-tab" data-bs-toggle="tab" data-bs-target="#nav-W" type="button" role="tab" aria-controls="nav-W" aria-selected="true">W Grade</button>
+                            </div>
+                        </nav>
+                        <div class="tab-content p-2" id="nav-tabContent" style="border: 4px solid #EBF3FF; ">
+                            <div class="tab-pane fade show active" id="nav-W" role="tabpanel" aria-labelledby="nav-W-tab" tabindex="0">
+                                <h6 class="card-title text-muted pt-2"></h6>
+                                <div>
+                                    <div class="col"><button id="btnexport" type="button" onclick="exportexcel()" class="btn btn-sm btn-primary">Export to Excel</button></div>
+                                    <br />
+                                    <table id="wgradepl" class="detailTable" style="width:100%">
+                                        <thead>
+                                            <tr class="toolbar-row">
+                                                <th colspan="5" class="text-center">W Grade</th>
+                                            </tr>
+                                            <tr class="toolbar-row">
+                                                <th>Packed Date </th>
+                                                <th>Item Code </th>
+                                                <th>Item Description </th>
+                                                <th>Lot Number</th>
+                                                <th>Lot Quantity</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @if (Model.ListW_GRADE_PL_DETAIL != null)
+                                            {
+                                                for (var j = 0; j < Model.ListW_GRADE_PL_DETAIL.Count; j++)
+                                                {
+                                                    <tr>
+                                                        <td>@Model.ListW_GRADE_PL_DETAIL[j].PACKED_DATE</td>
+                                                        <td>@Model.ListW_GRADE_PL_DETAIL[j].ITEM_CODE</td>
+                                                        <td>@Model.ListW_GRADE_PL_DETAIL[j].ITEM_DESC</td>
+                                                        <td>@Model.ListW_GRADE_PL_DETAIL[j].LOT_NUMBER</td>
+                                                        <td>@Model.ListW_GRADE_PL_DETAIL[j].PACK_QTY</td>
+                                                    </tr>
+                                                }
+                                            }
+
+                                            @if (Model.ListW_GRADE_PL_DETAIL == null || Model.ListW_GRADE_PL_DETAIL.Count == 0)
+                                            {
+                                                <tr>
+                                                    <td colspan="6" class="text-center"> No Record to show </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                            </div>
+
+                        </div>
+                    }
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        $('#btnGenerate').on('click', function () {
+            $('#btnSubmit').click();
+        });
+
+        $('#btnSubmit').on('click', function () {
+            setTimeout(function () {
+                loadings(false);
+            }, 5000);
+        });
+
+    });
+
+    function exportexcel() {
+        $.ajax({
+            url: '/ReportIDS/W_GRADE_PL_EXCEL',
+            type: 'POST',
+            data: {},
+            beforeSend: function () {
+                loadings();
+            },
+            success: function (response) {
+                loadings(false);
+                if (response.success) {
+                    // Trigger download
+                    window.location.href = '/ReportIDS/DownloadWGradeReport?fileKey=' + response.fileKey;
+                    loadings(false);
+                    document.body.style.cursor = 'default';
+                } else {
+                    displayToast("error", response.message);
+                    console.log(response.message); // Show error
+                }
+            },
+            error: function () {
+                displayToast("error", "Server error occurred while checking data.");
+                console.log("Something went wrong. Please try again.");
+            }
+        });
+    }
+
+    $(document).keypress(
+        function (event) {
+            if (event.which == '13') {
+                event.preventDefault();
+            }
+        }
+    );
+
+</script>

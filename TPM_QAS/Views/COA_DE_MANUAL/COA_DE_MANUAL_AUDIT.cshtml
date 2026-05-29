@@ -1,0 +1,407 @@
+﻿
+@{
+    ViewBag.Title = "Audit Trail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@model System.Data.DataTable
+@using System.Data;
+
+<input type="hidden" id="customInputKeyName" data-value="@ViewBag.KeyNames" />
+<input type="hidden" id="customInput" data-value="@ViewBag.JSONresult" />
+<input type="hidden" id="hid" value="@ViewBag.hid" />
+
+<div class="row g-0 px-3 tr-listing-header">
+    <div class="col-sm-6 align-self-center">
+        <p class="text-muted m-0 tr-listing-header-title">Audit Trail</p>
+    </div>
+    <div class="col-sm-6 text-end align-self-center">
+        <div class="d-flex justify-content-end">
+            <div id="customDTButton"></div>
+        </div>
+    </div>
+</div>
+<div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+        <div class="row mt-3 mb-2">
+            <div class="col-12 col-sm-8">
+                <div class="accordion" id="accordionExample">
+                </div>
+            </div>
+            <div class="col-12 col-sm-4 align-self-end tr-text pb-0 mb-0" id="action-bar">
+                @*<button type="button" class="btn btn-link m-0 p-0" id="btnAuditTrail">Audit Trail</button>*@
+            </div>
+        </div>
+        <div class="row">
+            <table id="tr-datatable" class="table table-hover table-bordered compact" style="width:100%; margin-top: 0px !important;">
+                <thead>
+                    <tr style="background-color: #FCFCFC">
+                        @foreach (var keyName in ViewBag.KeyNames)
+                        {
+                            <th>@keyName</th>
+                        }
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <div class="row tr-btm-btn-area">
+            <div class="col">
+                <div class="aud customDTButton" style="margin-left:-4px"></div>
+            </div>
+            <div class="col">
+                <div class="aud customDTButtonBack row row-cols-auto justify-content-end g-1 tr-btm-btn-area tr-btm-size" style="padding-right: 20px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="advance-search-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;">Advanced Search</h5>
+            </div>
+            <hr />
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+                    <div class="row align-items-center">
+                        <div class="col-md-2 isLabel"><label>Field Name</label></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="FIELD_NAME" type="text" />
+                        </div>
+                    </div>
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel"><label>Old Value</label></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="B4UPDATE" type="text" />
+                        </div>
+                    </div>
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel"><label>New Value</label></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="AFUPDATE" type="text" />
+                        </div>
+                    </div>
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel"><label>User Name</label></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="UPDATED_BY" type="text" />
+                        </div>
+                    </div>
+                    <div class="row align-items-center mt-2">
+                        <div class="col-md-2 isLabel"><label>Date</label></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="UPDATED_DATE" type="date" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" id="btnReset" class="btn btn-sm btn-secondary" style="margin-right: auto;">Reset</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-sm btn-primary" onclick="as_search();" data-bs-dismiss="modal">Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script type="text/javascript">
+        var table;
+
+        $(document).ready(function () {
+
+
+            var popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+            var popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+                return new bootstrap.Popover(popoverTriggerEl)
+            })
+
+
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+
+            var abc = $('.tr-select2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.tr-select2:input').val('');
+            $('.tr-select2').multiselect('rebuild');
+
+            var def = $('.tr-select').select2({
+                theme: "bootstrap-5",
+                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+                placeholder: $(this).data('placeholder'),
+                minimumResultsForSearch: Infinity,
+                templateSelection: function formatState(state) {
+                    return 'Status : ' + state.element.value;
+                },
+                dropdownCssClass: 'tr-select2-container',
+                selectionCssClass: 'tr-no-border'
+            });
+
+            //var def = $('.tr-select').select2({
+            //    theme: "bootstrap-5",
+            //    width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+            //    placeholder: $(this).data('placeholder'),
+            //    minimumResultsForSearch: Infinity,
+            //    templateSelection: function formatState(state) {
+            //        return 'Status : ' + state.element.value;
+            //    },
+            //    dropdownCssClass: 'tr-select2-container',
+            //    selectionCssClass: 'tr-no-border'
+            //});
+
+
+
+
+            $('.multiselectpicker').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                },
+            });
+            $('.multiselectpicker2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                },
+            });
+            $('.multiselect-native-select > .btn-group').addClass("w-100");
+            $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+            $('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-100");
+
+            loadDataTable();
+
+            $('.dataTables_length select').addClass('tr-select2');
+
+            $('.tr-select2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+
+            $('.tr-select').select2({
+                theme: "bootstrap-5",
+                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+                placeholder: $(this).data('placeholder'),
+                minimumResultsForSearch: Infinity,
+                templateSelection: function formatState(state) {
+                    return 'Status : ' + state.element.value;
+                },
+                dropdownCssClass: 'tr-select2-container',
+                selectionCssClass: 'tr-no-border'
+            });
+
+            $('#btnSearchAS').on('click', function () {
+                //$('#advance-search-modal').toggle();
+
+                $("div.spanner").addClass("show");
+                $("div.overlay").addClass("show");
+                console.log('here');
+                setTimeout(function () {
+                    $("div.spanner").removeClass("show");
+                    $("div.overlay").removeClass("show");
+                }, 2500);
+            });
+
+            $('#btnReset').on('click', function () {
+                $(':input').val('');
+
+                $('#mul-select-id1').multiselect('rebuild');
+                $('#mul-select-id2').multiselect('rebuild');
+                $('#select-id2').multiselect('rebuild');
+                $('#select-id3').multiselect('rebuild');
+            });
+
+        });
+
+        function getColumnConfig() {
+
+            var dynamicColumns = [];
+            var data = $("#customInput").data("value");
+            var val = data[0];
+            var columnJsonArrs = new Array();
+
+            var x = 0;
+            for (var j in val) {
+                columnJsonArrs[x] = j;
+                x++
+            }
+
+            columnJsonArrs.forEach(function (columnJsonArr, index) {
+                var columnConfig = {
+                    data: columnJsonArr
+                };
+                dynamicColumns.push(columnConfig);
+            });
+
+            return dynamicColumns;
+        }
+
+        function loadDataTable() {
+            var hid = $("#hid").val();
+            var data = $("#customInput").data("value");
+            var data2 = $("#customInputKeyName").data("value");
+            console.log(data[0]);
+            table = $('#tr-datatable').DataTable({
+                data: data,
+                pagingType: 'simple_numbers',
+                columns: getColumnConfig(),
+                order: [[4, 'desc']],
+                dom: "<'row'<'col'<'d-flex justify-content-start py-2 margin-top-20'<'toolbar row align-items-baseline'>>>>" +
+                    "<'card'<'card-body'" +
+                    "<'row'<'col'<'audit-info'>>>" +
+                    "<'row'<'col-sm-12'<'toolbar-row'l>>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    ">>" +
+                    "<'row mt-2'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'<'d-flex justify-content-end'p<'go-to align-self-center mx-2'>>>>", //+
+                //"<'row sticky-btn'<'col'<'customDTButton py-2'>><'col'<'customDTButton2 py-2'>>>",
+                initComplete: function () {
+                    $("div.audit-info").html('<h5 class="card-title text-muted">History of ID: ' + hid + '</h5>');
+                    $("div.toolbar").html(
+                        '<div class="col">' +
+                        '<div class="input-group input-group-sm">' +
+                        '<input type="text" id="txtSearch" class="form-control remove-right-border" style="border-top-right-radius: 0px !important; border-bottom-right-radius: 0px !important;" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
+                        '<div class="input-group-text listing-search-icon">' +
+                        '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                        '</div>' +
+                        '<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#advance-search-modal" id="btnAdvanceSearch" style="min-width: 30px; background-color: #057FE5; border: #057FE5;"><i class="fa-solid fa-sliders" style="transform: rotate(90deg);"></i></button>' +
+                        '</div>');
+                    //$("div.toolbar").html('<button type="button" data-bs-toggle="modal" data-bs-target="#advance-search-modal" id="btnAdvanceSearch" class="btn btn-outline-primary py-1 px-2"><i class="fa-solid fa-sliders"></i></button>');
+                    //$("div.toolbar").html('<div class="col-sm-4"><p>Search Criteria 1 : </p></div>' +
+                    //    '<div class="col-sm-8">' +
+                    //    '<div class="input-group input-group-sm">' +
+                    //    '<input type="text" id="txtSearch" class="form-control remove-right-border" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
+                    //    '<div class="input-group-text listing-search-icon">' +
+                    //    '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                    //    '</div>' +
+                    //    '<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#advance-search-modal" id="btnAdvanceSearch" style="min-width: 30px; background-color: #057FE5;"><i class="fa-solid fa-sliders" style="transform: rotate(90deg);"></i></button>' +
+                    //    '</div>' +
+                    //    '</div>');
+                },
+                drawCallback: function (settings) {
+                    var api = this.api();
+                    $("#txtGoTo").val(api.page() + 1);
+                }
+            });
+
+            $("div.go-to").html('<div class="d-flex align-items-center p-0"><input class="form-control" type="text" id="txtGoTo" style="width:75px" value=1> &nbsp; <div class="page-info">of ' + table.page.info().pages + '</div></div>');
+            $("#txtGoTo").on('keyup', function (e) {
+                try {
+                    var page = e.target.value;
+                    if ($.isNumeric(page) && page > 0 && page <= table.page.info().pages) {
+                        table.page(page - 1).draw('page');
+                    } else if (e.target.value.trim() == '') {
+
+                    } else {
+                        e.target.value = table.page() + 1;
+                    }
+
+                } catch (ex) {
+                    console.log(ex.toString());
+                    e.target.value = 1;
+                }
+            });
+            $("#txtGoTo").on('blur', function (e) {
+                try {
+                    var page = e.target.value;
+                    if (page.trim() == '') {
+                        $("#txtGoTo").val(1);
+                        table.page(0).draw('page');
+                        $("#txtGoTo").focus();
+                    }
+                } catch (ex) {
+                    console.warn(ex.toString());
+                    e.target.value = 1;
+                }
+            });
+            $('#txtSearch').on('keyup', function (e) {
+                table.search(e.target.value).draw();
+            });
+            $(".dataTables_length .form-select").on('change', function () {
+                $("#txtGoTo").val(table.page() + 1);
+                $("div.page-info").html('of ' + table.page.info().pages + '</div>');
+            });
+
+            table.on('select deselect', function (e, dt, type, indexes) {
+                var rowCnt = table.rows({ selected: true }).count();
+
+                // do something with the number of selected rows
+                if (rowCnt > 0) {
+                    $("#btnDelete").prop('disabled', false);
+                    $("#btnExport").prop('disabled', false);
+                } else {
+                    $("#btnDelete").prop('disabled', true);
+                    $("#btnExport").prop('disabled', true);
+                }
+            });
+
+            $("#btnExport").on("click", function () {
+                table.buttons.exportData({
+                    modifier: {
+                        selected: true
+                    }
+                });
+            });
+
+            addTableButtons();
+        }
+
+        function addTableButtons() {
+            new $.fn.dataTable.Buttons(table, {
+                name: "export",
+                buttons: [
+                    {
+                        text: 'Export to Excel',
+                        extend: 'excel',
+                        className: 'btn-sm btn-primary mx-1',
+                        init: function (api, node, config) {
+                            $(node).removeClass('btn-secondary')
+                        }
+                    }
+                ]
+            });
+
+
+        }
+
+        $(document).on('click', '#btnReset', function (e) {
+            e.preventDefault();
+            $('#FIELD_NAME').val('');
+            $('#B4UPDATE').val('');
+            $('#AFUPDATE').val('');
+            $('#UPDATED_BY').val('');
+            $('#UPDATED_DATE').val('');
+            as_search();
+        });
+        function as_search() {
+            table.search("");
+            var formattedDate = "";
+            if ($('#UPDATED_DATE').val().trim() != "") {
+                var date = new Date($('#UPDATED_DATE').val());
+                formattedDate = ("0" + date.getDate()).slice(-2) + "/" + ("0" + (date.getMonth() + 1)).slice(-2) + "/" + date.getFullYear();
+            }
+            table.columns(0).search($('#FIELD_NAME').val().trim());
+            table.columns(1).search($('#B4UPDATE').val().trim());
+            table.columns(2).search($('#AFUPDATE').val().trim());
+            table.columns(3).search($('#UPDATED_BY').val().trim());
+            table.columns(4).search(formattedDate);
+            table.draw();
+        }
+        function as_exclude() {
+            table.columns(0).search("");
+            table.columns(1).search("");
+            table.columns(2).search("");
+            table.columns(3).search("");
+            table.columns(4).search("");
+        }
+    </script>
+}
+

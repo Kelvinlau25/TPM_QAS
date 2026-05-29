@@ -1,0 +1,1862 @@
+﻿@using TPM_QAS.Models
+@model COAMMMaterialModel
+
+@{
+    ViewBag.Title = "MM TPM RAW MATERIAL SPECIFICATION - Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+
+    /* Rotate tab text vertically */
+    .vertical-tabs .nav-link {
+        writing-mode: vertical-rl; /* Rotates text vertically */
+        transform: rotate(180deg); /* Ensures proper text alignment */
+        text-align: left;
+        background-color: #F0F0F0 !important;
+        height: 100px;
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-top: 15px;
+        border-top-left-radius: 0px;
+        border-bottom-left-radius: 0px;
+        border-top-right-radius: 15px;
+        border-bottom-right-radius: 15px;
+    }
+
+        .vertical-tabs .nav-link:not(:first-child) {
+            margin-top: 5px;
+            /*border-bottom-right-radius: 15px;*/
+        }
+
+
+
+    .tab-content {
+        flex-grow: 1;
+    }
+
+    #nav-summary, #nav-allsup {
+        border: 10px solid #EBF3FF !important;
+    }
+
+    .vertical-tabs .nav-link.active {
+        color: #54575A !important;
+        background-color: #EBF3FF !important;
+        font-weight: bold;
+    }
+
+    #nav-allsup .nav-link.active {
+        color: #54575A !important;
+        background-color: white !important;
+        font-weight: bold;
+    }
+
+    .tabtitle {
+        /*padding-left: 12px;*/
+        background-color: #EBF3FF;
+        margin: 0px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+    }
+
+        .tabtitle h6 {
+            padding-bottom: 0px;
+            margin-bottom: 0px;
+            padding-left: 0px !important;
+        }
+
+    .tabdetail {
+        margin: 5px 0px;
+    }
+
+    .btn {
+        --bs-btn-padding-x: 0 !important;
+    }
+
+    .btnsupplierplus {
+        margin: 10px;
+    }
+
+    .nav-tabs {
+        background-color: #EBF3FF;
+    }
+
+    #nav-allsup .nav-link {
+        min-width: 10px;
+    }
+
+        #nav-allsup .nav-link:not(:first-child) {
+            margin-left: 5px;
+            /*border-bottom-right-radius: 15px;*/
+        }
+
+    .detailTable th, .detailTable td {
+        border: 1px solid #d3c8c8;
+    }
+</style>
+
+<div class="row g-0 px-3 tr-listing-header">
+    <div class="col-sm-6 align-self-center">
+        <p class="text-muted m-0 tr-listing-header-title main-title">View Form - Raw Material Specification</p>
+    </div>
+    <div class="col-sm-6 text-end align-self-center">
+        <div class="d-flex justify-content-end">
+            <div id="customDTButton"></div>
+        </div>
+    </div>
+</div>
+
+<div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+        <div class="card mt-3 mb-2 card-height">
+            <div class="card-body">
+                <div class="row align-items-baseline">
+                    <div class="col"><h6 class="card-title text-muted">Raw Material Specification</h6></div>
+                    @if (Model.RECORD_TYP != null)
+                    {
+                    if (@Model.RECORD_TYP != "5")
+                    {
+                    <div class="col text-end"><button class="btn btn-sm btn-primary" id="btnEdit" type="button" data-behaviour="toggle">Edit</button></div>
+                    }
+
+                    }
+                </div>
+
+                <hr />
+
+                <div class="row align-items-baseline">
+                    <div class="col-sm-2">
+                        <p class="text-muted">
+                            <span>Material Name</span>
+                            <span class="text-danger isEditable" style="display:none">*</span>
+                            <span style="float:right">:</span>
+                        </p>
+                    </div>
+                    <div class="col-sm-3 d-flex">
+                        @Html.TextBoxFor(m => m.MATERIAL_NAME, null, new { @id = "txtMatName", @class = "form-control", @disabled = "disabled" })
+                    </div>
+                    <div class="col-sm-1">
+                    </div>
+
+                    <div class="col-sm-2">
+                        <p class="text-muted">
+                            <span>Abbreviation </span>
+                            <span style="float:right">:</span>
+                        </p>
+                    </div>
+                    <div class="col-sm-3 d-flex">
+                        @Html.TextBoxFor(m => m.MATERIAL_ABBR, null, new { @id = "txtMatAbbr", @class = "form-control", @disabled = "disabled" })
+                    </div>
+                </div>
+                <div class="row align-items-baseline">
+                    <div class="col-sm-2">
+                        <p class="text-muted">
+                            <span>Material Code</span>
+                            <span class="text-danger isEditable" style="display:none">*</span>
+                            <span style="float:right">:</span>
+                        </p>
+                    </div>
+                    <div class="col-sm-3 d-flex">
+                        @Html.TextBoxFor(m => m.MATERIAL_CODE, null, new { @id = "txtMatCode", @class = "form-control", @disabled = "disabled" })
+                    </div>
+                    <div class="col-sm-1">
+                    </div>
+
+                    <div class="col-sm-2">
+                        <p class="text-muted">
+                            <span>TPM Code </span>
+                            <span style="float:right">:</span>
+                        </p>
+                    </div>
+                    <div class="col-sm-3 d-flex">
+                        @Html.TextBoxFor(m => m.TPM_CODE, null, new { @id = "txtTPMCode", @class = "form-control", @disabled = "disabled" })
+                    </div>
+                </div>
+
+                <div class="page-container px-3 overflow-auto" style="padding-left:0px !important;">
+                    <div class="tr-btm-btn-margin">
+                        <div class="card mt-3 mb-2 card-height height-override">
+                            <div class="card-body">
+                                <!-- Left-Side Tab Layout with Vertical Text -->
+                                <div class="d-flex">
+                                    <!-- Tabs (Sidebar on Left with Vertical Text) -->
+                                    <nav class="nav flex-column nav-pills vertical-tabs" id="nav-tab" role="tablist">
+                                        <button class="nav-link active" id="nav-summary-tab" data-bs-toggle="pill" data-bs-target="#nav-summary" type="button" role="tab" aria-controls="nav-summary" aria-selected="true">TPM</button>
+                                        <button class="nav-link" id="nav-allsup-tab" data-bs-toggle="pill" data-bs-target="#nav-allsup" type="button" role="tab" aria-controls="nav-allsup" aria-selected="false">Supplier</button>
+                                    </nav>
+                                    <!-- Tab Content (Right Side) -->
+                                    <div class="tab-content align-items-baseline" id="nav-tabContent">
+                                        @*TPM TAB*@
+                                        <div class="tab-pane fade show active" id="nav-summary" role="tabpanel" aria-labelledby="nav-summary-tab">
+                                            <div class="row align-items-baseline tabtitle">
+                                                <h6 class="card-title text-muted">TPM Raw Material Specifications</h6>
+                                                <hr />
+                                                <br />
+                                            </div>
+                                            <div class="row tabdetail">
+                                                <div class="row mt-2 align-items-baseline">
+
+                                                    <div class="col"><span class="text-muted">Inspection Item</span></div>
+                                                    <div class="col text-end isEditable" style="display:none">
+                                                        <button class="btn btn-sm btn-danger" id="btnRemove" type="button">Remove</button>
+                                                        <button class="btn btn-sm btn-primary" id="btnAdd" type="button" onclick="addrow();">Add</button>
+                                                    </div>
+                                                </div>
+                                                <div class="row mt-2 mx-1 isEditable" style="display:none">
+                                                    <table id="item-table" class="detailTable" style="width:100%">
+                                                        <thead>
+                                                            <tr class="toolbar-row">
+                                                                <th class="hidden">id</th>
+                                                                <th style="width: 3%; text-align: center;">
+                                                                    <input id="trCheckbox" type="checkbox" class="dt-checkboxes select-all form-check-input" style="margin-top:5.5px; display:none">
+                                                                </th>
+                                                                <th>
+                                                                    <span>Items</span>
+                                                                    <span class="text-danger isEditable" style="display:none">*</span>
+                                                                </th>
+                                                                <th>Set Value</th>
+                                                                <th>Unit of Measurement</th>
+                                                                <th class="hidden">type</th>
+                                                                <th></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @{ var cnt = 0;}
+                                                            @for (var j = 0; j < Model.TPMMatSpecList.Count; j++)
+                                                            {
+                                                            <tr>
+                                                                <td class="hidden">@cnt</td>
+                                                                <td class="text-center">
+                                                                    <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk" onClick="handleCheckboxClick(this)">
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" class="form-control" id="items" onChange="tpmTableChange('EDITNAME');" value="@Model.TPMMatSpecList[j].TPM_SPEC_NAME">
+                                                                </td>
+                                                                <td>
+                                                                    <div class="input-group">
+                                                                        <input type="text" class="form-control" id="itemsval" value="@Model.TPMMatSpecList[j].TPM_SPEC_VALUE" disabled="disabled">
+                                                                        <button type="button" id="btnTPMSetVal" class="btn-info input-group-text tr-input-group fa-solid fa-ellipsis" data-bs-target="#SetValue" title="Set Value" style="margin: 0;" onclick="openSetValue(this);"></button>
+                                                                    </div>
+                                                                </td>
+                                                                <td>
+                                                                    @*<input type="text" class="form-control" id="itemsuom" value="@Model.TPMMatSpecList[j].TPM_SPEC_UOM">*@
+                                                                    <select class="ddloption form-select form-control ddlTPMUOM" id="ddlTPMUOM_@cnt" name="@Model.TPMMatSpecList[j].TPM_SPEC_UOM"></select>
+                                                                </td>
+                                                                <td class="hidden">
+                                                                    <input type="text" class="form-control" id="itemstype" value="@Model.TPMMatSpecList[j].TPM_SPEC_TYPE" disabled="disabled">
+                                                                </td>
+                                                                <td>
+                                                                    <button type="button" class="btn-info input-group-text tr-input-group fa-solid fa-plus" style="margin: 0;" onclick="addsamerow(this);"></button>
+                                                                </td>
+                                                                <td class="hidden">@Model.TPMMatSpecList[j].MM_MATERIAL_D1_ID</td>
+                                                            </tr>
+                                                            cnt = cnt + 1;
+                                                            }
+                                                        </tbody>
+                                                    </table>
+
+                                                </div>
+                                                <div class="row mt-2 mx-1 isNotEditable">
+                                                    <table class="detailTable" style="width:100%">
+                                                        <thead>
+                                                            <tr class="toolbar-row">
+                                                                <th>Items</th>
+                                                                <th>Set Value</th>
+                                                                <th>Unit of Measurement</th>
+
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+
+                                                            @for (var j = 0; j < Model.TPMMatSpecList.Count; j++)
+                                                            {
+                                                            <tr>
+                                                                <td>@Model.TPMMatSpecList[j].TPM_SPEC_NAME</td>
+                                                                <td>@Model.TPMMatSpecList[j].TPM_SPEC_VALUE</td>
+                                                                <td>@Model.TPMMatSpecList[j].TPM_SPEC_UOM</td>
+                                                            </tr>
+
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                            <br />
+                                        </div>
+
+                                        <div class="tab-pane fade" id="nav-allsup" role="tabpanel" aria-labelledby="nav-allsup-tab">
+                                            <div>
+                                                @{ List<SUPPMatSpecList>
+                                                    supplierlist = new List<SUPPMatSpecList>
+                                                        ();
+                                                        supplierlist = Model.SUPPMatSpecList.GroupBy(x => new { x.MM_SUPPLIER_H_ID, x.SUPPLIER_NAME, x.SUPP_MATERIAL_NAME })
+                                                        .Select(g => new SUPPMatSpecList
+                                                        {
+                                                        MM_SUPPLIER_H_ID = g.Key.MM_SUPPLIER_H_ID,
+                                                        SUPPLIER_NAME = g.Key.SUPPLIER_NAME,
+                                                        SUPP_MATERIAL_NAME = g.Key.SUPP_MATERIAL_NAME
+                                                        }).ToList();
+                                                        var cntsuppnav = 1; }
+                                                        <input type="hidden" id="suppliercount" value="@supplierlist.Count" />
+                                                        <div class="row align-items-baseline tabtitle">
+                                                            <h6 class="card-title text-muted">Supplier Raw Material Specifications</h6>
+                                                            <hr />
+                                                            <br />
+                                                        </div>
+                                                        <nav class="tr-tab">
+                                                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                                                @if (supplierlist.Count > 0)
+                                                                {
+                                                                for (var j = 0; j < supplierlist.Count; j++)
+                                                                {
+                                                                string pact = cntsuppnav == 1 ? "active" : "";
+                                                                <button class="nav-link @pact nav-link-supp" id="nav-tab_supplier_@cntsuppnav" data-bs-toggle="tab" data-bs-target="#nav-supplier_@cntsuppnav" type="button" role="tab" aria-controls="nav-supplier_@cntsuppnav" aria-selected="true">
+                                                                    @supplierlist[j].SUPPLIER_NAME.ToString()
+                                                                    &nbsp;<i class="fas fa-close dark-grey isEditable" id="close_@cntsuppnav" onclick="DeleteSupplierTab(this);" style="display:none"></i>
+                                                                </button>
+
+                                                                cntsuppnav = cntsuppnav + 1;
+                                                                }
+                                                                }
+                                                                else
+                                                                {
+                                                                <button class="nav-link active nav-link-supp isEditable" style="display:none" id="nav-tab_supplier_1" data-bs-toggle="tab" data-bs-target="#nav-supplier_1" type="button" role="tab" aria-controls="nav-supplier_1" aria-selected="true">
+                                                                    Supplier 1
+                                                                    &nbsp;<i class="fas fa-close dark-grey isEditable" id="close_1" onclick="DeleteSupplierTab(this);" style="display:none"></i>
+                                                                </button>
+                                                                }
+                                                                <span id="btnsupplierplus" class="btnsupplierplus isEditable" style="display:none"><i class="fa-solid fa-plus text-primary"></i></span>
+                                                            </div>
+                                                        </nav>
+                                                        <div class="row tabdetail">
+                                                            <div class="tab-content p-2" id="nav-tabContent">
+                                                                <div id="dumdum" style="display:none"></div>
+                                                                @{
+                                                                var cntsuppdiv = 1;
+                                                                }
+                                                                @if (supplierlist.Count > 0)
+                                                                {
+                                                                for (var j = 0; j < supplierlist.Count; j++)
+                                                                {
+                                                                string pact = cntsuppdiv == 1 ? "show active" : "";
+                                                                <div class="tab-pane fade @pact" id="nav-supplier_@cntsuppdiv" role="tabpanel" aria-labelledby="nav-tab_supplier_@cntsuppdiv" tabindex="0">
+                                                                    <div class="row align-items-baseline">
+                                                                        <div class="col-sm-2">
+                                                                            <p class="text-muted">
+                                                                                <span>Supplier Name</span>
+                                                                                <span class="text-danger isEditable" style="display:none">*</span>
+                                                                                <span style="float:right">:</span>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="col-sm-4">
+                                                                            <input type="text" id="txtSuppName_@cntsuppdiv" value="@supplierlist[j].SUPPLIER_NAME" class="form-control" disabled />
+                                                                            <input type="text" id="txtSuppID_@cntsuppdiv" value="@supplierlist[j].MM_SUPPLIER_H_ID" class="hidden" />
+                                                                        </div>
+                                                                        <div class="col-sm-2">
+                                                                            <p class="text-muted">
+                                                                                <span>Supplier Material Name</span>
+                                                                                <span class="text-danger isEditable" style="display:none">*</span>
+                                                                                <span style="float:right">:</span>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="col-sm-4">
+                                                                            <input type="text" class="form-control txtSuppMatName isEditable" id="txtSuppMatName_@cntsuppdiv" value="@supplierlist[j].SUPP_MATERIAL_NAME" disabled />
+                                                                        </div>
+                                                                    </div>
+                                                                    <br />
+                                                                    <div id="divitemtblsupp_@cntsuppdiv" class="isEditable" style="display:none;">
+                                                                        <table class='detailTable tblitemsupp' id='tblitemsupp_@cntsuppdiv' style='width:100%;'>
+                                                                            <thead>
+                                                                                <tr class='toolbar-row'>
+                                                                                    <th class='hidden'>ROWID</th>
+                                                                                    <th>TPM Inspection Item</th>
+                                                                                    <th>Supplier Inspection Item</th>
+                                                                                    <th>Set Value</th>
+                                                                                    <th>UOM</th>
+                                                                                    <th class='hidden'>TYpe</th>
+                                                                                    <th class='hidden'>MM_MATERIAL_D2_ID</th>
+                                                                                    <th class='hidden'>MM_MATERIAL_D1_ID</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            @{ List
+                                                                            <SUPPMatSpecList>
+                                                                                thissuppitems = Model.SUPPMatSpecList
+                                                                                .Where(x => x.MM_SUPPLIER_H_ID == supplierlist[j].MM_SUPPLIER_H_ID)
+                                                                                .ToList();
+                                                                                var cntitems = 0;
+                                                                                }
+                                                                                @if (thissuppitems.Count > 0)
+                                                                                {
+                                                                                <tbody>
+                                                                                    @foreach (var supitems in thissuppitems)
+                                                                                    {
+                                                                                    <tr>
+                                                                                        <td class="hidden">@cntitems</td>
+                                                                                        <td>@supitems.TPM_SPEC_NAME</td>
+                                                                                        <td>
+                                                                                            <input type="text" class="form-control txtSuppInspItem" id="txtSuppInspItem_@cntitems" value="@supitems.SUPP_SPEC_NAME" />
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            <div class="input-group">
+                                                                                                <input type="text" class="form-control" id="txtSuppSetVal_@cntitems" value="@supitems.SUPP_SPEC_VALUE" disabled />
+                                                                                                <button type="button" id="btnSuppSetVal_@cntsuppdiv _@cntitems" class="btnSuppSetVal btn-info input-group-text tr-input-group fa-solid fa-ellipsis" data-bs-target="#SetValue" title="Set Value" style="margin: 0;" onclick="openSetValue(this);"></button>
+                                                                                            </div>
+                                                                                        </td>
+                                                                                        <td>
+                                                                                            @*<input type="text" class="form-control txtSuppUOM" id="txtSuppUOM_@cntitems" value="@supitems.SUPP_SPEC_UOM" />*@
+                                                                                            <select class="ddloption form-select form-control ddlSuppUOM" id="ddlSuppUOM_@cntitems" name="@supitems.SUPP_SPEC_UOM"></select>
+                                                                                        </td>
+                                                                                        <td class="hidden">
+                                                                                            <input type="text" class="form-control" id="txtSuppSetType_@cntitems" value="@supitems.SUPP_SPEC_TYPE" disabled />
+                                                                                        </td>
+                                                                                        <td class="hidden">@supitems.MM_MATERIAL_D2_ID</td>
+                                                                                        <td class="hidden">@supitems.MM_MATERIAL_D1_ID</td>
+                                                                                    </tr>
+
+                                                                                    cntitems = cntitems + 1;
+                                                                                    }
+                                                                                </tbody>
+                                                                                }
+
+                                                                        </table>
+                                                                    </div>
+                                                                    <div class="isNotEditable">
+                                                                        <table class='detailTable' style='width:100%;'>
+                                                                            <thead>
+                                                                                <tr class='toolbar-row'>
+                                                                                    <th>TPM Inspection Item</th>
+                                                                                    <th>Supplier Inspection Item</th>
+                                                                                    <th>Set Value</th>
+                                                                                    <th>UOM</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            @{ List
+                                                                            <SUPPMatSpecList>
+                                                                                thissuppitemsv = Model.SUPPMatSpecList
+                                                                                .Where(x => x.MM_SUPPLIER_H_ID == supplierlist[j].MM_SUPPLIER_H_ID)
+                                                                                .ToList();
+                                                                                }
+                                                                                @if (thissuppitems.Count > 0)
+                                                                                {
+                                                                                <tbody>
+                                                                                    @foreach (var supitems in thissuppitemsv)
+                                                                                    {
+                                                                                    <tr>
+                                                                                        <td>@supitems.TPM_SPEC_NAME</td>
+                                                                                        <td>@supitems.SUPP_SPEC_NAME</td>
+                                                                                        <td>@supitems.SUPP_SPEC_VALUE</td>
+                                                                                        <td>@supitems.SUPP_SPEC_UOM</td>
+                                                                                    </tr>
+                                                                                    }
+                                                                                </tbody>
+                                                                                }
+                                                                        </table>
+                                                                    </div>
+                                                                    <br />
+                                                                </div>
+                                                                cntsuppdiv = cntsuppdiv + 1;
+                                                                }
+                                                                }
+                                                                else
+                                                                {
+                                                                <div class="tab-pane fade show active isEditable" style="display:none" id="nav-supplier_1" role="tabpanel" aria-labelledby="nav-tab_supplier_1" tabindex="0">
+                                                                    <div class="row align-items-baseline">
+                                                                        <div class="col-sm-2">
+                                                                            <p class="text-muted">
+                                                                                <span>Supplier Name</span>
+                                                                                <span class="text-danger">*</span>
+                                                                                <span style="float:right">:</span>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="col-sm-4">
+                                                                            <select class="ddlSupplier ddloption form-control form-select" id="ddlSupplier1" onChange="ChangeSupplier(this);">
+                                                                                <option value=" ">Select Supplier</option>
+                                                                            </select>
+                                                                        </div>
+                                                                        <div class="col-sm-2">
+                                                                            <p class="text-muted">
+                                                                                <span>Supplier Material Name</span>
+                                                                                <span class="text-danger">*</span>
+                                                                                <span style="float:right">:</span>
+                                                                            </p>
+                                                                        </div>
+                                                                        <div class="col-sm-4">
+                                                                            <input type="text" class="form-control txtSuppMatName" id="txtSuppMatName_1" />
+                                                                        </div>
+                                                                    </div>
+                                                                    <br />
+                                                                    <div id="divitemtblsupp_1">
+
+                                                                    </div>
+                                                                    <br />
+                                                                </div>
+                                                                }
+                                                            </div>
+                                                        </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <div class="hideInfo">
+                    <hr />
+
+                    <div class="row row-cols-2 mt-4">
+                        <div class="col align-self-center">
+                            <h6 style="float: left" class="text-muted">Entry Details</h6>
+                        </div>
+                        <div class="col">
+
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Updated By<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.UPDATED_BY">
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="text-muted">Created By<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.CREATED_BY">
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Updated Date<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.UPDATED_DATE">
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="text-muted">Created Date<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.CREATED_DATE">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row tr-btm-btn-area">
+            @if (Model.RECORD_TYP != null)
+            {
+            if (@Model.RECORD_TYP != "5")
+            {
+            <div class="col"><button id="btnDeleteView" type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#delete-confirmation-modal">Delete</button></div>
+            }
+
+            }
+            <div class="col">
+                <div class="row row-cols-auto justify-content-end isNotEditable" style="padding-right: 20px">
+                    <div class="col"><button id="btnCancelView" type="button" class="btn btn-sm btn-secondary">Back</button></div>
+                </div>
+
+                <div class="row row-cols-auto justify-content-end isEditable g-1" style="display:none; padding-right: 20px">
+                    <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-back-confirmation-modal">Back</button></div>
+                    <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+@*formula modal*@
+<div class="modal fade" id="SetValueModal" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;">Set Value</h5>
+            </div>
+            <hr />
+
+            <input type="hidden" id="current_count" />
+            <input type="hidden" id="current_open_by" />
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+                    <div class="row align-items-center">
+                        <div class="col-sm-2">
+                            <p class="text-muted">
+                                <span>Value Type</span>
+                                <span class="text-danger">*</span>
+                                <span style="float:right">:</span>
+                            </p>
+                        </div>
+                        <div class="col-sm-5">
+                            <input type="radio" id="setvalNumeric" name="valueType" value="Numeric" /> Numeric &nbsp;&nbsp;
+                            <input type="radio" id="setvalText" name="valueType" value="Text" /> Text &nbsp;&nbsp;
+                            <input type="radio" id="setvalRange" name="valueType" value="Range" /> Range
+                        </div>
+                    </div>
+                    <div id="valnumeric">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2">
+                                <p class="text-muted">Symbol <span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-5">
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnsym1" value="<=" onclick='varClickSymbol("<="); return false;'><=</button>
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnsym2" value=">=" onclick='varClickSymbol(">="); return false;'>>=</button>
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnsym3" value="<" onclick='varClickSymbol("<"); return false;'><</button>
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnsym4" value=">" onclick='varClickSymbol(">"); return false;'>></button>
+                                @*<button type="button" class="btn btn-outline-dark varinput" id="btnsym5" value="+-" onclick='varClickSymbol("+-"); return false;'>+-</button>*@
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnsym6" value="/" onclick='varClickSymbol("/"); return false;'>/</button>
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnsym7" value="." onclick='varClickNumber("."); return false;'>.</button>
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnsym7" value="-" onclick='varClickSymbol("-"); return false;'>-</button>
+                            </div>
+                        </div>
+
+                        <div class="row align-items-center">
+                            <div class="col-sm-2">
+                                <p class="text-muted">Number <span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-7">
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnnum1" value="1" onclick='varClickNumber("1"); return false;'>1</button>
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnnum2" value="2" onclick='varClickNumber("2"); return false;'>2</button>
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnnum3" value="3" onclick='varClickNumber("3"); return false;'>3</button>
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnnum4" value="4" onclick='varClickNumber("4"); return false;'>4</button>
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnnum5" value="5" onclick='varClickNumber("5"); return false;'>5</button>
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnnum6" value="6" onclick='varClickNumber("6"); return false;'>6</button>
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnnum7" value="7" onclick='varClickNumber("7"); return false;'>7</button>
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnnum8" value="8" onclick='varClickNumber("8"); return false;'>8</button>
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnnum9" value="9" onclick='varClickNumber("9"); return false;'>9</button>
+                                <button type="button" class="btn btn-outline-dark varinput" id="btnnum0" value="0" onclick='varClickNumber("0"); return false;'>0</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="valtext">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2">
+                                <p class="text-muted">Text value <span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-6">
+                                <input class="form-control" id="txtsetvaltypetext" type="text" onchange="varChangeText();" maxlength="200"/>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="valrange">
+                        <div class="row align-items-center">
+                            <div class="col-sm-2">
+                                <p class="text-muted">Minimum <span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-2">
+                                <input class="form-control" id="txtsetvalmin" type="number" onchange="varChangeRange();" />
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row align-items-center">
+                            <div class="col-sm-2">
+                                <p class="text-muted">Maximum <span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-2">
+                                <input class="form-control" id="txtsetvalmax" type="number" onchange="varChangeRange();" />
+                            </div>
+                        </div>
+                        <br />
+                    </div>
+                    <div class="row mt-2 align-items-center">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Set value preview <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            <input class="form-control modalform required-field-modal" id="txtSetValuePreview" type="text" maxlength="200" disabled />
+                        </div>
+                        <div class="col-sm-3">
+                            <button type="button" class="btn btn-outline-dark varerase" id="btnerase" value="Backspace" onclick='varClickErase(); return false;'>Backspace</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" id="btnResetModal" class="btn btn-sm btn-secondary" style="margin-right: auto;">Reset</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" id="btnsubmitcal" class="btn btn-sm btn-primary">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+@section scripts {
+
+<script>
+        var idh = '@Model.MM_MATERIAL_H_ID';
+
+        var ListSupplier = @Html.Raw(ViewBag.SerializedSupplierName);
+        var ListUom = @Html.Raw(ViewBag.SerializedUOM);
+
+        var opt = '<option value= "" selected>Not Applicable</option>';
+        if (ListUom.length > 0) {
+            ListUom.forEach(row => {
+                opt = '<option value="' + row.Value + '">' + row.Text + '</option>' + opt;
+            });
+        }
+
+    $(document).ready(function () {
+        var listingURL = '/COA_MM_MATERIAL/COA_MM_MATERIAL_LST';
+
+
+        checkboxChecking();
+        if ('@Model.SUPPMatSpecList.Count' == '0') {
+            populatesupplier(1);
+            $("#suppliercount").val("1");
+        }
+
+        populateUOM();
+        //SUBMIT FOR MODAL FORMULA
+
+        $("#btnsubmitcal").click(function () {
+            const inputElement = document.getElementById('txtSetValuePreview');
+
+            if (!(inputElement.classList.contains('is-invalid'))) {
+                var count = $("#current_count").val();
+                var by = $("#current_open_by").val();
+                var tr = $('#item-table tbody').find('tr').eq(count);
+                var trtpm = $('#item-table tbody').find('tr').eq(count);
+                var supplier = false;
+                var pass = "Y";
+
+                if (by.includes("btnSuppSetVal")) {
+                    var suppcnt = by.replace(" ", "").split("_")[1];
+                    tr = $('#tblitemsupp_' + suppcnt + ' tbody').find('tr').eq(count);
+                    supplier = true;
+                }
+
+                var td = $(tr).find('td').eq(3);
+                var inp = $(td).find('input[type="text"]')
+                var valtype = $(tr).find('td:eq(5) input[type="text"]');
+                var formula = $("#txtSetValuePreview").val().trim();
+                var tpmformula = $(trtpm).find("td:eq(3) input[type='text']").val().trim();
+
+                const valueTypes = document.querySelectorAll('input[name="valueType"]');
+                let selectedValue = null;
+
+                valueTypes.forEach(radioButton => {
+                    if (radioButton.checked) {
+                        selectedValue = radioButton.value;
+                    }
+                });
+
+                if (supplier) {
+                    pass = compareFormulas(tpmformula, formula, selectedValue);
+                }
+                if (pass == "Y") {
+                    if ($('.required-field-modal').hasClass('is-invalid')) {
+                        pass = $('.invalid-feedback').text().trim();
+                        alert(pass);
+                    } else {
+                        $(inp).val(formula);
+                        $(valtype).val(selectedValue);
+                        $("#txtsetvalmin").val('');
+                        $("#txtsetvalmax").val('');
+                        $("#txtsetvaltypetext").val('');
+                        $("#txtSetValuePreview").val('');
+                        $("#SetValueModal").modal("hide");
+                    }
+                } else {
+                    alert(pass);
+                }
+            }
+
+        });
+
+        //button + supplier
+        $("#btnsupplierplus").click(function () {
+            var orisuppcnt = $("#suppliercount").val();
+            var suppcnt = $("#suppliercount").val();
+            if (!isNaN(parseInt(suppcnt))) {
+                suppcnt = parseInt(suppcnt) + 1
+            } else {
+                suppcnt = 1;
+            }
+
+            var $navbartoinsert = $("#nav-tab_supplier_" + orisuppcnt);
+            var currbtntoclick = "nav-tab_supplier_" + suppcnt;
+            var newnav = '<button class="nav-link" id="nav-tab_supplier_' + suppcnt + '" data-bs-toggle="tab" data-bs-target="#nav-supplier_' + suppcnt + '" type="button" role="tab" aria-controls="nav-supplier_' + suppcnt + '" aria-selected="true">Supplier ' + suppcnt
+                + '&nbsp;<i class="fas fa-close dark-grey" id="close_' + suppcnt + '" onclick="DeleteSupplierTab(this);"></i>'
+                + '</button>';
+            var $divsupplier = $("#nav-supplier_" + orisuppcnt);
+
+            var currdivtopopulate = "nav-supplier_" + suppcnt;
+            var newdivsupplier = '<div class="tab-pane fade" id="nav-supplier_' + suppcnt + '" role="tabpanel" aria-labelledby="nav-tab_supplier_' + suppcnt + '" tabindex="0">' +
+                '<div class="row align-items-baseline">' +
+                '<div class="col-sm-2">' +
+                '<p class="text-muted">' +
+                '<span>Supplier Name </span>' +
+                '<span class="text-danger">*</span>' +
+                '<span style="float:right">:</span>' +
+                '</p>' +
+                '</div>' +
+                '<div class="col-sm-4">' +
+                '<select class="ddlSupplier ddloption form-control form-select" id="ddlSupplier' + suppcnt + '" onChange="ChangeSupplier(this);">' +
+                '<option value=" ">Select Supplier</option>' +
+                '</select>' +
+                '</div>' +
+                '<div class="col-sm-2">' +
+                '<p class="text-muted">' +
+                '<span>Supplier Material Name</span>' +
+                '<span class="text-danger">*</span>' +
+                '<span style="float:right">:</span>' +
+                '</p>' +
+                '</div>' +
+                '<div class="col-sm-4">' +
+                '<input type="text" class="form-control txtSuppMatName" id="txtSuppMatName_' + suppcnt + '" />' +
+                '</div>' +
+                '</div> <br>' +
+                '<div id="divitemtblsupp_' + suppcnt + '"></div><br>' +
+                '</div>';
+
+            if (suppcnt == '1') {
+                $(newnav).insertBefore($('#btnsupplierplus'));
+                $(newdivsupplier).insertAfter($('#dumdum'));
+            } else {
+                $(newnav).insertAfter($navbartoinsert);
+                $(newdivsupplier).insertAfter($divsupplier);
+            }
+
+            $("#suppliercount").val(suppcnt);
+
+            if (suppcnt >= 10) {
+                $("#btnsupplierplus").hide();
+            } else {
+                $("#btnsupplierplus").show();
+            }
+
+            populatesupplier(suppcnt);
+            $('#' + currbtntoclick).click();
+            console.log($('#' + currbtntoclick))
+
+        })
+
+        //SUBMIT
+        $('#btnConfirmSubmit').on('click', function () {
+            $('.invalid-feedback').remove();
+            $('.is-invalid').removeClass('is-invalid');
+
+            var cont = true;
+            var message = "";
+
+            if (cont) {
+
+                var TPMModel = new Array();
+                var SUPPModel = new Array();
+
+                var model = {
+                    MM_MATERIAL_H_ID: idh,
+                    MATERIAL_NAME: '@Model.MATERIAL_NAME',
+                    MATERIAL_ABBR: '@Model.MATERIAL_ABBR',
+                    MATERIAL_CODE: '@Model.MATERIAL_CODE',
+                    TPM_CODE: '@Model.TPM_CODE',
+                    RECORD_TYP: '3',
+                };
+
+                $("#item-table tbody tr").each(function (row, tr) {
+                    //-------------- 0 ID, 1 CHECKBOX, 2 TPMSPECNAME , 3 TPM SEPC VAL, 4 TPM SPEC UOM
+
+                    var fTPMSPECNAME = $(tr).find("td:eq(2) input[type='text']").val().trim();
+                    var fTPMSPECVAL = $(tr).find("td:eq(3) input[type='text']").val().trim();
+                    var fTPMSPECTYPE = $(tr).find("td:eq(5) input[type='text']").val().trim();
+                    var fTPMSPECUOM = $(tr).find("td:eq(4) select").val().trim();
+
+                    if (fTPMSPECNAME == "") {
+                        cont = false;
+                        message = "Items cannot be empty.";
+                    }
+
+                    TPMModel.push({
+                        TPM_SPEC_NAME: fTPMSPECNAME,
+                        TPM_SPEC_VALUE: fTPMSPECVAL,
+                        TPM_SPEC_TYPE: fTPMSPECTYPE,
+                        TPM_SPEC_UOM: fTPMSPECUOM
+                    });
+                });
+
+                if (cont) {
+                    var cntsupp = 0;
+                    $(".tblitemsupp").each(function (value, tbl) {
+                        cntsupp = cntsupp + 1;
+                        var tblid = $(tbl).attr("id");
+                        var allitem = "";
+                        $("#" + tblid + " tbody tr").each(function (valuetr, tr) {
+                            //---------0 ROWID, 1 TPMNAME TEXT, 2 SUPP NAME INPUT, 3, 4
+                            var currsuppcnt = tblid.replace("tblitemsupp_", "");
+                            var ddlorNot = $("#ddlSupplier" + currsuppcnt).length > 0 ? true : false;
+                            var fSUPPNAMEID = "";
+                            if (ddlorNot) {
+                                fSUPPNAMEID = $("#ddlSupplier" + currsuppcnt).val().trim();
+                            } else {
+                                fSUPPNAMEID = $("#txtSuppID_" + currsuppcnt).val().trim();
+                            }
+                            var fSUPPMATNAME = $("#txtSuppMatName_" + currsuppcnt).val().trim();
+                            if (fSUPPMATNAME == "") {
+                                cont = false;
+                                message = "Please insert Supplier Material Name";
+                            }
+
+                            if (fSUPPNAMEID != "") {
+                                var fTPMSPECNAME = $(tr).find('td').eq(1).text().trim();
+                                var fSUPPSPECNAME = $(tr).find("td:eq(2) input[type='text']").val().trim();
+                                var fSUPPSPECVAL = $(tr).find("td:eq(3) input[type='text']").val().trim();
+                                var fSUPPSPECTYPE = $(tr).find("td:eq(5) input[type='text']").val().trim();
+                                var fSUPPSPECUOM = $(tr).find("td:eq(4) select").val().trim();
+                                allitem = allitem + fSUPPSPECNAME;
+                                SUPPModel.push({
+                                    COUNT_SUPPLIER: cntsupp,
+                                    MM_SUPPLIER_H_ID: fSUPPNAMEID,
+                                    SUPP_MATERIAL_NAME: fSUPPMATNAME,
+                                    TPM_SPEC_NAME: fTPMSPECNAME,
+                                    SUPP_SPEC_NAME: fSUPPSPECNAME,
+                                    SUPP_SPEC_VALUE: fSUPPSPECVAL,
+                                    SUPP_SPEC_TYPE: fSUPPSPECTYPE,
+                                    SUPP_SPEC_UOM: fSUPPSPECUOM
+                                });
+                            } else {
+                                cont = false;
+                                message = "Please select Supplier";
+                            }
+                        });
+
+                        if (allitem.trim() == "") {
+                            cont = false;
+                            message = "Please insert atleast 1 Supplier Inspection item for each supplier.";
+                        }
+                    });
+                }
+
+                console.log(model)
+                console.log(TPMModel)
+                console.log(SUPPModel)
+                if (cont) {
+                    $.ajax({
+                        url: '@Url.Action("InsertUpdateCOAMaterial", "COA_MM_MATERIAL")',
+                        type: 'POST',
+                        datatype: 'application/json',
+                        contentType: 'application/json',
+                        //data: JSON.stringify({ m: model, allbagandprop: allbagandprop, bagnoappcolmodel: bagnoappcolmodel, bagnoapprowmodel: bagnoapprowmodel, action: action }),
+                        data: JSON.stringify({ m: model, TPMModel: TPMModel, SUPPModel: SUPPModel, action: "Save" }),
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        },
+                        complete: function () {
+                            $("#loading").fadeOut();
+                        }
+                    });
+                }
+
+            }
+            if (!(cont)) {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+
+        });
+
+        // BUTTON DELETE
+        $('#btnConfirmDel').on('click', function () {
+
+            var lstid = [];
+            lstid.push(idh)
+
+            $.ajax({
+                url: "/COA_MM_MATERIAL/deleteCOAMaterial",
+                type: 'POST',
+                data: {
+                    lstid: lstid
+                },
+                beforeSend: function () {
+                    loadings();
+                },
+                success: function (response) {
+                    loadings(false);
+                    if (response.success) {
+                        displayToast("s", "Data successfully deleted");
+
+                        setTimeout(function () {
+                            window.location.href = listingURL;
+                        }, 2000);
+
+                    } else {
+                        displayToast("error", response.message)
+                    }
+                },
+                error: function () {
+                    displayToast("error", response.responseText)
+                }
+            });
+
+        });
+
+        //BUTTON CANCEL/BACK
+        $('#btnCancelView').on('click', function () {
+            var del = '0';
+            if (@Model.RECORD_TYP != null && @Model.RECORD_TYP  == '5') {
+                del = '1';
+            }
+            window.location.href = listingURL + '?Deleted=' + del;
+        });
+
+        $('#btnBackEdit').on('click', function () {
+            window.location.href = listingURL;
+        });
+
+        $("#btnResetModal").on('click', function () {
+            $("#txtsetvalmin").val('');
+            $("#txtsetvalmax").val('');
+            $("#txtsetvaltypetext").val('');
+            $("#txtSetValuePreview").val('');
+        });
+
+    });
+
+</script>
+
+    @*TPM Tab*@
+<script>
+        function addrow() {
+
+            var trcount = $("#item-table tbody tr").length;
+            var tbody = $("#item-table tbody");
+            var td = $("<td>");
+            var row = $("<tr>");
+
+            td = $("<td class='hidden'>").html(trcount);
+            row.append(td);
+            td = $("<td class='text-center'>").html('<input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk" onClick="handleCheckboxClick(this)">');
+            row.append(td);
+            td = $("<td>").html('<input type="text" class="form-control" id="items" onChange="tpmTableChange(\'EDITNAME\');"/>');
+            row.append(td);
+            td = $("<td>").html('<div class="input-group">' +
+                '<input type="text" class="form-control" id="itemsval" disabled/>' +
+                '<button type="button" id="btnTPMSetVal" class="btn-info input-group-text tr-input-group fa-solid fa-ellipsis" data-bs-target="#SetValue" title="Set Value" style="margin: 0;" onclick="openSetValue(this);"></button>' +
+                '</div>');
+            row.append(td);
+            //td = $("<td>").html('<input type="text" class="form-control" id="itemsuom" />');
+            td = $("<td>").html('<select class="ddloption form-select form-control ddlTPMUOM" id="ddlTPMUOM_' + trcount + '">' +
+                opt +
+                '</select > ');
+
+            row.append(td);
+            td = $("<td class='hidden'>").html('<input type="text" class="form-control" id="itemstype" disabled/>');
+            row.append(td);
+            td = $("<td>").html('<button type="button" class="btn-info input-group-text tr-input-group fa-solid fa-plus" style="margin: 0;" onclick="addsamerow(this);"></button>');
+            row.append(td);
+
+            tbody.append(row);
+
+            tpmTableChange("ADDROW");
+        }
+
+        function addsamerow(thisbutton) {
+
+            var $this = $(thisbutton);
+            var $parentTR = $this.closest('tr');
+
+            $parentTR.clone().insertAfter($parentTR);
+
+            //-------for supptable
+            var rowid = $parentTR.find('td').eq(0).text();
+            $(".tblitemsupp").each(function (value, tbl) {
+                var tblid = $(tbl).attr("id");
+                var $trtoclone = $("#" + tblid + " tbody tr:eq(" + rowid + ")");
+                $trtoclone.clone().insertAfter($trtoclone);
+            });
+            //-----------
+            populateitemid();
+        }
+
+        $('#btnRemove').on('click', function () {
+            $('#item-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                var tablerow = $('#item-count').val();
+                var row = $(ele).closest('tr');
+                //var itemStatInput = row.find('input[id^="item_stat_"]');
+
+                var rowid = $(row).find('td').eq(0).text();
+                $(".tblitemsupp").each(function (value, tbl) {
+                    var tblid = $(tbl).attr("id");
+                    $("#" + tblid + " tbody tr").each(function (valuetr, tr) {
+                        //check if td text = rowid if yes only delete
+                        var crid = $(tr).find("td:eq(0)").text();
+                        if (crid == rowid) {
+                            tr.remove();
+                        }
+                    });
+                });
+
+                row.remove();
+            });
+            populateitemid();
+
+            checkboxChecking();
+        });
+
+        function populateitemid() {
+            var cnt = 0;
+            $('#item-table tbody tr').each(function (x, tr) {
+                $(tr).find('td').eq(0).text(cnt);
+                cnt = cnt + 1;
+            });
+            $(".tblitemsupp").each(function (value, tbl) {
+                var tblid = $(tbl).attr("id");
+                var cnt2 = 0;
+                $('#' + tblid + ' tbody tr').each(function (x, tr) {
+                    $(tr).find('td').eq(0).text(cnt2);
+                    cnt2 = cnt2 + 1;
+                });
+            });
+        }
+
+        function tpmTableChange(type) {
+            if (type == "EDITNAME") {
+
+                $('#item-table tbody tr').each(function (x, tr) {
+                    var rowid = $(tr).find('td').eq(0).text();
+                    var tpmitems = $(tr).find("td:eq(2) input[type='text']").val();
+                    $(".tblitemsupp").each(function (value, tbl) {
+                        var tblid = $(tbl).attr("id");
+                        var trchg = $("#" + tblid + " tbody tr:eq(" + rowid + ")");
+                        $(trchg).find('td').eq(1).text(tpmitems);
+                        $(trchg).find("td:eq(2) input[type='text']").val(tpmitems);
+                    });
+                });
+            }
+
+            if (type == "ADDROW") {
+                var idtrtocopy = $('#item-table tbody tr').length;
+                var tr = $('#item-table tbody tr:eq(' + (idtrtocopy - 1) + ')');
+                $(".tblitemsupp").each(function (value, tbl) {
+                    var tblid = $(tbl).attr("id");
+                    if ($(tbl).length != idtrtocopy) {
+                        var suppcnt = tblid.replace("tblitemsupp","").replace("_","")
+                        var tbody = $("#" + tblid + " tbody");
+                        var rowtr = $("<tr>");
+                        var td = $("<td>");
+                        var tdrownum, tdtpmitem = "";
+
+                        rowtr = $("<tr>");
+                        tdrownum = idtrtocopy - 1;
+                        td = $("<td class='hidden'>").html(tdrownum);
+                        rowtr.append(td);
+
+                        tdtpmitem = $(tr).find("td:eq(2) input[type='text']").val();
+                        td = $("<td>").html(tdtpmitem);
+                        rowtr.append(td);
+
+                        tdsuppitem = tdtpmitem;
+                        td = $("<td>").html('<input type="text" class="form-control txtSuppInspItem" id="txtSuppInspItem_' + tdrownum + '" />');
+                        rowtr.append(td);
+
+                        td = $("<td>").html('<div class="input-group">' +
+                            '<input type="text" class="form-control" id="txtSuppSetVal_' + tdrownum + '" disabled/>' +
+                            '<button type="button" id="btnSuppSetVal_' + suppcnt + '_' + tdrownum + '" class="btnSuppSetVal btn-info input-group-text tr-input-group fa-solid fa-ellipsis" data-bs-target="#SetValue" title="Set Value" style="margin: 0;" onclick="openSetValue(this);"></button>' +
+                            '</div>');
+                        rowtr.append(td);
+
+                        //td = $("<td>").html('<input type="text" class="form-control txtSuppSetUOM" id="txtSuppUOM_' + tdrownum + '" />');
+                        td = $("<td>").html('<select class="ddloption form-select form-control ddlSuppUOM" id="ddlSuppUOM_' + tdrownum + '">' +
+                            opt +
+                            '</select > ');
+                        rowtr.append(td);
+
+                        td = $("<td class='hidden'>").html('<input type="text" class="form-control" id="txtSuppSetType_' + tdrownum + '" disabled/>');
+                        rowtr.append(td);
+                        tbody.append(rowtr);
+                    }
+                });
+            }
+        }
+</script>
+
+    @*//function for FORMULA MODAL*@
+<script>
+        // show formula modal
+        function openSetValue(x) {
+            var currtr = x.closest('tr');
+            var count = $(currtr).find('td').eq(0).text();
+            var openby = $(x).attr("id")
+            $("#current_count").val(count);
+            $("#current_open_by").val(openby);
+
+            $("#SetValueModal").modal("show");
+            //document.getElementById("setvalNumeric").checked = true;
+            //$('#valnumeric').show();
+            //$('#valtext').hide();
+            //$('#valrange').hide();
+            //$("#btnerase").show();
+
+            var tr = $('#item-table tbody').find('tr').eq(count);
+
+            if (openby.includes("btnSuppSetVal")) {
+                var suppcnt = openby.replace(" ", "").split("_")[1];
+                tr = $('#tblitemsupp_' + suppcnt + ' tbody').find('tr').eq(count);
+            }
+
+            var td = $(tr).find('td').eq(3);
+            var inp = $(td).find('input[type="text"]')
+
+            $("#txtSetValuePreview").val($(inp).val());
+
+            // for set value type
+            var tdtype = $(tr).find('td').eq(5);
+            var inptype = $(tdtype).find('input[type="text"]')
+            var type = $(inptype).val()
+
+            if (type == "Numeric") {
+                $("#setvalNumeric").prop("checked", true);
+                $('#valnumeric').show();
+                $("#btnerase").show();
+                $('#valtext').hide();
+                $('#valrange').hide();
+            } else if (type == "Text") {
+                $("#setvalText").prop("checked", true);
+                $('#valnumeric').hide();
+                $('#valtext').show();
+                $('#valrange').hide();
+                $("#btnerase").hide();
+            } else if (type == "Range") {
+                $("#setvalRange").prop("checked", true);
+                $('#valnumeric').hide();
+                $('#valtext').hide();
+                $('#valrange').show();
+                $("#btnerase").hide();
+            } else {
+                //$('#valnumeric').hide();
+                //$('#valtext').hide();
+                //$('#valrange').hide();
+                //$("#btnerase").hide();
+                $("#setvalNumeric").prop("checked", true);
+                $('#valnumeric').show();
+                $("#btnerase").show();
+                $('#valtext').hide();
+                $('#valrange').hide();
+            }
+
+            
+        }
+
+        $('#setvalNumeric, #setvalText, #setvalRange').on('change', function () {
+
+            $("#txtSetValuePreview").val("");
+            if (this.value == "Numeric") {
+                $('#valnumeric').show();
+                $("#btnerase").show();
+                $('#valtext').hide();
+                $('#valrange').hide();
+            } else if (this.value == "Text") {
+                $('#valnumeric').hide();
+                $('#valtext').show();
+                $('#valrange').hide();
+                $("#btnerase").hide();
+            } else if (this.value == "Range") {
+                $('#valnumeric').hide();
+                $('#valtext').hide();
+                $('#valrange').show();
+                $("#btnerase").hide();
+            } else {
+                $('#valnumeric').hide();
+                $('#valtext').hide();
+                $('#valrange').hide();
+                $("#btnerase").hide();
+            }
+        });
+
+        function varClickSymbol(text) {
+            var txt = $('#txtSetValuePreview').val();
+            var trimmedValue = $.trim(txt);
+            $('#txtSetValuePreview').val(trimmedValue + " " + text);
+        }
+
+        function varClickNumber(num) {
+            $('.invalid-feedback').remove();
+            $('.is-invalid').removeClass('is-invalid');
+            var txt = $('#txtSetValuePreview').val();
+            $('#txtSetValuePreview').focus();
+            var trimmedValue = $.trim(txt);
+
+            if (!isNaN(trimmedValue.slice(-1)) || trimmedValue.slice(-1) === '.') {
+                $('#txtSetValuePreview').val(trimmedValue + num);
+            } else {
+                $('#txtSetValuePreview').val(trimmedValue + ' ' + num);
+            }
+            txt = $('#txtSetValuePreview').val();
+            $('#txtSetValuePreview').val($.trim(txt).substring(0, 200));
+        }
+
+        function varClickErase() {
+            $('.invalid-feedback').remove();
+            $('.is-invalid').removeClass('is-invalid');
+            var txt = $('#txtSetValuePreview').val();
+            $('#txtSetValuePreview').focus();
+
+            if (txt.length > 0) {
+                var trimmedValue = $.trim(txt);
+                var parts = trimmedValue.split(" ");
+                var lastPart = parts[parts.length - 1];
+
+                if (/^var[1-6]$/.test(lastPart)) {
+                    // If the last part is a variable (e.g., var1, var2), remove the entire variable
+                    parts.pop();
+                    $('#txtSetValuePreview').val(parts.join(" "));
+                } else {
+                    // Otherwise, just remove the last character
+                    $('#txtSetValuePreview').val(trimmedValue.slice(0, -1));
+                }
+            }
+        }
+
+        function varChangeText() {
+            $('.invalid-feedback').remove();
+            $('.is-invalid').removeClass('is-invalid');
+            var txtprev = $('#txtSetValuePreview');
+            var txt = $('#txtsetvaltypetext').val();
+            var trimmedValue = $.trim(txt).substring(0, 200);
+            $('#txtSetValuePreview').val(trimmedValue);
+        }
+
+        function varChangeRange() {
+            var txtprev = $('#txtSetValuePreview');
+            var txtmin = $('#txtsetvalmin').val();
+            var txtmax = $('#txtsetvalmax').val();
+            var concat = "";
+            $('.invalid-feedback').remove();
+            $('.is-invalid').removeClass('is-invalid');
+            if ((txtmin != "" && txtmax != "") && (parseFloat(txtmax) > parseFloat(txtmin))) {
+                concat = $.trim(txtmin) + " ~ " + $.trim(txtmax);
+            } else {
+                $('.required-field-modal').each(function (e) {
+                    $(this).addClass('is-invalid');
+                    inputCustomError(this, "Maximum value need to be more than minimum value");
+                });
+                concat = "";
+            }
+
+            $('#txtSetValuePreview').val(concat);
+        }
+
+</script>
+
+    @*For supplier tab *@
+<script>
+        //populate supplier ddl
+        function populatesupplier(suppcnt) {
+
+            var opt = '';
+            if (ListSupplier.length > 0) {
+                ListSupplier.forEach(row => {
+                    opt = '<option value="' + row.Value + '">' + row.Text + '</option>' + opt;
+                });
+            }
+
+            document.getElementById("ddlSupplier" + suppcnt).innerHTML += opt;
+
+        }
+
+        function ChangeSupplier(x) {
+            var ddlval = $(x).val().trim();
+            var ddlid = $(x).attr("id");
+            var suppcnt = ddlid.replace("ddlSupplier", "");
+            var divhtml = $("#divitemtblsupp_" + suppcnt).text().trim();
+
+            if (ddlval != "") {
+                if (divhtml == "") {
+                    $("#txtSuppMatName_" + suppcnt).val($("#txtMatName").val());
+                    if ($('#item-table tbody tr').length > 0) {
+                        var divuse = $("#divitemtblsupp_" + suppcnt);
+                        var table = $("<table class='detailTable tblitemsupp'  id='tblitemsupp_" + suppcnt + "' style='width:100%;'>");
+                        var thead = $("<thead>");
+                        var rowth = $("<tr class='toolbar-row'>");
+                        var rowtr = $("<tr>");
+                        var td = $("<td>");
+                        var th = $("<th class='hidden'>").html('ROWID');
+                        rowth.append(th);
+                        var th = $("<th>").html('TPM Inspection Item');
+                        rowth.append(th);
+                        th = $("<th>").html('Supplier Inspection Item');
+                        rowth.append(th);
+                        th = $("<th>").html('Set Value');
+                        rowth.append(th);
+                        th = $("<th>").html('UOM');
+                        rowth.append(th);
+                        th = $("<th class='hidden'>").html('TYPE');
+                        rowth.append(th);
+                        thead.append(rowth);
+                        table.append(thead);
+
+                        var tbody = $("<tbody>");
+                        var tdrownum, tdtpmitem = "";
+                        $('#item-table tbody tr').each(function (value, tr) {
+                            rowtr = $("<tr>");
+                            tdrownum = $(tr).find("td:eq(0)").text().trim();
+                            td = $("<td class='hidden'>").html(tdrownum);
+                            rowtr.append(td);
+
+                            tdtpmitem = $(tr).find("td:eq(2) input[type='text']").val();
+                            td = $("<td>").html(tdtpmitem);
+                            rowtr.append(td);
+
+                            tdsuppitem = tdtpmitem;
+                            td = $("<td>").html('<input type="text" class="form-control txtSuppInspItem" id="txtSuppInspItem_"' + tdrownum + ' value="' + tdtpmitem +'" />');
+                            rowtr.append(td);
+
+                            td = $("<td>").html('<div class="input-group">' +
+                                '<input type="text" class="form-control" id="txtSuppSetVal_' + tdrownum + '" disabled/>' +
+                                '<button type="button" id="btnSuppSetVal_' + suppcnt + '_' + tdrownum +'" class="btnSuppSetVal btn-info input-group-text tr-input-group fa-solid fa-ellipsis" data-bs-target="#SetValue" title="Set Value" style="margin: 0;" onclick="openSetValue(this);"></button>' +
+                                '</div>');
+                            rowtr.append(td);
+
+                            //td = $("<td>").html('<input type="text" class="form-control txtSuppUOM" id="txtSuppUOM_' + tdrownum + '"/>');
+                            td = $("<td>").html('<select class="ddloption form-select form-control ddlSuppUOM" id="ddlSuppUOM_' + tdrownum + '">' +
+                                opt +
+                                '</select > ');
+                            rowtr.append(td);
+
+                            td = $("<td class='hidden'>").html('<input type="text" class="form-control" id="txtSuppSetType_' + tdrownum + '" disabled/>');
+                            rowtr.append(td);
+                            tbody.append(rowtr);
+                        });
+                        tbody.append(rowtr);
+                        table.append(tbody);
+                        divuse.append(table);
+                    }
+                }
+            } else {
+                $("#divitemtblsupp_" + suppcnt).html('');
+            }
+
+        }
+
+        function DeleteSupplierTab(x) {
+            if (confirm("Are you sure you want to delete this supplier?")) {
+                var btnid = $(x).attr("id");
+                var currcnt = btnid.replace("close_", "");
+                const button = document.getElementById('nav-tab_supplier_' + currcnt);
+                const div = document.getElementById('nav-supplier_' + currcnt);
+
+                if (button) {
+                    button.remove(); // Removes the button from the DOM
+                }
+
+                if (div) {
+                    div.remove(); // Removes the button from the DOM
+                }
+
+                var orisuppcnt = $("#suppliercount").val();
+                var newsuppcnt = parseInt(orisuppcnt) - 1;
+                $("#suppliercount").val(newsuppcnt)
+                if (newsuppcnt == '0') {
+                    $("#btnsupplierplus").click();
+                }
+                populateid(currcnt);
+            }
+        }
+
+        function populateid(delid) {
+            const Listalpha = [
+                { key: 'A', value: '1' },
+                { key: 'B', value: '2' },
+                { key: 'C', value: '3' },
+                { key: 'D', value: '4' },
+                { key: 'E', value: '5' },
+                { key: 'F', value: '6' },
+                { key: 'G', value: '7' },
+                { key: 'H', value: '8' },
+                { key: 'I', value: '9' },
+                { key: 'J', value: '10' },
+                { key: 'K', value: '11' },
+                { key: 'L', value: '12' },
+                { key: 'M', value: '13' },
+                { key: 'N', value: '14' },
+                { key: 'O', value: '15' },
+                { key: 'P', value: '16' },
+                { key: 'Q', value: '17' },
+                { key: 'R', value: '18' },
+                { key: 'S', value: '19' },
+                { key: 'T', value: '20' }
+            ];
+
+            var btntoclick = "";
+            const listelementid = ["nav-supplier_", "txtSuppName_", "txtSuppID_", "divitemtblsupp_", "tblitemsupp_", "ddlSupplier", "txtSuppMatName_"];
+            for (let runi = 1; runi <= 2; runi++) {
+
+                $("#nav-allsup button.nav-link").each(function (value, x) {
+                    console.log("id this = " + $(x).attr("id"));
+                    var oldcount = $(x).attr("id").replace("nav-tab_supplier_", "");
+
+                    var i = oldcount;
+                    if (parseInt(oldcount) > parseInt(delid)) {
+                        i = parseInt(oldcount) - 1;
+                    }
+
+                    var newcount = "KK";
+                    if (runi == 1) {
+                        const findrow = Listalpha.filter(item => item.value == i)[0];
+                        if (findrow) {
+                            newcount = findrow.key;
+                        }
+                        var text = $(x).html().trim();
+                        var newtext = text.replace("Supplier " + oldcount, "Supplier " + i);
+                        $(x).html(newtext);
+                    } else {
+                        const findrow = Listalpha.filter(item => item.key == i)[0];
+                        if (findrow) {
+                            newcount = findrow.value;
+                        }
+
+                    }
+
+                    //region nav button
+                    const element = document.getElementById($(x).attr("id"));
+                    var idname = '#' + $(x).attr("id");
+                    if (element) {
+                        //element.id = 'nav-tab_supplier_' + i;
+                        $(idname).attr('data-bs-target', "#nav-supplier_" + newcount);
+                        $(idname).attr('aria-controls', "nav-supplier_" + newcount);
+                        $(idname).attr('id', 'nav-tab_supplier_' + newcount);
+                        if (newcount == "1") {
+                            btntoclick = 'nav-tab_supplier_' + newcount;
+                        }
+                    }
+
+                    for (const elmid of listelementid) {
+                        const elem = document.getElementById(elmid + oldcount);
+                        var idnam = '#' + elmid + oldcount;
+                        if (elem) {
+                            if (elmid == 'nav-supplier_') {
+                                $(idnam).attr('aria-labelledby', "nav-tab_supplier_" + newcount);
+                            }
+                            $(idnam).attr('id', elmid + newcount);
+                        }
+                    }
+
+                    $("#tblitemsupp_" + i + " .btnSuppSetVal").each(function (value, j) {
+                        //btnSuppSetVal_2 _1
+                        const elem = document.getElementById($(j).attr("id"));
+                        var oldid = $(j).attr("id");
+                        if (oldid.includes("btnSuppSetVal")) {
+                            var idnam = '#' + $(j).attr("id");
+                            var newid = oldid.split("_")[0] + "_" + newcount + " _" + oldid.split("_")[2];
+                            if (elem) {
+                                //element.id = 'nav-tab_supplier_' + i;
+                                $(idnam).attr('id', newid);
+                            }
+                        }
+                    });
+                });
+            }
+
+            $("#" + btntoclick).click();
+
+        }
+
+        function populateUOM() {
+            //tpm first
+            $(".ddlTPMUOM").each(function (value, j) {
+                var elementid = $(j).attr("id");
+                var elementname = $(j).attr("name");
+                document.getElementById(elementid).innerHTML += opt;
+                const findrow = ListUom.filter(item => item.Text === elementname)[0];
+
+                if (findrow) {
+                    $("#" + elementid).val(findrow.Value);
+                }
+            });
+
+
+            $(".tblitemsupp").each(function (value, tbl) {
+                var tblid = $(tbl).attr("id");
+                $("#" + tblid + " tbody tr").each(function (valuetr, tr) {
+                    var fSUPPSPECUOM = $(tr).find("td:eq(4) select");
+                    var elementid = $(fSUPPSPECUOM).attr("id");
+                    var elementname = $(fSUPPSPECUOM).attr("name");
+                    $(tr).find('td:eq(4) #' + elementid).append(opt);
+                    const findrow = ListUom.filter(item => item.Text === elementname)[0];
+
+                    if (findrow) {
+                        $(tr).find('td:eq(4) #' + elementid).val(findrow.Value);
+                    }
+                });
+            });
+        }
+
+</script>
+
+<script>
+    function compareFormulas(tpmvalue, suppvalue, typevalue) {
+        console.log('compare formula');
+        //typevalue = Numeric, Text, Range
+        const arrSymb = ['>=', '<=', '<', '>', '/', '+-'];
+        try {
+            if (tpmvalue == '' || suppvalue == '') {
+                return "Y";
+            } else {
+                var isNumOnly = "N";
+                if (!isNaN(parseFloat(suppvalue))) {
+                    isNumOnly = "Y";
+                }
+
+                if (typevalue == 'Numeric' && isNumOnly == 'Y') {
+                    console.log('numeric');
+                //if (typevalue == 'Text' || (typevalue == 'Numeric' && isNumOnly == 'Y')) {
+                    if (tpmvalue == suppvalue) {
+                        return "Y";
+                    } else {
+                        return "Value does not match with TPM value";
+
+                    }
+                } else {
+                    if (typevalue == 'Range') {
+                        const tpmvalarr = tpmvalue.split("~");
+                        const suppvalarr = suppvalue.split("~");
+                        if (tpmvalarr.length <= 1 || suppvalarr.length <= 1) {
+                            return "For Range type set value, both Supplier and TPM need to use same Range Type set value."
+                        } else {
+                            var tpmmin = tpmvalarr[0];
+                            var tpmmax = tpmvalarr[1];
+
+                            var suppmin = suppvalarr[0];
+                            var suppmax = suppvalarr[1];
+
+                            if (!isNaN(parseFloat(tpmmin)) && !isNaN(parseFloat(tpmmax)) && !isNaN(parseFloat(suppmin)) && !isNaN(parseFloat(suppmax))) {
+                                tpmmin = parseFloat(tpmmin);
+                                tpmmax = parseFloat(tpmmax);
+                                suppmin = parseFloat(suppmin);
+                                suppmax = parseFloat(suppmax);
+
+                                if (suppmin < tpmmin || suppmax > tpmmax) {
+
+                                    return "Supplier Range must be within TPM Range";
+                                } else {
+                                    return "Y";
+                                }
+                            } else {
+                                return "Range can only be between number and number";
+                            }
+                        }
+                    } else {
+                        if (typevalue == 'Numeric') {
+                            if (!(tpmvalue.trim() == suppvalue.trim())) {
+                                var isit = compareSpecifications(tpmvalue, suppvalue);
+                                if (isit) {
+                                    return "Y";
+                                } else {
+                                    return "Supplier value does not go within TPM value";
+                                }
+                            } else {
+                                return "Y";
+                            }
+                        } else {
+                            if (typevalue == 'Text') {
+                                //if (tpmvalue === suppvalue) {
+                                    return "Y";
+                                //} else {
+                                //    return "Supplier value is not the same as TPM value";
+                                //}
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        catch (error) {
+            console.error("Error evaluating formulas:", error);
+            return null; // Indicate an error
+        }
+    }
+</script>
+<script>
+    function isValueAInsideValueB(valueA, valueB) {
+        console.log('here isValueAInsideValueB');
+            try {
+                const parsedA = parseAndEvaluate(valueA);
+                const parsedB = parseAndEvaluate(valueB);
+
+                if (typeof parsedA === 'number' && typeof parsedB === 'object') {
+                    if (parsedB.operator === '>') {
+                        return parsedA > parsedB.value;
+                    } else if (parsedB.operator === '<') {
+                        return parsedA < parsedB.value;
+                    } else if (parsedB.operator === '>=') {
+                        return parsedA >= parsedB.value;
+                    } else if (parsedB.operator === '<=') {
+                        return parsedA <= parsedB.value;
+                    } else if (parsedB.operator === '==') {
+                        return parsedA === parsedB.value;
+                    } else if (parsedB.operator === '!=') {
+                        return parsedA !== parsedB.value;
+                    }
+                } else if (typeof parsedB === 'number' && typeof parsedA === 'object') {
+                    if (parsedA.operator === '>') {
+                        return parsedB > parsedA.value;
+                    } else if (parsedA.operator === '<') {
+                        return parsedB < parsedA.value;
+                    } else if (parsedA.operator === '>=') {
+                        return parsedB >= parsedA.value;
+                    } else if (parsedA.operator === '<=') {
+                        return parsedB <= parsedA.value;
+                    } else if (parsedA.operator === '==') {
+                        return parsedB === parsedA.value;
+                    } else if (parsedA.operator === '!=') {
+                        return parsedB !== parsedA.value;
+                    }
+                } else if (typeof parsedA === 'object' && typeof parsedB === 'object') {
+                    if (parsedA.operator === parsedB.operator) {
+                        if (parsedA.operator === '>' || parsedA.operator === '>=') return parsedA.value >= parsedB.value;
+                        if (parsedA.operator === '<' || parsedA.operator === '<=') return parsedA.value <= parsedB.value;
+                        if (parsedA.operator === '==' || parsedA.operator === '!=') return parsedA.value === parsedB.value;
+                    } else if ((parsedA.operator === '<' && parsedB.operator === '<=') || (parsedA.operator === '>' && parsedB.operator === '>=')) {
+                        return parsedA.value === parsedB.value;
+                    } else if ((parsedA.operator === '<=' && parsedB.operator === '<') || (parsedA.operator === '>=' && parsedB.operator === '>')) {
+                        return false;
+                    }
+                    else return false;
+                }
+                else if (typeof parsedA === 'number' && typeof parsedB === 'number') {
+                    return parsedA === parsedB;
+                }
+
+                return false; // Default case
+            } catch (error) {
+                console.error("Error comparing values:", error);
+                return false;
+            }
+        }
+
+        function parseAndEvaluate(value) {
+            value = value.trim();
+            const operators = ['>=', '<=', '>', '<', '==', '!='];
+            let operator = null;
+
+            for (const op of operators) {
+                if (value.startsWith(op)) {
+                    operator = op;
+                    value = value.substring(op.length).trim();
+                    break;
+                } else if (value.endsWith(op)) {
+                    operator = op;
+                    value = value.substring(0, value.length - op.length).trim();
+                    break;
+                }
+            }
+
+            if (operator) {
+                const num = eval(value); // Evaluate arithmetic expressions
+                if (!isNaN(num)) {
+                    return { operator, value: num };
+                } else {
+                    return NaN;
+                }
+            } else {
+                const num = eval(value);
+                if (!isNaN(num)) {
+                    return num;
+                } else {
+                    return NaN;
+                }
+            }
+        }
+</script>
+<script>
+    function compareSpecifications(mainSpec, supplierSpec) {
+        console.log("Main: " + mainSpec);
+        console.log("Supplier: " + supplierSpec);
+
+        const operators = {
+            '>': (a, b) => a > b,
+            '<': (a, b) => a < b,
+            '>=': (a, b) => a >= b,
+            '<=': (a, b) => a <= b,
+            '+-': (a, b, tolerance) => Math.abs(a - b) <= tolerance,
+            '-': (a, b) => a === b,
+            '/': (a, b) => a === b,
+        };
+
+        function parseSpec(spec) {
+            const regex = /^(>=|<=|>|<|\+-|\/|-)?\s*(\d+(\.\d+)?)\s*(?:([+-])\s*(\d+(\.\d+)?))?$/;
+            const match = spec.match(regex);
+
+            console.log('Match:', match);
+
+            if (!match) return null;
+
+            const operator = match[1] || '-';
+            const value = parseFloat(match[2]);
+            const tolerance = match[5] ? parseFloat(match[5]) : null;
+
+            if (operator === '+-' && tolerance !== null) {
+                return { operator, value, tolerance };
+            }
+
+            return { operator, value };
+        }
+
+        const main = parseSpec(mainSpec);
+        const supplier = parseSpec(supplierSpec);
+
+        if (!main || !supplier) return null;
+
+        const mainOperator = main.operator;
+        const mainValue = main.value;
+        const supplierOperator = supplier.operator;
+        const supplierValue = supplier.value;
+
+        console.log(`Parsed Main: ${mainOperator} ${mainValue}`);
+        console.log(`Parsed Supplier: ${supplierOperator} ${supplierValue}`);
+
+        if (mainOperator === '<=' && supplierOperator === '<=') {
+            return mainValue >= supplierValue;
+        } else if (mainOperator === '<=' && supplierOperator === '<') {
+            return mainValue > supplierValue;
+        } else if (mainOperator === '<' && supplierOperator === '<=') {
+            return mainValue > supplierValue;
+        } else if (mainOperator === '<' && supplierOperator === '<') {
+            return mainValue > supplierValue;
+        } else if (mainOperator === '>=' && supplierOperator === '>=') {
+            return mainValue <= supplierValue;
+        } else if (mainOperator === '>=' && supplierOperator === '>') {
+            return mainValue <= supplierValue;
+        } else if (mainOperator === '>' && supplierOperator === '>=') {
+            return mainValue < supplierValue;
+        } else if (mainOperator === '>' && supplierOperator === '>') {
+            return mainValue < supplierValue;
+        } else if (mainOperator === '+-' && supplierOperator === '+-') {
+            return operators['+-'](mainValue, supplierValue, main.tolerance);
+        } else if (mainOperator === '-' && supplierOperator === '-') {
+            return mainValue === supplierValue;
+        } else if (mainOperator === '/' && supplierOperator === '/') {
+            return mainValue === supplierValue;
+        }
+
+        return false;
+    }
+</script>
+
+}
+

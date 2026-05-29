@@ -1,0 +1,214 @@
+﻿@using Helper_Code.Objects;
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@ViewBag.Title</title>
+    @Styles.Render("~/Content/css.css")
+    @Scripts.Render("~/bundles/modernizr.css")
+    @Styles.Render("~/Content/font-awesome.min.css")
+    @Styles.Render("~/Content/site.css")
+    @Styles.Render("~/Content/bootstrap.min.css")
+    @Scripts.Render("~/Scripts/jquery-3.4.1.min.js")
+    @Scripts.Render("~/Scripts/jquery.validate.min.js")
+    @Scripts.Render("~/Scripts/jquery.validate.unobtrusive.min.js")
+    @Scripts.Render("~/Scripts/popper.min.js")
+    @Scripts.Render("~/Scripts/bootstrap.js")
+
+    @Scripts.Render("~/Scripts/moment.min.js")
+    @Scripts.Render("~/Scripts/jquery.unobtrusive-ajax.min.js")
+
+
+    <!--new 20190612-->
+    @Styles.Render("~/Content/Main.css")
+    @Scripts.Render("~/Scripts/Main.js")
+    <!--new 20190612 end-->
+
+    @Scripts.Render("~/Scripts/bootstrap-select.js")
+    @Scripts.Render("~/Scripts/script-bootstrap-select.js")
+    @Styles.Render("~/Content/style/bootstrap-select.css")
+    @Styles.Render("~/Content/style/bootstrap-select.min.css")
+
+    <!--for Datepicker-->
+    @Styles.Render("~/Content/jquery-ui-1.8.22.custom.css")
+    @Scripts.Render("~/Scripts/jquery.mtz.monthpicker.js")
+
+
+    <style type="text/css">
+        .navbar-brand:hover {
+            color: black !important;
+        }
+
+        .fa-sign-out {
+            padding-top: 10px;
+            padding-right: 50px;
+            text-decoration: none;
+        }
+
+            .fa-sign-out:hover {
+                text-decoration: none;
+            }
+
+        .displayLogin {
+            padding-right: 10px;
+            font-size: large;
+            font-weight: normal;
+            /*padding-bottom: 100px;*/
+        }
+
+        .fa-file {
+            padding-right: 0.5em;
+        }
+    </style>
+
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top height5">
+        <div class="navbar-header">
+
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            <button type="button" class="btn  hidden-sm hidden-xs" id="make-small-nav">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+
+            @Html.ActionLink("Machine Spare Part Tracking System", "Menu", "Home", new { area = "" }, new { @class = "navbar-brand" })
+
+        </div>
+        <div style="float:right">
+            @*@Html.Label("Admin", new { @class = "displayLogin" })*@
+            @Html.Label((string)(Session["AclUser"] as ACL_UserObj).EMP_NAME, new { @class = "displayLogin" })
+            @Html.ActionLink(" ", "Index", "Home", new { area = "" }, new { @class = "fa fa-sign-out fa-2x" })
+        </div>
+    </div>
+    <div class="full-height">
+        <div class="maincover LeftBar">
+            <div class="container" style="width:220px; padding-top:2em;">
+                <div class="panel-group" id="accordion">
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                                    <label>User Guide</label>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse1" class="panel-collapse collapse in">
+                            <div class="panel-body">
+                                <label><i class="fa fa-file"></i>@Html.ActionLink("MSP Tracking System User Guide", "MM_EXCEL_GUIDE", "MstMain")</label>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
+                                    <label>User MM</label>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse2" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <label><i class="fa fa-file"></i>@Html.ActionLink("Spare Part Model", "MM_SPARE_PART_LST", "Mstmain")</label>
+                                <label><i class="fa fa-file"></i>@Html.ActionLink("Spare Part Machine", "MM_SPARE_PART_M_LST", "Mstmain")</label>
+                                <label><i class="fa fa-file"></i>@Html.ActionLink("RFID Type", "MM_RFID_TYPE_LST", "Mstmain")</label>
+                                <label><i class="fa fa-file"></i>@Html.ActionLink("Storage Location", "MM_STORE_LOC_LST", "Mstmain")</label>
+                                <label><i class="fa fa-file"></i>@Html.ActionLink("Manufacturer", "MM_MANUF_LST", "Mstmain")</label>
+                                <label><i class="fa fa-file"></i>@Html.ActionLink("Transaction Type", "MM_TRAN_TYPE_LST", "Mstmain")</label>
+                                <label><i class="fa fa-file"></i>@Html.ActionLink("Email List", "MM_EMAIL_LIST_LST", "Mstmain")</label>
+                                <label style="padding-right: 3.5em;"><i class="fa fa-file"></i>@Html.ActionLink("Spare Part", "MM_SPART_LST", "Mstmain")</label>
+                                <label><i class="fa fa-file"></i>@Html.ActionLink("Error", "MM_ERROR_INVALID_SS", "Mstmain")</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">
+                                    <label>MSP Transaction Registration</label>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse3" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <label><i class="fa fa-file"></i>@Html.ActionLink("MSP Transaction Registration", "MM_TRANS_REG_LST", "MSPTransReg")</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse4">
+                                    <label>TMS MM</label>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse4" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <label><i class="fa fa-file"></i>@Html.ActionLink("Storage Reader", "MM_STORE_RDR_LST", "Mstmain")</label>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse5">
+                                    <label>User Report</label>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse5" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <label><i class="fa fa-file"></i>@Html.ActionLink("Report", "movement_rpt", "Report")</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel">
+                        <div class="panel-heading">
+                            <h4 class="panel-title">
+                                <a data-toggle="collapse" data-parent="#accordion" href="#collapse6">
+                                    <label for="Settings">Settings</label>
+                                </a>
+                            </h4>
+                        </div>
+                        <div id="collapse6" class="panel-collapse collapse">
+                            <div class="panel-body">
+                                <label><i class="fa fa-cog"></i>@Html.ActionLink(" Change Password", "ChangePassword", "Home")</label>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="maincover RightBar">
+            <div class="body-content">
+                @RenderBody()
+                <footer>
+                    <table style="width:100%;">
+                        <tr>
+                            <td style="width:50%; padding-left:2.0em"></td>
+                            <td style="width:50%; float:right;"></td>
+                        </tr>
+                    </table>
+                    @*<small style="text-align:left"></small>*@
+                </footer>
+            </div>
+        </div>
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/jqueryval")
+    @RenderSection("scripts", required: false)
+</body>
+</html>

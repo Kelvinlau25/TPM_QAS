@@ -1,0 +1,213 @@
+﻿@using TPM_QAS.Models
+@model ReportYiVM
+
+@{
+    ViewBag.Title = "Trend Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .multiselect-container{
+        max-height:230px !important;
+    }
+</style>
+@using (Html.BeginForm("TREND", "Report", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">Trend Report</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Date From <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.TextBoxFor(Model => Model.datefrom, new { @class = "form-control", @type = "date", @id = "txtdatefrom" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Date To <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4 d-flex">
+                            @Html.TextBoxFor(Model => Model.dateto, new { @class = "form-control", @type = "date" , @id="txtdateto"})
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Product Type <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4 d-flex">
+                            @Html.DropDownListFor(m => m.prodtype, new SelectList(Model.DropdownProdType, "Value", "Text"), "", new { @class = "form-control", @id = "ddlProp" })
+                            @Html.ValidationMessageFor(a => a.prodtype, "", new { @class = "red", @style = "color:red" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Product Line From <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4 d-flex">
+                            @Html.TextBoxFor(Model => Model.prodlinefrom, new { @class = "form-control" , @id="txtprodlinefr"})
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Product Line To <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4 d-flex">
+                            @Html.TextBoxFor(Model => Model.prodlineto, new { @class = "form-control", @id = "txtprodlineto" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Property<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            @Html.DropDownListFor(Model => Model.MM_PROPERTIES_H_ID, Model.DropdownPropItem, new { @id = "ddlpropitem", @class = "multiselectpicker form-control", @multiple = "multiple" })
+                            @Html.TextBoxFor(Model => Model.listproperties, new { @class = "hidden form-control", @id = "txtlistproperties" })
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">By (Graph X-axis) <span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4 d-flex">
+                            <div class="form-check-inline">
+                                @Html.RadioButtonFor(m => m.xaxis, "LotNo", new { id = "xaxis", name = "xaxis" })
+                                <label class="form-check-label" for="xaxis">Lot No</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnGenerate" type="button" class="btn btn-sm btn-primary">Generate</button></div>
+                <div class="col hidden"><button id="btnSubmit" type="submit" class="btn btn-sm btn-primary">Gen erate</button></div>
+            </div>
+        </div>
+    </div>
+
+}
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        var abc = $('.tr-select2').multiselect({
+            buttonClass: 'form-select form-control text-start',
+            templates: {
+                button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+            }
+        });
+
+
+        var def = $('.tr-select').select2({
+            theme: "bootstrap-5",
+            width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+            placeholder: $(this).data('placeholder'),
+            minimumResultsForSearch: Infinity,
+            templateSelection: function formatState(state) {
+                return 'Status : ' + state.element.value;
+            },
+            dropdownCssClass: 'tr-select2-container',
+            selectionCssClass: 'tr-no-border'
+        });
+
+
+        $('.multiselectpicker').multiselect({
+            buttonClass: 'form-select form-control text-start',
+            includeSelectAllOption: true,
+            templates: {
+                button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+            }
+        });
+
+        $('.multiselect-native-select > .btn-group').addClass("w-100");
+        $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+        $('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-100");
+
+
+        $('#btnGenerate').on('click', function () {
+            var datefr = $('#txtdatefrom').val();
+            var dateto = $('#txtdateto').val();
+            var propitem = $('#ddlpropitem').val();
+            var prodlinefr = $('#txtprodlinefr').val();
+            var prodlineto = $('#txtprodlineto').val();
+            var prodtype = $('#ddlProp').val();
+            var proceed = true;
+            var msg = '';
+
+            if (datefr != '' && dateto != '') {
+                if (datefr > dateto) {
+                    proceed = false;
+                    msg = msg + 'Date From cannot later than Date To\n';
+                }
+            } else {
+                proceed = false;
+                msg = msg + 'Please choose Date From and Date To\n';
+            }
+
+            if (propitem != '') {
+                $('#txtlistproperties').val(propitem);
+            } else {
+                proceed = false;
+                msg = msg + 'Please choose atleast 1 Property\n';
+            }
+
+            if (prodlinefr == '' || prodlineto == '') {
+                proceed = false;
+                msg = msg + 'Please insert Production Line From and Production Line To\n';
+            }
+
+            if (prodtype == '') {
+                proceed = false;
+                msg = msg + "Please select Product Type\n";
+            }
+
+            if (proceed) {
+                $('#btnSubmit').click();
+                //$.when($('#btnSubmit').click()).then(function () {
+                //    setTimeout(function () {
+                //        loadings(false);
+                //    }, 5000);
+                //})
+            } else {
+                alert(msg);
+            }
+
+        });
+
+        $('#btnSubmit').on('click', function () {
+            setTimeout(function () {
+                loadings(false);
+            }, 5000);
+        });
+
+
+    });
+
+    $(document).keypress(
+        function (event) {
+            if (event.which == '13') {
+                event.preventDefault();
+            }
+        }
+    );
+
+
+</script>

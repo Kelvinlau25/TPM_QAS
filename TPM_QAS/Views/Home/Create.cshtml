@@ -1,0 +1,350 @@
+﻿
+@{
+    ViewBag.Title = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="tr-btm-btn-margin">
+
+    <div class="row g-0 tr-listing-header">
+        <div class="col align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">New Form</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h6 class="card-title text-muted">Header 1</h6>
+            <div class="row mt-2 align-items-baseline">
+                <div class="col-sm-2">
+                    <p class="text-muted">ID <span class="text-danger">*</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="" disabled value="A100001">
+                </div>
+                <div class="col-sm-2">
+                    <p class="text-muted">Text Box <span class="text-danger">*</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="">
+                </div>
+            </div>
+
+
+            <div class="row align-items-baseline">
+                <div class="col-sm-2">
+                    <p class="text-muted">Text Box <span class="text-danger">*</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control" id="exampleFormControlInput1" placeholder="">
+                </div>
+                <div class="col-sm-2">
+                    <p class="text-muted">Switches <span class="text-danger">*</span></p>
+                </div>
+                <div class="col-sm-4 align-self-center">
+                    <div class="d-inline-flex">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckCheckedDisabled" disabled>
+                            <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">Disabled</label>
+                        </div>
+                        <div class="form-check form-switch" style="margin-left: 15px">
+                            <input class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckCheckedEnabled" checked>
+                            <label class="form-check-label" for="flexSwitchCheckCheckedEnabled">Enabled</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-baseline">
+                <div class="col-sm-2">
+                    <p class="text-muted">Date <span class="text-danger">*</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="exampleFormControlDateInput" placeholder="">
+                        <div class="input-group-text">
+                            <a href="" class="text-reset dp"><i class="fa-solid fa-calendar-days" aria-hidden="true"></i></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <p class="text-muted">Radio <span class="text-danger">*</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio1" value="male" checked>
+                        <label class="form-check-label" for="inlineRadio1">Male</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="female">
+                        <label class="form-check-label" for="inlineRadio2">Female</label>
+                    </div>
+
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row align-items-baseline">
+                <div class="col-sm-2">
+                    <p class="text-muted">Single Select <span class="text-danger">*</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <select class="tr-select2" id="select-id">
+                        <option>Selection A</option>
+                        <option>Selection B</option>
+                        <option>Selection C</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <p class="text-muted">Invalid Input <span class="text-danger">*</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <input type="text" class="form-control is-invalid" id="exampleFormControlInvalidInput1" placeholder="" value="wrong value" aria-describedby="validationServer03Feedback" required>
+                    <div id="validationServer03Feedback" class="invalid-feedback">
+                        Sorry, that username's taken. Try another?
+                    </div>
+                </div>
+            </div>
+
+            <div class="row align-items-baseline">
+                <div class="col-sm-2">
+                    <p class="text-muted">Multiple Select <span class="text-danger">*</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <select class="multiselectpicker form-control" multiple="multiple">
+                        <option value="selection a">Selection A</option>
+                        <option value="selection b" selected>Selection B</option>
+                        <option value="selection c">Selection C</option>
+                        <option value="selection d" selected>Selection D</option>
+                        <option value="selection e" selected>Selection E</option>
+                    </select>
+                </div>
+                <div class="col-sm-2">
+                    <p class="text-muted">Checkboxes <span class="text-danger">*</span></p>
+                </div>
+                <div class="col-sm-4">
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="Malay" checked>
+                        <label class="form-check-label" for="inlineCheckbox1">Malay</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="English" checked>
+                        <label class="form-check-label" for="inlineCheckbox2">English</label>
+                    </div>
+
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="checkbox" id="inlineCheckbox3" value="Chinese" checked>
+                        <label class="form-check-label" for="inlineCheckbox3">Chinese</label>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row align-items-baseline">
+                <div class="col-sm-2">
+                    <p class="text-muted">Upload Image</p>
+                </div>
+                <div class="col-sm-4">
+                    <input class="form-control file-upload tt" type="file">
+                </div>
+                <div class="col-sm-2">
+                    <p class="text-muted">Disabled Input</p>
+                </div>
+                <div class="col-sm-4">
+                    <input class="form-control" type="text" disabled value="Disable input example">
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="row align-items-baseline">
+                <div class="col-sm-6">
+                    <label for="customRange1" class="text-muted">Example Range</label>
+                    <div class="slider">
+                        <input type="range" min="0" max="100" value="50" id="fader" step="10">
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <label for="customRange2" class="text-muted">Disabled Range</label>
+                    <div class="slider">
+                        <input type="range" min="0" max="100" value="50" id="fader" step="10" disabled>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-2 mt-4">
+                <div class="col align-self-center">
+                    <label class="text-muted" style="float: left">Table List</label>
+                </div>
+                <div class="col">
+                    <div class="row row-cols-auto justify-content-end g-1">
+                        <div class="col">
+                            <button class="btn btn-sm btn-md btn-danger" id="removeBtn" type="button">
+                                Remove
+                            </button>
+                        </div>
+                        <div class="col">
+                            <button class="btn btn-sm btn-md btn-primary" id="addBtn" type="button">
+                                Add
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-2 mx-1">
+                <table id="tr-datatable" class="table table-hover detailTable" style="width:100%">
+                    <thead>
+                        <tr class="toolbar-row">
+                            <th></th>
+                            <th>Name</th>
+                            <th>Relationship</th>
+                            <th>Age</th>
+                            <th>Occupation</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tbody"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+        <div class="col"><button id="btnCancel" type="button" class="btn btn-sm btn-secondary mx-1">Back</button></div>
+        <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary mx-1" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+    </div>
+</div>
+
+<div class="modal fade" id="submit-confirmation-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Confirmation</h5>
+            </div>
+
+            <hr />
+
+            <div class="modal-body">
+                <h6>Are you sure to submit this record?</h6>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal" id="btnConfirm">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="position-fixed translate-middle-x p-3 tr-toast-alert">
+    <div id="liveToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" style="border: 1px solid #B1003C">
+        <div class="toast-header" style="background-color: #FFF0EE">
+            <strong class="me-auto text-danger">Warning!</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body text-muted" style="background-color: #FFF0EE; border-top: 1px solid #FFF0EE; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit">
+            Hello, world! This is a error message.
+        </div>
+    </div>
+</div>
+
+@section scripts {    
+    <script>
+        var rowIdx = 0;
+
+        $(document).ready(function () {
+            var rowCount = $('#tbody tr').length;
+            if (rowCount > 0) {
+                $('#removeBtn').css("display", "");
+            } else {
+                $('#removeBtn').css("display", "none");
+            }
+
+            $('.tr-select').select2({
+                theme: "bootstrap-5",
+                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+                placeholder: $(this).data('placeholder'),
+                minimumResultsForSearch: Infinity,
+                dropdownCssClass: 'tr-select2-container',
+            });
+
+            var abc = $('.tr-select2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+
+            $('.multiselectpicker').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.multiselect-native-select > .btn-group').addClass("w-100");
+            $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+            $('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-100");
+            
+
+
+            $('#exampleFormControlDateInput').datetimepicker({
+                timepicker: false,
+                format: 'd/m/Y'
+            });
+            $('.dp').on('click', function (e) {
+                e.preventDefault();
+                $('#exampleFormControlDateInput').focus();
+            });
+
+            $('#addBtn').on('click', function () {
+                // Adding a row inside the tbody.
+                $('#tbody').append(`<tr id="R${++rowIdx}">
+                    <td class="text-center"><input class="form-check-input" type="checkbox" value="" id="chk${++rowIdx}"></td>
+                    <td><input type="text" class="form-control" id="tbl_input${++rowIdx}" placeholder=""></td>
+                    <td><input type="text" class="form-control" id="tbl_input${++rowIdx}" placeholder=""></td>
+                    <td><input type="text" class="form-control" id="tbl_input${++rowIdx}" placeholder=""></td>
+                    <td><input type="text" class="form-control" id="tbl_input${++rowIdx}" placeholder=""></td>
+               </tr>`);
+
+                var rowCount = $('#tbody tr').length;
+                if (rowCount > 0) {
+                    $('#removeBtn').css("display", "");
+                }
+            });
+
+            $('#removeBtn').on('click', function () {
+                var selectedRow = $('tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                    ele.closest('tr').remove();
+                });
+
+                var rowCount = $('#tbody tr').length;
+                if (rowCount == 0) {
+                    $('#removeBtn').css("display", "none");
+                }
+            });
+
+            $('#btnCancel').on('click', function () {
+                var url = '@Url.Action("List", "Home")';
+                window.location.href = url;
+            });
+
+            $('#btnConfirm').on('click', function () {
+                const toastLiveExample = document.getElementById('liveToast');
+                const toast = new bootstrap.Toast(toastLiveExample);
+
+                toast.show();
+                //$("div.spanner").addClass("show");
+                //$("div.overlay").addClass("show");
+
+                //setTimeout(function () {
+                //    $("div.spanner").removeClass("show");
+                //    $("div.overlay").removeClass("show");
+                //}, 2500);
+            });
+        });
+
+    </script>
+}

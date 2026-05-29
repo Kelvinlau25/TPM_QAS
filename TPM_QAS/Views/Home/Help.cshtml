@@ -1,0 +1,74 @@
+﻿@using TPM_QAS.Models
+@model TPM_QAS.Models.DailyIDSTransVM
+@{
+    ViewBag.Title = "Help";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+
+    .gs {
+        font-size:1.25rem; 
+    }
+
+    .ug {
+        font-size: 16px;
+    }
+</style>
+
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">Help Page</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="h-100">
+                <div class="card tr-help-card mt-3">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col">
+                                <p class="text-muted m-0 p-0 tr-listing-header-title gs">Getting Started</p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col py-2 ug">
+                                <div>
+                                    Here are User guidelines path (QAS):
+                                    <span style="color:#057FE5;">
+                                        <a href="../UserManual/UserManual - TPM QAS Datalink System V2.pdf" target="_blank">
+                                            User Guide for TPM QAS
+                                        </a>
+                                    </span>
+
+                                </div>
+                                <br />
+                                <div>
+                                    Here are User guidelines path (COA):
+                                    <span style="color:#057FE5;">
+                                        <a href="../UserManual/UserManual - TPM QAS COA V1.1.pdf" target="_blank">
+                                            User Guide for TPM COA
+                                        </a>
+                                    </span>
+
+                                </div>
+                                <div></div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row justify-content-end tr-btm-btn-area pb-2">
+                    <div class="col">
+                        <div class="row row-cols-auto justify-content-end isNotEditable" style="padding-right: 20px">
+                            <div class="col">@*<button id="btnBack" type="button" class="btn btn-sm btn-secondary">Back</button>*@</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+

@@ -1,0 +1,258 @@
+﻿@using TPM_QAS.Helpers;
+<!DOCTYPE html>
+<html class="h-100">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>@System.Configuration.ConfigurationManager.AppSettings["SystemName"]</title>
+    @Styles.Render("~/Content/css")
+    @Styles.Render("~/Content/fontawesome")
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/Scripts/Main.js")
+    @Scripts.Render("~/bundles/datatables")
+    @Scripts.Render("~/bundles/js")
+</head>
+
+<body class="theme-cyan" style="height:100vh;padding: 10px;">
+    @RenderBody()
+
+    <!--Popup message delete-->
+    <div class="modal fade" id="delete-confirmation-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmation</h5>
+                </div>
+                <hr />
+                <div class="modal-body">
+                    <h6>Are you sure to delete this record?</h6>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="btnConfirmDel">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Popup message submit-->
+    <div class="modal fade" id="submit-confirmation-modal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirmation</h5>
+                </div>
+
+                <hr />
+
+                <div class="modal-body">
+                    <h6>Are you sure to submit this record?</h6>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-sm btn-primary" data-bs-dismiss="modal" id="btnConfirmSubmit">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="position-fixed translate-middle-x p-3 tr-toast-alert">
+        <div id="SuccessMessageToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" style="border: 1px solid #00A251">
+            <div class="toast-header" style="background-color: #E9FFF8">
+                <strong class="me-auto" style="color: #00A251">Successful!</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body text-muted" style="background-color: #E9FFF8; border-top: 1px solid #E9FFF8; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit">
+                <span id="success-message-body"> </span>
+            </div>
+        </div>
+    </div>
+    <div class="position-fixed translate-middle-x p-3 tr-toast-alert">
+        <div id="ErrorMessageToast" class="toast hide" role="alert" aria-live="assertive" aria-atomic="true" style="border: 1px solid #B1003C">
+            <div class="toast-header" style="background-color: #FFF0EE">
+                <strong class="me-auto text-danger">Warning!</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            <div class="toast-body text-muted" style="background-color: #FFF0EE; border-top: 1px solid #FFF0EE; border-bottom-left-radius: inherit; border-bottom-right-radius: inherit">
+                <span id="error-message-body"> </span>
+            </div>
+        </div>
+    </div>
+
+    @RenderSection("scripts", required: false)
+    <script>
+
+        $(document).ready(function () {
+
+            //JH230712
+            $("#sidebarcontent").load('@Url.Content("/Home/SideBar")', function () {
+                setActiveSidebar();
+            });
+
+            $(document).on('click', "#sidebarcontent li a.nav-header", function () {
+                $("#sidebarcontent li ul.list-unstyled").collapse('hide');
+                $("#sidebarcontent").find(".active").removeClass("active");
+                $(this).find(".fas").addClass("active");
+                $(this).addClass("active");
+            });
+
+            //$("#sidebar-nav .nav-item a").on("click", function () {
+            //    $("#sidebar-nav").find(".active").removeClass("active");
+            //    $(this).parentsUntil(".nav").find(".nav-header").addClass("active");
+            //    $(this).addClass("active");
+            //});
+
+            $('#btnLogout').on('click', function () {
+                var url = '@Url.Action("Login", "Home")';
+                window.location.href = url;
+            });
+
+            $(".file-upload").fileinput({
+                showPreview: false,
+                showRemove: false,
+                showUploadStats: false,
+                browseClass: 'btn btn-sm btn-outline-secondary',
+                browseLabel: 'Choose File',
+                buttonLabelClass: 'file-input-browse-label'
+            });
+
+            $('#btnHelp').on('click', function () {
+                //var url = '@Url.Action("Help", "Home")';
+                //window.location.href = url;
+            });
+        });
+
+
+        //NISA230825 - FUNCTION TO CALL TOAST
+        function displayToast(type, message) {
+            if (type == 'success' || type == 's') {
+                console.log("masuk")
+                const successToast = document.getElementById('SuccessMessageToast');
+                const toast = new bootstrap.Toast(successToast);
+                document.getElementById('success-message-body').innerHTML = message;
+                toast.show();
+            } else { // error
+                const errorToast = document.getElementById('ErrorMessageToast');
+                const toast = new bootstrap.Toast(errorToast);
+                document.getElementById('error-message-body').innerHTML = message;
+                toast.show();
+            }
+        }
+
+        //JH230712
+        $(window).on('beforeunload', function () {
+            loadings();
+        });
+        $(window).on('unload', function () {
+            loadings(false);
+        });
+
+        $(document).ready(function () {
+            $('.tr-select').select2({
+                theme: "bootstrap-5",
+                width: $(this).data('width') ? $(this).data('width') : $(this).hasClass('w-100') ? '100%' : 'style',
+                placeholder: $(this).data('placeholder'),
+                minimumResultsForSearch: Infinity,
+                dropdownCssClass: 'tr-select2-container',
+            });
+
+            var abc = $('.tr-select2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+
+            $('.multiselectpicker').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.multiselect-native-select > .btn-group').addClass("w-100");
+            $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+            $('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-100");
+        });
+
+        function trselect2Refresh() {
+            $('.tr-select2').multiselect('destroy');
+            $('.tr-select2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.multiselect-native-select > .btn-group').addClass("w-100");
+            $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+            $('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-100");
+        }
+
+
+        var ExcludedNavBarPage = ['/Home/ChangePassword'];
+        function setActiveSidebar() {
+            var page_url = window.location.pathname;
+            var page_controller = 'Home';
+            var page_view = '';
+            var page_url_part = page_url.split('/');
+            if (page_url_part.length >= 2) {
+                page_controller = page_url_part[1];
+                page_view = page_url_part[2];
+                page_view = page_view.split('?')[0];
+            }
+            //console.log('Page Url:' + page_url);
+            //console.log('Page Controller:' + page_controller);
+            //console.log('Page View:' + page_view);
+            if (!ExcludedNavBarPage.includes('/' + page_controller + '/' + page_view)) {
+                $("#sidebarcontent li.nav-item a.nav-link").each(function () {
+                    var nav_url = $(this).attr("href");
+                    var nav_controller = '';
+                    var nav_url_part = nav_url.split('/');
+                    if (nav_url_part.length >= 2) {
+                        nav_controller = nav_url_part[1];
+                    }
+                    //console.log('Nav Url:' + nav_url);
+                    //console.log('Nav Controller:' + nav_controller);
+                    //if (nav_url.includes(page_url) || page_url.includes(nav_url)) {
+                    if (page_controller == nav_controller) {
+                        //console.log('Hit:' + nav_url);
+                        var submenu_id = $(this).closest("ul").attr('id');
+                        $('#' + submenu_id).collapse('show');
+                        $('#sidebarcontent a.nav-header[href="#' + submenu_id + '"]').find(".fas").addClass("active");
+                        $('#sidebarcontent a.nav-header[href="#' + submenu_id + '"]').addClass("active");
+                        $(this).addClass('active');
+                        return false;
+                    }
+                });
+            }
+        }
+
+        function alertError(message) {
+            $('#ErrorMessageToast .toast-body').text(message);
+            new bootstrap.Toast(document.getElementById('ErrorMessageToast')).show();
+        }
+        function alertSuccess(message) {
+            $('#SuccessMessageToast .toast-body').text(message);
+            new bootstrap.Toast(document.getElementById('SuccessMessageToast')).show();
+        }
+
+        //--New Standard--------------------------------//
+        function calcDataTableHeight() {
+            var winWidth = $(window).width();
+            if (winWidth >= 1280 && winWidth <= 1599) {
+                return $(window).height() * 43 / 100;
+            } else {
+                return $(window).height() * 50 / 100;
+            }
+        };
+
+
+    </script>
+</body>
+
+</html>

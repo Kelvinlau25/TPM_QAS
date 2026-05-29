@@ -1,0 +1,276 @@
+﻿@using TPM_QAS.Models
+@model ProdPackModel
+
+
+@{
+    ViewBag.Title = "PRODUCT PACKING MM - Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("MM_PRODPACK_DETAIL", "MM_PRODPACK", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title main-title">View Form - Product Packing</p>
+        </div>
+        <div class="col-sm-6 text-end align-self-center">
+            <div class="d-flex justify-content-end">
+                <div id="customDTButton"></div>
+            </div>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">Product Packing</h6></div>
+                        @if (Model.RECORD_TYP != null)
+                        {
+                            if (@Model.RECORD_TYP != "5")
+                            {
+                                <div class="col text-end"><button class="btn btn-sm btn-primary" id="btnEdit" type="button" data-behaviour="toggle">Edit</button></div>
+                            }
+
+                        }
+                    </div>
+
+                    <hr />
+
+                    @Html.HiddenFor(model => model.MM_PRODPACK_ID)
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Packing Type <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4 isEditable">
+                            @Html.DropDownListFor(Model => Model.PACKING_TYPE_ID, Model.DropdownPackType, "Select an option..", new { id = "ddlPackType", @class = "ddloption isEditable form-control form-select", required = "required", disabled = "disabled"})
+                        </div>
+                    </div>
+
+                    <div class="row align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Product Pack Name <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4 isEditable">
+                            @Html.ListBoxFor(Model => Model.PROD_PACK_NAME, Model.DropdownPackName, new { multiple = "multiple", id = "ddlPackName", @class = "multiselectpicker ddloption isEditable form-control form-select", required = "required", disabled = "disabled" })
+                        </div>
+                    </div>
+
+                    
+                    <div class="hideInfo">
+                        <hr />
+
+                        <div class="row row-cols-2 mt-4">
+                            <div class="col align-self-center">
+                                <h6 style="float: left" class="text-muted">Entry Details</h6>
+                            </div>
+                            <div class="col">
+
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted">Updated By<span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-4">
+                                <input class="form-control" type="text" disabled value="@Model.UPDATED_BY">
+                            </div>
+                            <div class="col-sm-2">
+                                <p class="text-muted">Created By<span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-4">
+                                <input class="form-control" type="text" disabled value="@Model.CREATED_BY">
+                            </div>
+                        </div>
+
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted">Updated Date<span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-4">
+                                <input class="form-control" type="text" disabled value="@Model.UPDATED_DATE">
+                            </div>
+                            <div class="col-sm-2">
+                                <p class="text-muted">Created Date<span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-4">
+                                <input class="form-control" type="text" disabled value="@Model.CREATED_DATE">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row tr-btm-btn-area">
+                @if (Model.RECORD_TYP != null)
+                {
+                    if (@Model.RECORD_TYP != "5")
+                    {
+                        <div class="col"><button id="btnDeleteView" type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#delete-confirmation-modal">Delete</button></div>
+                    }
+
+                }
+                <div class="col">
+                    <div class="row row-cols-auto justify-content-end isNotEditable" style="padding-right: 20px">
+                        <div class="col"><button id="btnCancelView" type="button" class="btn btn-sm btn-secondary">Back</button></div>
+                    </div>
+
+                    <div class="row row-cols-auto justify-content-end isEditable g-1" style="display:none; padding-right: 20px">
+                        <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-back-confirmation-modal">Back</button></div>
+                        <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+}
+
+@section scripts {
+<script>
+
+    $(document).ready(function () {
+        var listingURL = '/MM_PRODPACK/MM_PRODPACK_LST';
+        var idh = '@Model.MM_PRODPACK_ID';
+
+        
+        //SUBMIT
+        $('#btnConfirmSubmit').on('click', function () {
+            $('.invalid-feedback').remove();
+            $('.is-invalid').removeClass('is-invalid');
+
+            var cont = true;
+            var message = "";
+
+            var packtypeID = $("#ddlPackType").val();
+            var packtype = $("#ddlPackType option:selected").text();
+
+            var packname = $("#ddlPackName").val().join(',');
+
+            if (packtypeID == undefined || packtypeID == null || packtypeID == 0 || packtypeID == "" || packtypeID == "Select an option..") {
+                cont = false;
+                message += 'Please select Packing Type. <br>';
+            }
+
+            if (packname == undefined || packname == null || packname == 0 || packname == "" || packname == "Select an option..") {
+                cont = false;
+                message += 'Please select Product Pack Name. <br>';
+            }
+
+            $('.required-field').each(function (e) {
+                var input_val = $(this).val().trim();
+                if (input_val == null || input_val == undefined || input_val === "") {
+                    cont = false;
+                    $(this).addClass('is-invalid');
+                    inputError(this);
+                }
+            });
+
+            if (cont) {
+
+                var model = {
+                    MM_PRODPACK_ID: idh,
+                    RECORD_TYP: '3',
+
+                    PACKING_TYPE_ID: packtypeID,
+                    PACKING_TYPE: packtype,
+
+                    PROD_PACK_NAME_STRING: packname
+                };
+
+                console.log(model)
+
+                $.ajax({
+                    url: "/MM_PRODPACK/InsertUpdateProdPack",
+                    type: 'POST',
+                    data: {
+                        model: model
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data save successfully");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+
+        });
+
+        // BUTTON DELETE
+        $('#btnConfirmDel').on('click', function () {
+
+            var lstid = [];
+            lstid.push(idh)
+
+            $.ajax({
+                url: "/MM_PRODPACK/deleteProdPack",
+                type: 'POST',
+                data: {
+                    lstid: lstid
+                },
+                beforeSend: function () {
+                    loadings();
+                },
+                success: function (response) {
+                    loadings(false);
+                    if (response.success) {
+                        displayToast("s", "Data successfully deleted");
+
+                        setTimeout(function () {
+                            window.location.href = listingURL;
+                        }, 2000);
+
+                    } else {
+                        displayToast("error", response.message)
+                    }
+                },
+                error: function () {
+                    displayToast("error", response.responseText)
+                }
+            });
+
+        });
+
+        //BUTTON CANCEL/BACK
+        $('#btnCancelView').on('click', function () {
+            var del = '0';
+            if (@Model.RECORD_TYP != null && @Model.RECORD_TYP  == '5') {
+                del = '1';
+            }
+            window.location.href = listingURL + '?Deleted=' + del;
+        }); 
+
+        $('#btnBackEdit').on('click', function () {
+                window.location.href = listingURL;
+        });
+    });
+
+</script>
+}
+

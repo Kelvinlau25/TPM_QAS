@@ -1,0 +1,309 @@
+﻿@{
+    var postto = this.ViewData["SrcAct"].ToString();
+    var act = this.ViewData["Act"].ToString();
+    var ctrlto = this.ViewData["Ctrl"].ToString();
+    var deleted = "0";
+    var num = Model.Count;
+    if (Request.QueryString["Deleted"] != null)
+    {
+        deleted = Request.QueryString["Deleted"].ToString();
+    }
+    var ViewAutoGen = this.ViewData["AutoGenView"].ToString();
+}
+
+@*<style type="text/css">
+        .btntolink {
+            background-color: transparent;
+            border: none;
+        }
+
+        .searchbtn {
+            position: absolute;
+            display: inline-block;
+            padding: 3px 12px;
+            margin-left: -30px;
+        }
+
+        .searchtxt {
+            width: 100%;
+            border-radius: 8px;
+            border: 2px solid #ccc;
+        }
+
+        .topleft {
+            position: relative;
+            width: 70%;
+            float: left;
+        }
+
+        .topright {
+            position: relative;
+            width: 50%;
+            float: left;
+        }
+
+        .greyiconcolor {
+            color: grey;
+        }
+
+        /*.fa-custom {
+            -webkit-text-stroke-color: grey;
+            -webkit-text-stroke-width: 2px;
+            color: transparent;
+        }*/
+
+        /*maryam - 16032023 *Custom tooltip for advance search*/
+        [data-title]:hover:after {
+            opacity: 1;
+            visibility: visible;
+            /*transition: all 0.1s ease 0.5s;*/
+        }
+
+        [data-title]:after {
+            content: attr(data-title);
+            background-color: white;
+            font-size: 13px;
+            position: absolute;
+            padding: 5px 5px 5px 5px;
+            bottom: -2em;
+            /*left: -190%;*/                /*maryam - 22032023*/
+            transform: translateX(-50%);    /*maryam - 22032023*/
+            display: block;
+            white-space: nowrap;
+            opacity: 0;
+            border: 1px solid #ababab;
+            z-index: 99999;
+            visibility: hidden;
+            text-align: center;
+            border-radius: 0.5rem;
+            font-family: 'Open Sans', sans-serif;
+            /*box-shadow: 1px 1px 3px #222222;*/
+            /*color: #111;*/
+        }
+
+        [data-title] {
+            position: relative;
+        }
+    </style>*@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+        var deleted = '@deleted';
+
+        if (deleted == '1') {
+
+            let cbCheckDeleted = document.getElementById("cbCheckDeleted");
+            cbCheckDeleted.checked = true;
+
+        }
+        if (deleted == '0') {
+
+            let cbCheckDeleted = document.getElementById("cbCheckDeleted");
+            cbCheckDeleted.checked = false;
+        }
+
+    });
+</script>
+@{
+    if (num != 0)   //To check whether the search value is in model or not
+    {
+        using (Html.BeginForm(postto, ctrlto, routeValues: new { Deleted = deleted }))
+        {
+            <div id="loadSrh">
+                <fieldset>
+                    <div class="editor-field">
+                        <div class="topleft">
+                            <div class="row align-items-baseline">
+                                <div class="col-sm-3">
+                                    <input type="text" id="SEARCH_VALUE" class="form-control" name=@Html.ViewData["SrcVal"].ToString() value="@Model[0].SEARCH_VALUE" />
+                                </div>
+                                <div class="col-sm-4">
+                                    <button id="btnsubmit" class="btn btn-sm btn-secondary mx-1" style="width:10px; margin-bottom:2px;"><i class="fa fa-search"></i></button>
+                                    <input type="hidden" name="Deleted" value="@deleted" />
+                                    &nbsp;
+                                    <input type="checkbox" class="form-check-input" id="cbCheckDeleted" name="cbCheckDeleted" onclick="CheckDeleted()" style="margin-top:8px;">
+                                    <label class="form-check-label" for="cbCheckDeleted"> Show Deleted Records</label>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div style="float: right; padding-right: 10px">
+                            @*<input class="fa fa-search-plus fa-2x greyiconcolor" onclick="advanceSearchClick()" data-toggle="modal" data-target="#exampleModal1" type="button" />*@
+                            @*<a href="#" onclick="advanceSearchClick()" data-toggle="modal" data-target="#exampleModal1" class="fa fa-search-plus fa-2x greyiconcolor"></a>&nbsp; &nbsp;*@
+                            <a href="#" onclick="advanceSearchClick()" data-toggle="modal" data-target="#exampleModal1" class="fa fa-filter fa-2x greyiconcolor" data-title="Advance Search"></a>&nbsp; &nbsp;  @*maryam - 14032023*@
+
+                        </div>
+                        <br />
+                        <br />
+                        <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" data-backdrop="false" style="background-color: rgba(0, 0, 0, 0.5);">
+                            <div class="modal-dialog" role="document">
+                                <div id="advanceSearchDiv"></div>
+                            </div>
+                        </div>
+                        <script>
+                function advanceSearchClick() {
+                    //debugger
+                    //alert("test");
+                    $("#advanceSearchDiv").load('@(Url.Content("/Home/AdvancedSearch") + "?actionRequested=" + ViewContext.RouteData.Values["action"].ToString() + "/" + ViewContext.RouteData.Values["controller"].ToString())');
+                }
+
+                function CheckDeleted() {
+                    //debugger;
+                    var chboxs = document.getElementById("cbCheckDeleted");
+                    var deleted = "0";
+
+                    if (chboxs.checked == true) {
+                        deleted = "1";
+                    }
+
+                    var url = '@Url.Action(ViewContext.RouteData.Values["action"].ToString(), ViewContext.RouteData.Values["controller"].ToString()).ToString()' + '?Deleted=' + deleted;
+
+                    window.location.href = url;
+                }
+
+                        </script>
+
+                    </div>
+
+                </fieldset>
+
+            </div>
+        }
+    }
+    else
+    {
+        using (Html.BeginForm(postto, ctrlto, routeValues: new { Deleted = deleted }))
+        {
+            <div id="loadSrh">
+                <fieldset>
+                    <div class="editor-field">
+
+                        <div class="topleft">
+                            <input type="text" id="SEARCH_VALUE" class="searchtxt dis" name=@Html.ViewData["SrcVal"].ToString() />
+                            <button id="btnsubmit" class="btntolink searchbtn dis"><i class="fa fa-search"></i></button>
+                            <input type="hidden" name="Deleted" value="@deleted" />
+                            &nbsp;
+                            <input type="checkbox" id="cbCheckDeleted" name="cbCheckDeleted" onclick="CheckDeleted()"> Show Deleted Records
+                        </div>
+                        <div class="topright">
+
+
+                        </div>
+
+                        <div style="float:right;">
+                            @*<input class="fa fa-search-plus fa-2x greyiconcolor" onclick="advanceSearchClick()" data-toggle="modal" data-target="#exampleModal1" type="button" />*@
+                            @*<a href="#" onclick="advanceSearchClick()" data-toggle="modal" data-target="#exampleModal1" class="fa fa-search-plus fa-2x greyiconcolor"></a>&nbsp; &nbsp;*@
+                            <a href="#" onclick="advanceSearchClick()" data-toggle="modal" data-target="#exampleModal1" class="fa fa-filter fa-2x greyiconcolor" data-title="Advance Search"></a>&nbsp; &nbsp;  @*maryam - 14032023*@
+
+                        </div>
+                        <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" data-backdrop="false" style="background-color: rgba(0, 0, 0, 0.5);">
+                            <div class="modal-dialog" role="document">
+                                <div id="advanceSearchDiv"></div>
+                            </div>
+                        </div>
+                        <script>
+                function advanceSearchClick() {
+                    //debugger
+                    //alert("test");
+                    $("#advanceSearchDiv").load('@(Url.Content("/Home/AdvancedSearch") + "?actionRequested=" + ViewContext.RouteData.Values["action"].ToString() + "/" + ViewContext.RouteData.Values["controller"].ToString())');
+                }
+
+                function CheckDeleted() {
+                    //debugger;
+                    var chboxs = document.getElementById("cbCheckDeleted");
+                    var deleted = "0";
+
+                    if (chboxs.checked == true) {
+                        deleted = "1";
+                    }
+
+                    var url = '@Url.Action(ViewContext.RouteData.Values["action"].ToString(), ViewContext.RouteData.Values["controller"].ToString()).ToString()' + '?Deleted=' + deleted;
+
+                    window.location.href = url;
+                }
+
+                        </script>
+
+                    </div>
+
+                </fieldset>
+
+            </div>
+        }
+    }
+
+}
+
+
+
+<script>
+    if ('@ctrlto' == "Entry") {
+        $("#SEARCH_VALUE").autocomplete({
+
+            source: function (request, response) {
+                $.ajax({
+                    url: "/Mstmain/GenerateAutoComplete",
+                    type: "POST",
+                    dataType: "json",
+                    data: { Prefix: request.term, SearchSourceValue: '@postto', View: '@ViewAutoGen' },
+
+                    //   success: function (data) {
+
+                    //    console.log(data);
+                    //    response($.map(data, function (item) {
+                    //        return { label: item.Text, value: item.Text };
+                    //    })
+                    //    )
+
+                    //}
+                    success: function (similarityResponseList) {
+                        if (similarityResponseList != null && similarityResponseList.similarityList.length > 0 && document.getElementById('SEARCH_VALUE').value != "") {
+                            var arr = [];
+                            var count = 1;
+                            for (similarity of similarityResponseList.similarityList.reverse()) {
+                                arr.push({ label: similarity[0] });
+                                count++;
+                                if (count > 5)
+                                    break;
+                            }
+                            response(arr);
+                        }
+                    }
+                })
+            },
+
+            change: function (event, ui) {
+                if ($(this)[0].value === '') {
+                    $('.ui-autocomplete').hide();
+                }
+            },
+
+            messages: {
+                noResults: '',
+                results: function (resultsCount) { }
+            }
+        })
+            .autocomplete("instance")._renderMenu = function (ul, items) {
+                var that = this;
+                $.each(items, function (index, item) {
+                    that._renderItemData(ul, item);
+                });
+                $(ul).append(
+                    "<li style='pointer-events: none'><hr style='margin: 0px; padding: 0px'><div style='color:grey; '>Powered By TMS AI API</div></li>"
+                );
+            };
+    }
+</script>
+
+
+<script type="text/javascript">
+        //maryam - 16032023
+            //function loadings() {
+            //    //alert("loading header without add");
+            //    $("#CheckDeleted").fadeIn();
+            //};
+</script>
+

@@ -1,0 +1,234 @@
+﻿
+@using TPM_QAS.Models
+@model ProdPackModel
+@{
+    ViewBag.Title = "PRODUCT PACKING MM - Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@using (Html.BeginForm("MM_PRODPACK_ADD", "MM_PRODPACK", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">New Form - Product Packing</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">Product Packing</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+
+                    <hr />
+
+                    @Html.HiddenFor(model => model.MM_PRODPACK_ID)
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Packing Type </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.DropDownListFor(Model => Model.PACKING_TYPE_ID, Model.DropdownPackType, "Select an option..", new { id = "ddlPackType", @class = "ddloption form-control form-select", required = "required" })
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Product Pack Name </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-6">
+                            @Html.ListBoxFor(Model => Model.PROD_PACK_NAME, Model.DropdownPackName, new { multiple = "multiple", id = "ddlPackName", @class = "multiselectpicker ddloption form-control form-select", required = "required" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary mx-1 my-button" data-bs-toggle="modal" data-bs-target="#back-confirmation-modal">Back</button></div>
+                <div class="col"><button hidden id="btnDraft" type="button" class="btn btn-sm btn-primary">Save As Draft</button></div>
+                <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+            </div>
+        </div>
+    </div>
+
+
+}
+
+
+
+@section scripts{
+
+    <script>
+
+        $(document).ready(function () {
+
+            var idh = '@Model.MM_PRODPACK_ID' != 0 ? '@Model.MM_PRODPACK_ID' : 0;
+            var listingURL = '/MM_PRODPACK/MM_PRODPACK_LST';
+
+            //SUBMIT
+            $('#btnConfirmSubmit').on('click', function () {
+                $('.invalid-feedback').remove();
+                $('.is-invalid').removeClass('is-invalid');
+
+                var cont = true;
+                var message = "";
+
+                var packtypeID = $("#ddlPackType").val();
+                var packtype = $("#ddlPackType option:selected").text();
+
+                var packname = $("#ddlPackName").val().join(',');
+
+                if (packtypeID == undefined || packtypeID == null || packtypeID == 0 || packtypeID == "" || packtypeID == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Packing Type. <br>';
+                }
+
+                if (packname == undefined || packname == null || packname == 0 || packname == "" || packname == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Product Pack Name. <br>';
+                }
+
+                $('.required-field').each(function (e) {
+                    var input_val = $(this).val().trim();
+                    if (input_val == null || input_val == undefined || input_val === "") {
+                        cont = false;
+                        $(this).addClass('is-invalid');
+                        inputError(this);
+                    }
+                });
+
+                if (cont) {
+
+                    var model = {
+                        MM_PRODPACK_ID: idh,
+                        RECORD_TYP: '1',
+
+                        PACKING_TYPE_ID: packtypeID,
+                        PACKING_TYPE: packtype,
+
+                        PROD_PACK_NAME_STRING: packname
+                    };
+
+                    console.log(model)
+
+                    $.ajax({
+                        url: "/MM_PRODPACK/InsertUpdateProdPack",
+                        type: 'POST',
+                        data: {
+                            model: model
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            });
+
+            //DRAFT
+            $('#btnDraft').on('click', function () {
+                var cont = true;
+                var message = "";
+                var list = [];
+
+                //allow to draft if fill in packing type only
+
+                var packtypeID = $("#ddlPackType").val();
+                var packtype = $("#ddlPackType option:selected").text();
+
+                var packname = $("#ddlPackName").val().join(',');
+
+                if (packtypeID == undefined || packtypeID == null || packtypeID == 0 || packtypeID == "" || packtypeID == "Select an option..") {
+                    cont = false;
+                    message += 'Please select Packing Type. <br>';
+                }
+
+                //if (packname == undefined || packname == null || packname == 0 || packname == "" || packname == "Select an option..") {
+                //    cont = false;
+                //    message += 'Please select Product Pack Name. <br>';
+                //}
+
+                if (cont) {
+
+                    var model = {
+                        MM_PRODPACK_ID: idh,
+
+                        PACKING_TYPE_ID: packtypeID,
+                        PACKING_TYPE: packtype,
+                        PROD_PACK_NAME_STRING: packname,
+
+                        RECORD_TYP: '8'
+                    };
+
+                    console.log(model)
+
+                    $.ajax({
+                        url: "/MM_PRODPACK/DraftProdPack",
+                        type: 'POST',
+                        data: {
+                            model: model
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save as draft successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+            });
+
+            $('#btnConfirmBack').on('click', function () {
+                window.location.href = listingURL;
+            });
+
+        });
+
+    </script>
+}

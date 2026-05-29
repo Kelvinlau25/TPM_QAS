@@ -1,0 +1,652 @@
+﻿@using TPM_QAS.Models
+@model COAOCRModel
+
+
+@{
+    ViewBag.Title = "COA OCR Data Entry - Detail";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="row g-0 px-3 tr-listing-header">
+    <div class="col-sm-6 align-self-center">
+        <p class="text-muted m-0 tr-listing-header-title main-title">View Form - Supplier Raw Material Specifications (OCR)</p>
+    </div>
+    <div class="col-sm-6 text-end align-self-center">
+        <div class="d-flex justify-content-end">
+            <div id="customDTButton"></div>
+        </div>
+    </div>
+</div>
+
+<div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+        <div class="card mt-3 mb-2 card-height">
+            <div class="card-body">
+                <div class="row align-items-baseline">
+                    <div class="col"><h6 class="card-title text-muted">Supplier Raw Material Specifications (OCR)</h6></div>
+                    @if (Model.RECORD_TYP != null)
+                    {
+                        if (Model.RECORD_TYP != "5")
+                        {
+                            <div class="col text-end"><button class="btn btn-sm btn-primary" id="btnEdit" type="button" data-behaviour="toggle">Edit</button></div>
+                        }
+
+                    }
+                </div>
+                @Html.TextBoxFor(Model => Model.OCR_INDICATOR, new { @class = "hidden form-control", id = "txtocrindicator" })
+                <hr />
+
+                <div class="row align-items-baseline">
+                    <div class="col-sm-3">
+                        <p class="text-muted">OCR Indicator (Per Page) <span class="isEditable d-none text-danger">*</span><span style="float:right">:</span></p>
+                    </div>
+                    <div class="col-sm-8">
+                        <div class="form-check form-check-inline">
+                            <input class="secupl form-check-input" type="radio" name="ocrindicator" id="indi1" value="1"
+                                   @(string.IsNullOrEmpty(Model.OCR_INDICATOR?.ToString()) || Model.OCR_INDICATOR.ToString() == "1" ? "checked" : "") disabled>
+                            <label class="form-check-label" for="indi1">Single Lot no</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="secupl form-check-input" type="radio" name="ocrindicator" id="indi2" value="2"
+                                   @(Model.OCR_INDICATOR != null && Model.OCR_INDICATOR.ToString() == "2" ? "checked" : "") disabled>
+                            <label class="form-check-label" for="indi2">Multiple Lot No and Multiple Result</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="secupl form-check-input" type="radio" name="ocrindicator" id="indi3" value="3"
+                                   @(Model.OCR_INDICATOR != null && Model.OCR_INDICATOR.ToString() == "3" ? "checked" : "") disabled>
+                            <label class="form-check-label" for="indi3">Multiple Lot No and Single Result</label>
+                        </div>
+
+                    </div>
+                </div>
+
+                @*<div class="row align-items-baseline">
+                    <div class="col-sm-3">
+                        <p class="text-muted">Upload PDF <span class="isEditable d-none text-danger">*</span><span style="float:right">:</span></p>
+                    </div>
+                    <div class="col-sm-4">
+                        <div class="input-group">
+                            @Html.TextBoxFor(model => model.FILE_NAME, new { @class = "isItemDisabled form-control required-field", id = "txtfileName", @maxlength = "100", disabled = "disabled" })
+                            <span class="input-group-text">
+                                <i class="fa fa-eye text-muted" id="viewFileIcon" style="cursor: pointer;"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>*@
+
+                <div>
+                    <hr />
+                    <div class="col align-self-center">
+                        <h6 class="text-muted" style="float: left;font-weight:bold">OCR Results</h6>
+                    </div>
+                    <br />
+                    <br />
+                </div>
+
+                @functions {
+                    string GenerateTabId(string tabName)
+                    {
+                        return new string(tabName.Where(c => char.IsLetterOrDigit(c)).ToArray()).ToLower();
+                    }
+
+                    string ShortenTabName(string tabName, int maxLength = 25)
+                    {
+                        return tabName.Length > maxLength ? tabName.Substring(0, maxLength) + "..." : tabName;
+                    }
+                }
+
+                <nav class="tr-tab">
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        @if (Model.OCRLstModelDetail != null && Model.OCRLstModelDetail.Count > 0)
+                        {
+                            int tabcount = 1;
+                            foreach (var tab in Model.OCRLstModelDetail)
+                            {
+                                int tabId = tabcount;/*GenerateTabId(tab.Key.Item2.ToString());*/
+                                string shortTabName = ShortenTabName(tab.Key.Item1);
+
+                                <button class="nav-link @(tabcount == 1 ? "active" : "")"
+                                        id="nav-@tabId-tab"
+                                        data-bs-toggle="tab"
+                                        data-bs-target="#nav-@tabId"
+                                        type="button"
+                                        role="tab"
+                                        aria-controls="nav-@tabId"
+                                        aria-selected="@(tabcount == 0 ? "true" : "false")"
+                                        title="@tab.Key.Item1" data-bs-toggle="tooltip" data-bs-placement="top">
+                                    @shortTabName
+                                </button>
+                                tabcount++;
+                            }
+                        }
+                    </div>
+                </nav>
+                <div class="tab-content p-2" id="nav-tabContent" style="border: 4px solid #EBF3FF;">
+                    @if (Model.OCRLstModelDetail != null && Model.OCRLstModelDetail.Count > 0)
+                    {
+                        int tabcount2 = 1;
+
+                        foreach (var tab in Model.OCRLstModelDetail)
+                        {
+                            int tabId = tabcount2; /*GenerateTabId(tab.Key.Item2.ToString());*/
+                            int rowCount = 0;
+
+                            <div class="tab-pane fade @(tabcount2 == 1 ? "show active" : "")" id="nav-@tabId" role="tabpanel" aria-labelledby="nav-@tabId-tab" tabcount2="0">
+                                <div class="row align-items-center">
+                                    <div class="col-sm-2">
+                                        <p class="text-muted" style="padding-top:13px">Upload PDF <span class="isEditable d-none text-danger">*</span><span style="float:right">:</span></p>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <div class="input-group">
+                                            <input type="text" id="txtfileName_@tabId" value="@tab.Value[0].FILE_NAME" class="required-field form-control" disabled>
+                                            <span class="input-group-text">
+                                                <i class="fa fa-eye text-muted" id="viewFileIcon_@tabId" onclick="viewFile('@tab.Value[0].FILE_NAME')"  style="cursor: pointer;"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+
+                                <div class="row align-items-center">
+                                    <div class="col-sm-2">
+                                        <p class="text-muted" style="padding-top:13px">Supplier Name <span class="isEditable d-none text-danger">*</span><span style="float:right">:</span></p>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <input type="text" id="txtrealsupp_@tabId" value="@tab.Value[0].SUPPLIER_NAME" class="required-field form-control" disabled>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <p class="text-muted" style="padding-top:13px">Lot Number <span class="isEditable d-none text-danger">*</span><span style="float:right">:</span></p>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <input type="text" id="txtreallot_@tabId" value="@tab.Value[0].LOT_NO" class="required-field form-control lotnofield" disabled>
+                                    </div>
+                                </div>
+
+                                <div class="row align-items-center">
+                                    <div class="col-sm-2">
+                                        <p class="text-muted" style="padding-top:13px">Material Name <span class="isEditable d-none text-danger">*</span><span style="float:right">:</span></p>
+                                    </div>
+                                    <div class="col-sm-5">
+                                        <input type="text" id="txtrealmat_@tabId" value="@tab.Value[0].SUPPLIER_MATERIAL_NAME" class="required-field form-control" disabled>
+                                    </div>
+                                    <div class="col-sm-2">
+                                        <p class="text-muted" style="padding-top:13px">TPM Code <span class="isEditable d-none text-danger">*</span><span style="float:right">:</span></p>
+                                    </div>
+                                    <div class="col-sm-3">
+                                        <input type="text" id="txtreallot_@tabId" value="@tab.Value[0].TPM_CODE" class="required-field form-control" disabled>
+                                    </div>
+                                </div>
+                                <input type="hidden" id="txtsuppid_@tabId" value="@tab.Value[0].MM_SUPPLIER_H_ID" />
+                                <input type="hidden" id="itemmatid_@tabId" value="@tab.Value[0].MM_MATERIAL_H_ID" />
+
+                                <div class="row mt-2 mx-1">
+                                    <table id="item-table-@tabId" class="detailTable" style="width:100%">
+                                        <thead>
+                                            <tr class="toolbar-row">
+                                                <th hidden></th>
+                                                <th style="width: 20%; text-align: left;">Supplier Specification</th>
+                                                <th style="width: 12%; text-align: left;">Set Value</th>
+                                                <th style="width: 20%; text-align: left;">Supplier Specification (OCR)</th>
+                                                <th style="width: 10.5%; text-align: left;">Supplier Spec Accuracy</th>
+                                                <th style="width: 12%; text-align: left;">Result</th>
+                                                <th style="width: 10.5%; text-align: left;">Result Accuracy</th>
+                                                <th style="width: 12%; text-align: left;">Comparison Result</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in tab.Value)
+                                            {
+                                                rowCount++;
+                                                <tr id="R_@tabId-@rowCount" data-did="@rowCount">
+                                                    <td hidden><input type="text" class="form-control" id="item_d2id_@tabId-@rowCount" value="@item.MM_MATERIAL_D2_ID"></td>
+                                                    <td hidden><input type="text" class="form-control item-mm-spec-type" id="item_mm_spec_type_@tabId-@rowCount" value="@item.SUPPLIER_SPEC_TYPE"></td>
+                                                    <td id="item_mm_spec_@tabId-@rowCount">@item.SUPPLIER_SPEC_NAME</td>
+                                                    <td id="item_mm_spec_val_@tabId-@rowCount" class="mm_spec_val">@item.SUPPLIER_SPEC_VALUE</td>
+                                                    <td>
+                                                        <input type="text" class="isEditable form-control" id="item_ocr_spec_@tabId-@rowCount" value="@item.OCR_INSPECTION_ITEM" style="border:none; box-shadow: none;">
+                                                    </td>
+                                                    <td id="item_cfs_ocr_spec_@tabId-@rowCount"
+                                                        style="color: @(decimal.TryParse(item.OCR_INSPECTION_ITEM_SCORE, out decimal inspectionScore) && inspectionScore < 0.9M ? "#B1003C" : "inherit")">
+                                                        @(decimal.TryParse(item.OCR_INSPECTION_ITEM_SCORE, out inspectionScore) ? inspectionScore.ToString("F4") : item.OCR_INSPECTION_ITEM_SCORE)
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="isEditable form-control item_ocr_spec_value" id="item_ocr_spec_value_@tabId-@rowCount" value="@item.OCR_RESULT" style="border:none; box-shadow: none;">
+                                                    </td>
+                                                    <td id="item_cfs_ocr_spec_value_@tabId-@rowCount"
+                                                        style="color: @(decimal.TryParse(item.OCR_RESULT_SCORE, out decimal resultScore) && resultScore < 0.9M ? "#B1003C" : "inherit")">
+                                                        @(decimal.TryParse(item.OCR_RESULT_SCORE, out resultScore) ? resultScore.ToString("F4") : item.OCR_RESULT_SCORE)
+                                                    </td>
+                                                    <td id="item_comp_result_@tabId-@rowCount" class="item_comp_result"
+                                                        style="color: @(item.COMPARISON_RESULT == "APPROVED" ? "#00A251" :
+                                                        item.COMPARISON_RESULT == "TO BE CONFIRMED" ? "#FF850A" : "#B1003C")">
+                                                        @item.COMPARISON_RESULT
+                                                    </td>
+                                                    <td class="d-none">
+                                                        <input type="text" class="form-control" id="item_did_@tabId-@rowCount" value="@item.DE_OCR_D_ID">
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                    <input type="hidden" id="item-count-@tabId" value="@rowCount" />
+                                </div>
+                            </div>
+
+                            tabcount2++;
+                        }
+                    }
+                </div>
+
+
+                <div class="hideInfo">
+                    <hr />
+
+                    <div class="row row-cols-2 mt-4">
+                        <div class="col align-self-center">
+                            <h6 style="float: left" class="text-muted">Entry Details</h6>
+                        </div>
+                        <div class="col">
+
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Updated By<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.UPDATED_BY">
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="text-muted">Created By<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.CREATED_BY">
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Updated Date<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.UPDATED_DATE">
+                        </div>
+                        <div class="col-sm-2">
+                            <p class="text-muted">Created Date<span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" disabled value="@Model.CREATED_DATE">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        
+
+        <div class="row tr-btm-btn-area">
+            @if (Model.RECORD_TYP != null)
+            {
+                if (@Model.RECORD_TYP != "5" && ViewBag.isManager == "Y")
+                {
+                    <div class="col"><button id="btnDeleteView" type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#delete-confirmation-modal">Delete</button></div>
+                }
+
+            }
+            <div class="col">
+                <div class="row row-cols-auto justify-content-end isNotEditable" style="padding-right: 20px">
+                    <div class="col"><button id="btnCancelView" type="button" class="btn btn-sm btn-secondary">Back</button></div>
+                </div>
+
+                <div class="row row-cols-auto justify-content-end isEditable g-1" style="display:none; padding-right: 20px">
+                    <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-target="#edit-back-confirmation-modal">Back</button></div>
+                    <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@section scripts {
+    <script>
+
+        $(document).ready(function () {
+            var listingURL = '/COA_DE_OCR/COA_DE_OCR_LST';
+            var idh = '@Model.DE_OCR_H_ID' != 0 ? '@Model.DE_OCR_H_ID' : 0;
+
+            $('[data-bs-toggle="tooltip"]').tooltip();
+
+            //SUBMIT
+            $('#btnConfirmSubmit').on('click', function () {
+                var cont = true;
+                var message = "";
+                var list1 = [];
+
+                var hasItem = false;
+                var hasError = false;
+                var hasReject = false;
+                var hasInvResult = false;
+
+                //txtfileName = $("#txtfileName").val();
+                txtocrindicator = $("#txtocrindicator").val();
+
+                //if (txtfileName == undefined || txtfileName == null || txtfileName == "") {
+                //    cont = false;
+                //    message += 'Error in getting file name. <br>';
+                //}
+
+                $(".detailTable").each(function () {
+                    var tableId = $(this).attr("id"); //item-table-11
+                    var newtableid = tableId.replace("item-table-", "");  //11
+
+                    if ($("#item-count-" + newtableid).val() != "0") {
+                        $(this).find("tbody tr").each(function () {
+                            var did = $(this).data("did");
+
+                            if (did != '' && did != null && did != undefined) {
+
+                                var txtsuppid = $("#txtsuppid_" + newtableid).val();
+                                var itemmatid = $("#itemmatid_" + newtableid).val();
+                                var txtreallot = $("#txtreallot_" + newtableid).val();
+                                var txtfilename = $("#txtfileName_" + newtableid).val();
+
+                                var item_d2id = $("#item_d2id_" + newtableid + "-" + did).val().trim();
+                                var item_mm_spec = $("#item_mm_spec_" + newtableid + "-" + did).text().trim();
+                                var item_mm_spec_val = $("#item_mm_spec_val_" + newtableid + "-" + did).text().trim();
+                                var item_ocr_spec = $("#item_ocr_spec_" + newtableid + "-" + did).val().trim();
+                                var item_cfs_ocr_spec = $("#item_cfs_ocr_spec_" + newtableid + "-" + did).text().trim();
+                                var item_ocr_spec_value = $("#item_ocr_spec_value_" + newtableid + "-" + did).val().trim();
+                                var item_cfs_ocr_spec_value = $("#item_cfs_ocr_spec_value_" + newtableid + "-" + did).text().trim();
+                                var item_comp_result = $("#item_comp_result_" + newtableid + "-" + did).text().trim();
+
+                                if (item_comp_result != 'APPROVED' && item_comp_result != 'REJECTED') {
+                                    hasInvResult = true;
+                                }
+
+                                if (item_ocr_spec != "Not captured by OCR" && item_ocr_spec != "" && item_ocr_spec != undefined
+                                    && item_ocr_spec_value != "" && item_ocr_spec_value != undefined
+                                    && item_mm_spec != "" && item_mm_spec != undefined && item_mm_spec_val != "" && item_mm_spec_val != undefined) {
+                                    hasItem = true;
+
+                                    if (item_comp_result != 'APPROVED') {
+                                        hasReject = true;
+                                    }
+
+                                    list1.push({
+                                        'supplier_id': txtsuppid,
+                                        'MATERIAL_ID': itemmatid,
+                                        'lot_no': txtreallot,
+                                        'final_name': txtfilename,
+                                        'RECORD_TYP': 1,
+
+                                        'MM_MATERIAL_D2_ID': item_d2id,
+                                        'ocr_spec': item_ocr_spec,
+                                        'cfs_ocr_spec': item_cfs_ocr_spec,
+                                        'ocr_spec_value': item_ocr_spec_value,
+                                        'cfs_ocr_spec_value': item_cfs_ocr_spec_value,
+                                        'compare_result': item_comp_result
+                                    });
+                                } else {
+                                    hasError = true;
+                                }
+                            }
+                        });
+                    }
+
+                });
+
+                if (cont && hasInvResult) {
+                    cont = false;
+                    message = "Please make sure Result for each row is either APPROVED or REJECTED only.";
+                }
+
+                if (cont && hasError) {
+                    cont = false;
+                    message = "Please make sure all OCR Supplier Specification and Result (including Not captured by OCR field) are not empty.";
+                }
+                if (cont && !hasItem) {
+                    cont = false;
+                    message = "Please fill in at least one data in each tab.";
+                }
+
+                var final_result = 'APPROVED';
+                if (hasReject) {
+                    final_result = 'REJECTED'
+                }
+
+                if (cont) {
+                    var model = {
+                        DE_OCR_H_ID: idh,
+                        RECORD_TYP: '3',
+
+                        ENTRY_TYPE: 'OCR',
+                        OCR_INDICATOR: txtocrindicator,
+                        //FINAL_FILE_NAME: txtfileName,
+                        //FILE_NAME: txtfileName,
+                        FINAL_RESULT: final_result,
+                        MMOCRDataLst: list1
+                    };
+
+                    console.log(model);
+
+                    $.ajax({
+                        url: "/COA_DE_OCR/InsertUpdateDEOCR",
+                        type: 'POST',
+                        data: {
+                            model: model
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data save successfully");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                loadings(false);
+                                if (response.type == "EF") {
+                                    displayToast("error", response.message);
+                                    setTimeout(function () {
+                                        window.location.href = listingURL;
+                                    }, 2000);
+                                } else {
+                                    displayToast("error", response.message);
+                                }
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            console.log(jqXHR.responseText);
+                            displayToast("error", jqXHR.responseText || "An error occurred");
+                        }
+                    });
+
+                } else {
+                    if (message != "") {
+                        displayToast("error", message);
+                    }
+                }
+            });
+
+            // BUTTON DELETE
+            $('#btnConfirmDel').on('click', function () {
+
+                var lstid = [];
+                lstid.push(idh)
+
+                $.ajax({
+                    url: "/COA_DE_OCR/deleteCOAOCR",
+                    type: 'POST',
+                    data: {
+                        lstid: lstid
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data successfully deleted");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            });
+
+            //BUTTON CANCEL/BACK
+            $('#btnCancelView').on('click', function () {
+                var del = '0';
+                window.location.href = listingURL + '?Deleted=' + del;
+            });
+
+            $('#btnBackEdit').on('click', function () {
+                window.location.href = listingURL;
+            });
+
+            $(document).on("input", ".item_ocr_spec_value", debounce(handleInput, 300));
+        });
+
+        function viewFile(name) {
+            $.ajax({
+                url: "/COA_DE_OCR/CheckFileExists",
+                type: "POST",
+                data: { fileName: name },
+                success: function (response) {
+                    if (response.exists) {
+                        window.open(response.path, "width=500,height=500,top=100,left=500");
+                    } else {
+                        displayToast("error", "File not found or cannot be accessed.");
+                    }
+                },
+                error: function () {
+                    displayToast("error", "Error checking file existence.");
+                }
+            });
+        }
+
+        function compareResult(type, mm_spec_val, ocr_val) {
+            let result = "APPROVED";
+
+            if (type === "Text") {
+                if (ocr_val.toLowerCase().trim() !== mm_spec_val.toLowerCase().trim()) {
+                    result = "REJECTED";
+                }
+            } else if (type === "Range") {
+                if (!mm_spec_val.includes("~")) {
+                    return "Invalid range format";
+                }
+
+                let parts = mm_spec_val.split("~").map(s => s.trim());
+                if (parts.length === 2) {
+
+                    let minVal = parseFloat(parts[0].trim());
+                    let maxVal = parseFloat(parts[1].trim());
+
+                    if (!/^\d+(\.\d+)?$/.test(ocr_val.trim())) {
+                        return "Invalid numeric values";
+                    }
+
+                    let ocrValue = parseFloat(ocr_val);
+
+                    if (!isNaN(minVal) && !isNaN(maxVal) && !isNaN(ocrValue)) {
+                        if (ocrValue < minVal || ocrValue > maxVal) {
+                            result = "REJECTED";
+                        }
+                    } else {
+                        result = "Invalid numeric values";
+                    }
+                } else {
+                    result = "Invalid range format";
+                }
+            } else if (type === "Numeric") {
+                if (!/^[-]?\d+(\.\d+)?$/.test(ocr_val.trim())) {
+                    return "Invalid numeric values";
+                }
+
+                let match = mm_spec_val.trim().match(/^(<=|>=|<|>|=)?\s*(-?\s*\d+(\.\d+)?)$/);
+
+                if (match) {
+                    let operatorSymbol = match[1] || "=";
+                    let numberStr = match[2].replace(/\s+/g, "");
+                    let specValue = parseFloat(numberStr);
+                    let ocrValue = parseFloat(ocr_val);
+
+                    if (!isNaN(specValue) && !isNaN(ocrValue)) {
+                        switch (operatorSymbol) {
+                            case "<=":
+                                if (!(ocrValue <= specValue)) result = "REJECTED";
+                                break;
+                            case ">=":
+                                if (!(ocrValue >= specValue)) result = "REJECTED";
+                                break;
+                            case "<":
+                                if (!(ocrValue < specValue)) result = "REJECTED";
+                                break;
+                            case ">":
+                                if (!(ocrValue > specValue)) result = "REJECTED";
+                                break;
+                            case "=":
+                                if (!(ocrValue === specValue)) result = "REJECTED";
+                                break;
+                        }
+                    } else {
+                        result = "Invalid numeric values";
+                    }
+                } else {
+                    result = "Invalid numeric values";
+                }
+            } else {
+                result = "Invalid Spec Type";
+            }
+
+            return result;
+        }
+
+        function handleInput(event) {
+            let row = $(event.target).closest("tr");
+            let tabId = row.closest(".tab-pane").attr("id").replace("nav", "");
+            let rowIdx = row.data("did");
+
+            let type = row.find(".item-mm-spec-type").val();
+            let mm_spec_val = row.find(".mm_spec_val").text();
+            let ocr_val = $(event.target).val();
+
+            let result = compareResult(type, mm_spec_val, ocr_val);
+
+            let resultElement = row.find(".item_comp_result");
+            resultElement.text(result);
+            resultElement.css("color",
+                result === "APPROVED" ? "#00A251" :
+                    result === "TO BE CONFIRMED" ? "#FF850A" : "#B1003C");
+
+        }
+
+        function debounce(func, delay) {
+            let timer;
+            return function (...args) {
+                clearTimeout(timer);
+                timer = setTimeout(() => func.apply(this, args), delay);
+            };
+        }
+
+
+    </script>
+}
+

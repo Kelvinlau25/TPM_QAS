@@ -1,0 +1,446 @@
+﻿@using TPM_QAS.Models
+@model IEnumerable<CommonGroupModel>
+
+@{
+    ViewBag.Title = "COMMON GROUP MM - List";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="row g-0 px-3 tr-listing-header">
+    <div class="col-sm-6 align-self-center">
+        <p class="text-muted m-0 tr-listing-header-title">Main Listing - Common Group</p>
+    </div>
+    <div class="col-sm-6 text-end align-self-center">
+        <div class="d-flex justify-content-end">
+            <div class="dt-buttons btn-group flex-wrap">
+                <a href="@Url.Action("MM_COMMON_GROUP_ADD", "MM_COMMON_GROUP")" class="btn btn-sm btn-outline-secondary mt-1 my-button" tabindex="0" aria-controls="tr-datatable" id="btnAdd"><span><i class="fa-solid fa-plus text-primary"></i>&nbsp;&nbsp; Create Form</span></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+<div class="page-container px-3 overflow-auto">
+    <div class="tr-btm-btn-margin">
+        <div>
+            <div class="row mt-3 pb-2">
+                <div class="col-12 col-sm-8 d-flex align-items-end">
+                    <div class="accordion" id="accordionExample">
+                        <div class="accordion-item" style="border-radius: 0px !important; min-width:250px">
+                            <div class="row align-items-center">
+                                @if (TempData["STATUS_DDL"] != null)
+                                {
+                                    List<SelectListItem> statusList = TempData["STATUS_DDL"] as List<SelectListItem>;
+                                    @Html.DropDownList("select-id", statusList, new { @class = "tr-select", style = "color: #FCFCFC; border: 0px" })
+                                }
+                            </div>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample" style="border-top: 1px solid #F0F0F0">
+                                <div class="accordion-body text-center">
+                                    @if (Model.Count() > 1)
+                                    {
+                                        <p class="h6 m-0 p-2 tr-rec" style="color: #00A251">@Model.Count() entries</p>
+                                    }
+                                    else
+                                    {
+                                        <p class="h6 m-0 p-2 tr-rec" style="color: #00A251">@Model.Count() entry</p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-4" style="margin-left:10px;">
+                        <input type="checkbox" id="cbCheckDeleted" name="cbCheckDeleted" onclick="CheckDeleted('@Url.Action("MM_COMMON_GROUP_LST", "MM_COMMON_GROUP")')">
+                        <label class="form-check-label" style="margin-bottom:1px;" for="cbCheckDeleted">Show Deleted Records</label>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-4 align-self-end tr-text pb-0 mb-0" id="action-bar">
+                    <div class="dt-buttons btn-group flex-wrap">
+                        <button class="m-0 p-0 tr-btn tr-audit my-button" tabindex="0" aria-controls="tr-datatable" type="button" id="btnAuditTrail"><span>Audit Trail</span></button>
+                    </div>
+                    <div class="dt-buttons btn-group flex-wrap">
+                        <button class="tr-btn m-0 py-0 px-3 text-danger tr-trash isHide" tabindex="0" aria-controls="tr-datatable" type="button" id="btnDelete" data-bs-toggle="modal" data-bs-target="#delete-confirmation-modal"><span><i class="fa-solid fa-trash-can tr-icon-size tr-icon-del"></i></span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <table id="tr-datatable" class="table table-hover table-bordered compact" style="width:100%; margin-top: 0px !important">
+                <thead>
+                    <tr style="background-color:#FCFCFC">
+                        <th></th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>View</th>
+                    </tr>
+                </thead>
+                <tbody> </tbody>
+            </table>
+        </div>
+
+        <div class="row tr-btm-btn-area">
+            <div class="col">
+                <div class="aud export-section py-2"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!--ADV SEARCH MODAL-->
+<div class="modal fade" id="ASModal" tabindex="-1" role="dialog" data-backdrop="false">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" style="float:left;">Advanced Search</h5>
+            </div>
+            <hr />
+            <div class="modal-body" id="searchSourceBody">
+                <div class="container-fluid">
+                    <div class="row align-items-center mb-2">
+                        <div class="col-md-2 isLabel">Category <span style="float:right">:</span></div>
+                        <div class="col-md-4">
+                            <input class="form-control" id="AS_FIELD1" type="text" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="reset" id="btnReset" class="btn btn-sm btn-secondary" style="margin-right: auto;">Reset</button>
+                <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Back</button>
+                <button type="button" class="btn btn-sm btn-primary" onclick="as_search();" data-bs-dismiss="modal">Search</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section scripts {
+    <script type="text/javascript">
+        var table;
+        var data = [], dataAll = [];
+        var jsonData = @Html.Raw(Json.Encode(Model));
+        var data = jsonData;
+        dataAll = data;
+
+        $(document).ready(function () {
+            $.when(loaddatatable()).then(function () {
+                setTimeout(function () {
+                    table.columns.adjust();
+                    loadings(false);
+                }, 10);
+            })
+        });
+
+        function loaddatatable() {
+            //loadDataTable
+
+            table = $('#tr-datatable').DataTable({
+                data: data,
+                scrollCollapse: true,
+                scrollY: calcDataTableHeight,
+                pagingType: 'simple_numbers',
+                columns: [
+                    { data: 'MM_COMMONGROUP_H_ID' },
+                    { data: 'CATEGORY' },
+                    { data: 'REC_TYPE_DESC' },
+                    { data: 'MM_COMMONGROUP_H_ID' },
+                ],
+                columnDefs: [{
+                    targets: 0,
+                    render: function (data, type, row, meta) {
+                        if (type === 'display') {
+                            data = `<div class="checkbox"><input type="checkbox" class="dt-checkboxes" value="${data}"><label></label></div>`;
+                        }
+                        return data;
+                    },
+                    checkboxes: {
+                        selectRow: true,
+                        selectAllRender: '<div class="checkbox"><input type="checkbox" class="dt-checkboxes"><label></label></div>'
+                    }
+                }, {
+                    targets: 2,
+                    render: function (data, type, row, meta) {
+                        var _status = row.REC_TYPE_DESC;
+                        var _color = "";
+                        if (_status == "New") {
+                            _color = "#00A251";
+                        } else if (_status == "Amend") {
+                            _color = "#004098";
+                        } else if (_status == "Draft") {
+                            _color = "#FF850A";
+                        } else if (_status == "Deleted") {
+                            _color = "#B1003C";
+                        } else {
+                            _color = "#585858";
+                        }
+                        return '<span style=color:' + _color + '>' + _status + '</span>';
+                    }
+                }, {
+                    targets: 3,
+                    render: function (data, type, row, meta) {
+                        if (type === 'display') {
+                            var href = row.REC_TYPE_DESC === "Draft" ?
+                                `/MM_COMMON_GROUP/MM_COMMON_GROUP_ADD/${data}` :
+                                `/MM_COMMON_GROUP/MM_COMMON_GROUP_DETAIL/${data}`;
+
+                            data = `<a href="${href}" class="name tr-icon-size"><i class="fa-solid fa-eye my-button"></i></a>`;
+                        }
+                        return data;
+                    },
+                    orderable: false
+                }],
+                select: {
+                    style: 'multi',
+                    info: false,
+                    selector: 'td:nth-child(1)'
+                },
+                order: [],
+                dom: "<'row toolbar-row g-0'<'col-sm-12 col-md-6 align-self-center'l><'col-sm-12 col-md-6'<'d-flex justify-content-end'<'toolbar'>>>>" +
+                    "<'row'<'col-sm-12'tr>>" +
+                    "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'<'d-flex justify-content-end'p<'go-to align-self-center mx-2'>>>>",
+                initComplete: function () {
+                    $("div.toolbar").html(
+                        '<div class="input-group input-group-sm">' +
+                        '<input type="text" id="txtSearch" class="form-control remove-right-border" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
+                        '<div class="input-group-text listing-search-icon">' +
+                        '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                        '</div>' +
+                        '<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#ASModal" id="btnAS" style="min-width: 30px; background-color: #057FE5;"><i class="fa-solid fa-sliders" style="transform: rotate(90deg);"></i></button>' +
+                        '</div>'
+                    );
+                },
+                drawCallback: function (settings) {
+                    var api = this.api();
+                    $("#txtGoTo").val(api.page() + 1);
+                }
+            });
+
+            console.log(data)
+
+            $("div.go-to").html('<div class="d-flex align-items-center p-0"><input class="form-control" type="text" id="txtGoTo" style="width:50px" value=1> &nbsp; <div class="page-info">of ' + table.page.info().pages + '</div></div>');
+            $("#txtGoTo").on('keyup', function (e) {
+                try {
+                    var page = e.target.value;
+                    if ($.isNumeric(page) && page > 0 && page <= table.page.info().pages) {
+                        table.page(page - 1).draw('page');
+                    } else if (e.target.value.trim() == '') {
+
+                    }
+                    else {
+                        e.target.value = table.page() + 1;
+                    }
+
+                } catch (ex) {
+                    console.warn(ex.toString());
+                    e.target.value = 1;
+                }
+            });
+            $("#txtGoTo").on('blur', function (e) {
+                try {
+                    var page = e.target.value;
+                    if (page.trim() == '') {
+                        $("#txtGoTo").val(1);
+                        table.page(0).draw('page');
+                        $("#txtGoTo").focus();
+                    }
+                } catch (ex) {
+                    console.warn(ex.toString());
+                    e.target.value = 1;
+                }
+            });
+            $(".dataTables_length .form-select").on('change', function () {
+                $("#txtGoTo").val(table.page() + 1);
+                $("div.page-info").html('of ' + table.page.info().pages + '</div>');
+            });
+            table.on('select deselect', function (e, dt, type, indexes) {
+                var rowCnt = table.rows({ selected: true }).count();
+                console.log('count', rowCnt);
+                if (rowCnt > 0) {
+                    $(".tr-trash").removeClass('isHide');
+                    //$(".tr-audit").removeClass('isHide');
+                    $("#btnExport").prop('disabled', false);
+                } else {
+                    $(".tr-trash").addClass('isHide');
+                    //$(".tr-audit").addClass('isHide');
+                    $("#btnExport").prop('disabled', true);
+                }
+            });
+
+
+            //Multi Select
+            var abc = $('.tr-select2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.tr-select2:input').val('');
+            $('.tr-select2').multiselect('rebuild');
+
+            $('.multiselectpicker').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.multiselectpicker2').multiselect({
+                buttonClass: 'form-select form-control text-start',
+                templates: {
+                    button: '<button type="button" class="multiselect dropdown-toggle" data-bs-toggle="dropdown"><span class="multiselect-selected-text"></span></button>',
+                }
+            });
+            $('.multiselect-native-select > .btn-group').addClass("w-100");
+            $('.multiselect-native-select > .btn-group > .multiselect').removeClass("text-center");
+            $('.multiselect-native-select > .btn-group > .multiselect-container').addClass("w-100");
+
+            addTableButtons();
+
+            $('.tr-select').on('change', function (e) {
+                if (e.target.value == "All") {
+                    data = dataAll;
+                } else {
+                    data = dataAll.filter(x => x.REC_TYPE_DESC.toString() == e.target.value);
+                }
+                if (data.length > 1) {
+                    $('.tr-rec').text(data.length + ' entries');
+                } else {
+                    $('.tr-rec').text(data.length + ' entry');
+                }
+
+                table.clear().rows.add(data).draw();
+            });
+        }
+
+        $(document).on('click', '#btnSearch', function (e) {
+            e.preventDefault();
+            as_exclude();
+            table.search($('#txtSearch').val()).draw();
+        });
+        $(document).on('keyup', '#txtSearch', function (e) {
+            as_exclude();
+            table.search($(this).val()).draw();
+        });
+
+        $(document).on('click', '#btnReset', function (e) {
+            e.preventDefault();
+            $('#AS_FIELD1').val('');
+            as_search();
+        });
+        function as_search() {
+            table.search("");
+            table.columns(1).search($('#AS_FIELD1').val().trim());
+            table.draw();
+        }
+        function as_exclude() {
+            table.columns(1).search("");
+        }
+
+
+
+    </script>
+
+    <script>
+
+        $(document).ready(function () {
+
+            var listingURL = '/MM_COMMON_GROUP/MM_COMMON_GROUP_LST';
+
+            //Audit action control
+            var audit_url = '@Url.Action("MM_COMMON_GROUP_AUDIT", "MM_COMMON_GROUP")';
+
+            $('#btnAuditTrail').on('click', function () {
+                cont = true;
+                message = "";
+
+                var checkedValues = [];
+                var checkboxes = table.column(0).nodes().to$().find('.dt-checkboxes');
+                checkboxes.each(function () {
+                    if ($(this).is(':checked')) {
+                        checkedValues.push($(this).val());
+                    }
+                });
+
+                if (checkedValues.length == 0) {
+                    cont = false;
+                    message = "Please tick a record first.";
+                }
+
+                if (checkedValues.length > 1) {
+                    cont = false;
+                    message = "Multiple selection for audit trail is not applicable.";
+                }
+
+                if (cont) {
+                    var first_checked = checkedValues[0];
+                    window.location.href = audit_url + '?id=' + first_checked;
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+            });
+
+            //Delete action control
+            $('#btnConfirmDel').on('click', function () {
+                var cont = true;
+                var message = "";
+
+                var checkedValues = [];
+                var checkboxes = table.column(0).nodes().to$().find('.dt-checkboxes');
+                checkboxes.each(function () {
+                    if ($(this).is(':checked')) {
+                        checkedValues.push($(this).val());
+                    }
+                });
+
+                var first_checked = checkedValues[0];
+
+                if (first_checked == undefined || first_checked == null) {
+                    cont = false;
+                    message = "Please tick a record first to delete.";
+                }
+
+                if (cont) {
+
+                    $.ajax({
+                        url: "/MM_COMMON_GROUP/deleteCommonGroup",
+                        type: 'POST',
+                        data: {
+                            lstid: checkedValues
+                        },
+                        beforeSend: function () {
+                            loadings();
+                        },
+                        success: function (response) {
+                            loadings(false);
+                            if (response.success) {
+                                displayToast("s", "Data successfully deleted");
+
+                                setTimeout(function () {
+                                    window.location.href = listingURL;
+                                }, 2000);
+
+                            } else {
+                                displayToast("error", response.message)
+                            }
+                        },
+                        error: function () {
+                            displayToast("error", response.responseText)
+                        }
+                    });
+                } else {
+                    if (message != "") {
+                        displayToast("error", message)
+                    }
+                }
+
+            });
+
+        });
+
+    </script>
+}
+

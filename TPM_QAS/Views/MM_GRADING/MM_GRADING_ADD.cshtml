@@ -1,0 +1,1744 @@
+﻿
+@using TPM_QAS.Models
+@model GradingModel
+@{
+    ViewBag.Title = "GRADING MM - Add";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@using (Html.BeginForm("MM_GRADING_ADD", "MM_GRADING", FormMethod.Post, new { encType = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="row g-0 px-3 tr-listing-header">
+        <div class="col-sm-6 align-self-center">
+            <p class="text-muted m-0 tr-listing-header-title">New Form - Grading</p>
+        </div>
+    </div>
+
+    <div style="border-top:1px solid #F0F0F0; margin-top:-1px" class="tr-btm-line"></div>
+
+    <div class="page-container px-3 overflow-auto">
+        <div class="tr-btm-btn-margin">
+            <div class="card mt-3 mb-2 card-height height-override">
+                <div class="card-body">
+                    <div class="row align-items-baseline">
+                        <div class="col"><h6 class="card-title text-muted">Grading</h6></div>
+                        <div class="col text-end"></div>
+                    </div>
+
+                    <hr />
+
+                    @Html.HiddenFor(model => model.COMP_GROUP, new { id = "compGroupHidden" })
+
+                    <input type="text" id="temp_properties" hidden>
+                    <input type="text" id="temp_section" hidden>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted">Company Group <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(m => m.COMP_GROUP, "COMPOUNDER", new { id = "compounderRadio", @class = "form-check-input", onchange = "handleRadioChange()" })
+                                <label class="form-check-label" for="compounderRadio">Compounder</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                @Html.RadioButtonFor(m => m.COMP_GROUP, "TPM", new { id = "tpmRadio", @class = "form-check-input", onchange = "handleRadioChange()" })
+                                <label class="form-check-label" for="tpmRadio">TPM</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="radioline" style="display:none">
+                        <div class="row mt-2 align-items-baseline">
+                            <div class="col-sm-2">
+                                <p class="text-muted">Production Line <span class="text-danger">*</span><span style="float:right">:</span></p>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="form-check form-check-inline">
+                                    @Html.RadioButtonFor(m => m.PROD_LINE, "CE", new { id = "ceRadio", @class = "form-check-input"})
+                                    <label class="form-check-label" for="ceRadio">CE</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    @Html.RadioButtonFor(m => m.PROD_LINE, "CAP", new { id = "capRadio", @class = "form-check-input" })
+                                    <label class="form-check-label" for="capRadio">CAP</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mt-2 align-items-baseline">
+                        <div class="col-sm-2">
+                            <p class="text-muted"><span>Product Type </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                        </div>
+                        <div class="col-sm-5">
+                            @Html.DropDownListFor(Model => Model.MM_PRODTYPE_H_ID, Model.DropdownProdType, "Select an option..", new { id = "ddlprodtype", @class = "ddloption form-control form-select", required = "required" })
+                        </div>
+                        <div class="col-sm-4">
+                            <button class="btn btn-sm btn-md btn-primary" id="gradDuplBtn" type="button" onclick="popupGradingDuplicate()">
+                                Duplicate
+                            </button>
+                        </div>
+                    </div>
+
+                    <nav class="tr-tab">
+                        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                            <button class="nav-link active" id="nav-normal-tab" data-bs-toggle="tab" data-bs-target="#nav-normal" type="button" role="tab" aria-controls="nav-normal" aria-selected="true">Normal</button>
+                            <button class="nav-link" id="nav-appearance-tab" data-bs-toggle="tab" data-bs-target="#nav-appearance" type="button" role="tab" aria-controls="nav-appearance" aria-selected="false">Appearance</button>
+                            <button class="nav-link" id="nav-passgrade-tab" data-bs-toggle="tab" data-bs-target="#nav-passgrade" type="button" role="tab" aria-controls="nav-passgrade" aria-selected="false">Passing Grade</button>
+                        </div>
+                    </nav>
+                    <div class="tab-content p-2" id="nav-tabContent" style="border: 4px solid #EBF3FF;">
+
+                        @*TAB 1*@
+                        <div class="tab-pane fade show active" id="nav-normal" role="tabpanel" aria-labelledby="nav-normal-tab" tabindex="0">
+                            <div class="row row-cols-2 mt-4">
+                                <div class="col align-self-center">
+                                    <h6 class="text-muted" style="float: left">Properties Listing</h6>
+                                </div>
+                                <div class="col">
+                                    <div class="row row-cols-auto justify-content-end g-1">
+                                        <div class="col">
+                                            <button class="btn btn-sm btn-md btn-danger" id="removeBtn" type="button">
+                                                Remove
+                                            </button>
+                                        </div>
+                                        <div class="col">
+                                            <button class="btn btn-sm btn-md btn-primary" id="addBtn" type="button">
+                                                Add
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2 mx-1">
+                                <table id="item-table" class="detailTable" style="width:100%">
+                                    <thead>
+                                        <tr class="toolbar-row">
+                                            <th style="width: 3%; text-align: center;">
+                                                <input id="trCheckbox" type="checkbox" class="dt-checkboxes select-all form-check-input" style="margin-top:5.5px; display:none">
+                                            </th>
+                                            <th></th>
+                                            <th>Main Property</th>
+                                            <th>Property Item</th>
+                                            <th>Priority</th>
+                                            <th>Final Priority</th>
+                                            <th>Lower Spec</th>
+                                            <th>Upper Spec</th>
+                                            <th>Lower PCL</th>
+                                            <th>Upper PCL</th>
+                                            <th>Centre Line</th>
+                                            <th>Grade</th>
+                                            <th>Rounding</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{ var count = 0; }
+                                        @if (Model.GradingNormalLstModel != null && Model.GradingNormalLstModel.Count > 0)
+                                        {
+                                            foreach (var item in Model.GradingNormalLstModel)
+                                            {
+                                                count++;
+                                                <tr id="R_@count" data-did="@count">
+                                                    <td class="text-center">
+                                                        <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_@count" onClick="handleCheckboxClick(this)">
+                                                    </td>
+                                                    <td class="sort-handle">
+                                                        <div style="display: inline-flex">
+                                                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                                                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        <select id="item_property_norm_@count" class="form-control ddl_property" style="min-width:160px;" onchange="loadpropitem(@count)">
+                                                            <option value="@item.PROPERTY" selected></option>
+                                                        </select>
+                                                    </td>
+                                                    <td class="text-left"><select id="item_propitem_norm_@count" class="form-control ddl_propitem" style="min-width:160px;"><option value="@item.MM_PROPERTIES_H_ID" selected></option></select></td>
+                                                    <td><input type="text" class="form-control" id="item_prio_norm_@count" value="@item.PRIORITY" onkeypress="return isNumberKey(event)"></td>
+                                                    <td><input type="text" class="form-control" id="item_finalprio_norm_@count" value="@item.FINAL_PRIORITY" onkeypress="return isNumberKey(event)"></td>
+                                                    <td><input type="text" class="form-control numericInput lspec-input" id="item_lspec_norm_@count" value="@item.L_SPEC" onkeypress="return isNumberKey(event)"></td>
+                                                    <td><input type="text" class="form-control numericInput uspec-input" id="item_uspec_norm_@count" value="@item.U_SPEC" onkeypress="return isNumberKey(event)"></td>
+                                                    <td><input type="text" class="form-control numericInput lpcl-input" id="item_lpcl_norm_@count" value="@item.L_PCL" onkeypress="return isNumberKey(event)"></td>
+                                                    <td><input type="text" class="form-control numericInput upcl-input" id="item_upcl_norm_@count" value="@item.U_PCL" onkeypress="return isNumberKey(event)"></td>
+                                                    <td><input type="text" class="form-control numericInput" id="item_centre_norm_@count" value="@item.CENTRE_LINE" onkeypress="return isNumberKey(event)"></td>
+                                                    <td><input type="text" class="form-control" id="item_grade_norm_@count" value="@item.GRADE"></td>
+                                                    <td><input type="text" class="form-control" id="item_rounding_norm_@count" value="@item.ROUNDING" onkeypress="return isNumberKey(event)"></td>
+                                                    <td class="d-none">
+                                                        <input type="text" class="form-control" id="item_stat_@count" value="0">
+                                                        <input type="text" class="form-control" id="item_dbid_@count" value="@item.MM_GRADING_D1_ID">
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                <input type="hidden" id="item-count" value="@count" />
+                            </div>
+
+                        </div>
+
+                        @*TAB 2*@
+                        <div class="tab-pane fade" id="nav-appearance" role="tabpanel" aria-labelledby="nav-appearance-tab" tabindex="0">
+
+                            <div class="row row-cols-2 mt-4">
+                                <div class="col align-self-center">
+                                    <h6 class="text-muted" style="float: left">Properties Listing</h6>
+                                </div>
+                                <div class="col">
+                                    <div class="row row-cols-auto justify-content-end g-1">
+                                        <div class="col">
+                                            <button class="btn btn-sm btn-md btn-danger" id="removeBtn2" type="button">
+                                                Remove
+                                            </button>
+                                        </div>
+                                        <div class="col">
+                                            <button class="btn btn-sm btn-md btn-primary" id="addBtn2" type="button">
+                                                Add
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2 mx-1">
+                                <table id="item2-table" class="detailTable" style="width:100%">
+                                    <thead>
+                                        <tr class="toolbar-row">
+                                            <th style="width: 3%; text-align: center;">
+                                                <input id="trCheckbox2" type="checkbox" class="dt-checkboxes select2-all form-check-input" style="margin-top:5.5px; display:none">
+                                            </th>
+                                            <th></th>
+                                            <th>Section Name</th>
+                                            <th>Field Name</th>
+                                            <th>Priority</th>
+                                            <th>Final Priority</th>
+                                            <th>Lower Spec</th>
+                                            <th>Upper Spec</th>
+                                            <th>Lower PCL</th>
+                                            <th>Upper PCL</th>
+                                            <th>Calculation</th>
+                                            <th>Grade</th>
+                                            <th>Rounding</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{ var count2 = 0; }
+                                        @if (Model.GradingAppearanceLstModel != null && Model.GradingAppearanceLstModel.Count > 0)
+                                        {
+                                            foreach (var item in Model.GradingAppearanceLstModel)
+                                            {
+                                                count2++;
+                                                <tr id="R2_@count2" data-did="@count2">
+                                                    <td class="text-center">
+                                                        <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk2_@count2" onClick="handleCheckbox2Click(this)">
+                                                    </td>
+                                                    <td class="sort-handle">
+                                                        <div style="display: inline-flex">
+                                                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                                                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                                                        </div>
+                                                    </td>
+                                                    <td class="text-left">
+                                                        <select id="item_section_appr_@count2" class="form-control ddl_section" style="min-width:160px;" onchange="loadfield(@count2)">
+                                                            <option value="@item.SECTION" selected></option>
+                                                        </select>
+                                                    </td>
+
+                                                    <td class="text-left"><select id="item_field_appr_@count2" class="form-control ddl_field" style="min-width:160px;"><option value="@item.FIELD_NAME" selected></option></select></td>
+                                                    <td><input type="text" class="form-control" id="item_prio_appr_@count2" value="@item.PRIORITY" onkeypress="return isNumberKey(event)"></td>
+                                                    <td><input type="text" class="form-control" id="item_finalprio_appr_@count2" value="@item.FINAL_PRIORITY" onkeypress="return isNumberKey(event)"></td>
+                                                    <td><input type="text" class="form-control numericInput lspec-input" id="item_lspec_appr_@count2" value="@item.L_SPEC" onkeypress="return isNumberKey(event)"></td>
+                                                    <td><input type="text" class="form-control numericInput uspec-input" id="item_uspec_appr_@count2" value="@item.U_SPEC" onkeypress="return isNumberKey(event)"></td>
+                                                    <td><input type="text" class="form-control numericInput lpcl-input" id="item_lpcl_appr_@count2" value="@item.L_PCL" onkeypress="return isNumberKey(event)"></td>
+                                                    <td><input type="text" class="form-control numericInput upcl-input" id="item_upcl_appr_@count2" value="@item.U_PCL" onkeypress="return isNumberKey(event)"></td>
+                                                    <td><input type="text" class="form-control numericInput" id="item_cal_appr_@count2" value="@item.CALCULATION" onkeypress="return isNumberKey(event)"></td>
+                                                    <td><input type="text" class="form-control" id="item_grade_appr_@count2" value="@item.GRADE"></td>
+                                                    <td><input type="text" class="form-control" id="item_rounding_appr_@count2" value="@item.ROUNDING" onkeypress="return isNumberKey(event)"></td>
+                                                    <td class="d-none">
+                                                        <input type="text" class="form-control" id="item2_stat_@count2" value="0">
+                                                        <input type="text" class="form-control" id="item2_dbid_@count2" value="@item.MM_GRADING_D2_ID">
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                <input type="hidden" id="item2-count" value="@count2" />
+                            </div>
+
+                        </div>
+
+                        @*TAB 3*@
+                        <div class="tab-pane fade" id="nav-passgrade" role="tabpanel" aria-labelledby="nav-passgrade-tab" tabindex="0">
+                            <div class="row mt-2 align-items-baseline">
+                                <div class="col-sm-2">
+                                    <p class="text-muted"><span>Property </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-5">
+                                    @Html.DropDownListFor(Model => Model.PROPERTIES, Model.DropdownProperty, "Select an option..", new { id = "ddlpropertypass", @class = "ddloption form-control form-select", required = "required", onchange = "loadPropItemPass()" })
+                                </div>
+                            </div>
+
+                            <div class="row mt-2 align-items-baseline">
+                                <div class="col-sm-2">
+                                    <p class="text-muted"><span>Property Item </span> <span class="text-danger">*</span><span style="float:right">:</span></p>
+                                </div>
+                                <div class="col-sm-5">
+                                    @Html.DropDownListFor(Model => Model.MM_PROPERTIES_H_ID, Model.DropdownItem, "Select an option..", new { id = "ddlpropitempass", @class = "ddloption form-control form-select", required = "required" })
+                                </div>
+                            </div>
+
+                            <div class="row row-cols-2 mt-4">
+                                <div class="col align-self-center">
+                                    <h6 class="text-muted" style="float: left">Details</h6>
+                                </div>
+                                <div class="col">
+                                    <div class="row row-cols-auto justify-content-end g-1">
+                                        <div class="col">
+                                            <button class="btn btn-sm btn-md btn-danger" id="removeBtn3" type="button">
+                                                Remove
+                                            </button>
+                                        </div>
+                                        <div class="col">
+                                            <button class="btn btn-sm btn-md btn-primary" id="addBtn3" type="button">
+                                                Add
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row mt-2 mx-1">
+                                <table id="item3-table" class="detailTable" style="width:100%">
+                                    <thead>
+                                        <tr class="toolbar-row">
+                                            <th style="width: 3%; text-align: center;">
+                                                <input id="trCheckbox3" type="checkbox" class="dt-checkboxes select3-all form-check-input" style="margin-top:5.5px; display:none">
+                                            </th>
+                                            <th>Property Item</th>
+                                            <th>Passing Grade</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{ var count3 = 0; }
+                                        @if (Model.GradingPassingLstModel != null && Model.GradingPassingLstModel.Count > 0)
+                                        {
+                                            foreach (var item in Model.GradingPassingLstModel)
+                                            {
+                                                count3++;
+                                                <tr id="R3_@count3" data-did="@count3">
+                                                    <td class="text-center">
+                                                        <input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk3_@count3" onClick="handleCheckbox3Click(this)">
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" id="item_propitem_pass_@count3" value="@item.PROP_ITEM" placeholder="" disabled>
+                                                    </td>
+                                                    <td>
+                                                        <input type="text" class="form-control" id="item_passgrade_pass_@count3" value="@item.PASS_GRADE" placeholder="">
+                                                    </td>
+                                                    <td class="d-none">
+                                                        <input type="text" class="form-control" id="item3_stat_@count3" value="0">
+                                                        <input type="text" class="form-control" id="item3_dbid_@count3" value="@item.MM_GRADING_D3_ID">
+                                                        <input type="text" class="form-control" id="item_properties_pass_@count3" value="@item.PROPERTIES">
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                <input type="hidden" id="item3-count" value="@count3" />
+                            </div>
+
+
+                        </div>
+                    </div>
+
+
+                </div>
+            </div>
+
+            <div class="row row-cols-auto justify-content-end g-1 tr-btm-btn-area" style="padding-right: 20px">
+                <div class="col"><button id="btnBack" type="button" class="btn btn-sm btn-secondary mx-1 my-button" data-bs-toggle="modal" data-bs-target="#back-confirmation-modal">Back</button></div>
+                <div class="col"><button hidden id="btnDraft" type="button" class="btn btn-sm btn-primary">Save As Draft</button></div>
+                <div class="col"><button id="btnSubmit" type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#submit-confirmation-modal">Submit</button></div>
+            </div>
+        </div>
+    </div>
+
+}
+
+@section scripts{
+
+    <script>
+
+    $(document).ready(function () {
+
+
+        checkboxChecking();
+        checkbox2Checking();
+        checkbox3Checking();
+
+        var listingURL = '/MM_GRADING/MM_GRADING_LST';
+
+        var idh = '@Model.MM_GRADING_H_ID' != 0 ? '@Model.MM_GRADING_H_ID' : 0;
+
+        fillProperty();
+        fillPropItem();
+        fillSection();
+        fillFieldName();
+
+        $("#item-table tbody, #item2-table tbody").sortable({
+            handle: ".sort-handle",
+            axis: "y" // Enable vertical sorting only if needed
+        }).disableSelection();
+
+        //control ui based on Company Group
+        var type = $("#compGroupHidden").val();
+        if (type == "TPM") {
+            $('.radioline').show();
+        } else {
+            $('.radioline').hide();
+        }
+
+        //ADD D1
+        $('#addBtn').on('click', function () {
+
+            var rowIdx = $('#item-count').val();
+            rowIdx++;
+            $('#item-count').val(rowIdx);
+
+            $('#item-table tbody').append(`
+                    <tr id="R_${rowIdx}" data-did="${rowIdx}">
+                        <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk_${rowIdx}" onClick="handleCheckboxClick(this)"></td>
+                        <td class="sort-handle">
+                            <div style="display: inline-flex">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </div>
+                        </td>
+                        <td class="text-left"><select id="item_property_norm_${rowIdx}" class="form-control ddl_property" style="min-width:160px;" onchange="loadpropitem(${rowIdx})"><option value="0" selected></option></select></td>
+                        <td class="text-left"><select id="item_propitem_norm_${rowIdx}" class="form-control ddl_propitem" style="min-width:160px;" ><option value="0" selected></option></select></td>
+                        <td><input type="text" class="form-control" id="item_prio_norm_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td><input type="text" class="form-control" id="item_finalprio_norm_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td><input type="text" class="form-control numericInput lspec-input" id="item_lspec_norm_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td><input type="text" class="form-control numericInput uspec-input" id="item_uspec_norm_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td><input type="text" class="form-control numericInput lpcl-input" id="item_lpcl_norm_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td><input type="text" class="form-control numericInput upcl-input" id="item_upcl_norm_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td><input type="text" class="form-control numericInput" id="item_centre_norm_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td><input type="text" class="form-control" id="item_grade_norm_${rowIdx}"></td>
+                        <td><input type="text" class="form-control" id="item_rounding_norm_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td class="d-none">
+                            <input type="text" id="item_stat_${rowIdx}" value="1">
+                            <input type="text" id="item_dbid_${rowIdx}" value="0">
+
+                        </td>
+                    </tr>
+                    `);
+
+            fillProperty();
+            checkboxChecking();
+
+
+        });
+
+        //REMOVE D1
+        $('#removeBtn').on('click', function () {
+            $('#item-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                var row = $(ele).closest('tr');
+                var itemStatInput = row.find('input[id^="item_stat_"]');
+                var item_stat = itemStatInput.val();
+
+                //if (item_stat != '1') {
+                //    itemStatInput.val('5');
+                //    row.hide();
+                //} else {
+                //    row.remove();
+                //}
+
+                row.remove();
+            });
+
+            checkboxChecking();
+        });
+
+        //ADD D2
+        $('#addBtn2').on('click', function () {
+
+            var rowIdx = $('#item2-count').val();
+            rowIdx++;
+            $('#item2-count').val(rowIdx);
+
+            $('#item2-table tbody').append(`
+                    <tr id="R2_${rowIdx}" data-did="${rowIdx}">
+                        <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk2_${rowIdx}" onClick="handleCheckbox2Click(this)"></td>
+                        <td class="sort-handle">
+                            <div style="display: inline-flex">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </div>
+                        </td>
+                        <td class="text-left"><select id="item_section_appr_${rowIdx}" class="form-control ddl_section" style="min-width:160px;" onchange="loadfield(${rowIdx})"><option value="0" selected></option></select></td>
+                        <td class="text-left"><select id="item_field_appr_${rowIdx}" class="form-control ddl_field" style="min-width:160px;" ><option value="0" selected></option></select></td>
+                        <td><input type="text" class="form-control" id="item_prio_appr_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td><input type="text" class="form-control" id="item_finalprio_appr_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td><input type="text" class="form-control numericInput lspec-input" id="item_lspec_appr_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td><input type="text" class="form-control numericInput uspec-input" id="item_uspec_appr_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td><input type="text" class="form-control numericInput lpcl-input" id="item_lpcl_appr_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td><input type="text" class="form-control numericInput upcl-input" id="item_upcl_appr_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td><input type="text" class="form-control numericInput" id="item_cal_appr_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td><input type="text" class="form-control" id="item_grade_appr_${rowIdx}"></td>
+                        <td><input type="text" class="form-control" id="item_rounding_appr_${rowIdx}" onkeypress = "return isNumberKey(event)" ></td>
+                        <td class="d-none">
+                            <input type="text" id="item2_stat_${rowIdx}" value="1">
+                            <input type="text" id="item2_dbid_${rowIdx}" value="0">
+
+                        </td>
+                    </tr>
+                    `);
+
+            fillSection();
+            checkbox2Checking();
+
+        });
+
+        //REMOVE D2
+        $('#removeBtn2').on('click', function () {
+            $('#item2-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                var row = $(ele).closest('tr');
+                var itemStatInput = row.find('input[id^="item2_stat_"]');
+                var item2_stat = itemStatInput.val();
+
+                //if (item2_stat != '1') {
+                //    itemStatInput.val('5');
+                //    row.hide();
+                //} else {
+                //    row.remove();
+                //}
+
+                row.remove();
+            });
+
+            checkbox2Checking();
+        });
+
+        //ADD D3
+        $('#addBtn3').on('click', function () {
+
+            var cont = true;
+            var message = "";
+
+            var prop = $("#ddlpropertypass").val();
+            var ddlpropitempass = $("#ddlpropitempass option:selected").text();
+
+            if (ddlpropitempass == undefined || ddlpropitempass == null || ddlpropitempass == 0 || ddlpropitempass == "" || ddlpropitempass == "Select an option..") {
+                cont = false;
+                message = 'Please select Property Item. <br>';
+            }
+
+            if (cont) {
+                var rowIdx = $('#item3-count').val();
+                rowIdx++;
+                $('#item3-count').val(rowIdx);
+
+                $('#item3-table tbody').append(`
+                    <tr id="R3_${rowIdx}" data-did="${rowIdx}">
+                        <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk3_${rowIdx}" onClick="handleCheckbox3Click(this)"></td>
+                        <td><input type="text" class="form-control " value="${ddlpropitempass}"  id="item_propitem_pass_${rowIdx}" placeholder="" disabled></td>
+                         <td><input type="text" class="form-control " id="item_passgrade_pass_${rowIdx}" placeholder=""></td>
+                        <td class="d-none">
+                            <input type="text" id="item3_stat_${rowIdx}" value="1">
+                            <input type="text" id="item3_dbid_${rowIdx}" value="0">
+                            <input type="text" id="item_properties_pass_${rowIdx}" value="${prop}">
+                        </td>
+                    </tr>
+                    `);
+                checkbox3Checking();
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+
+
+        });
+
+        //REMOVE D3
+        $('#removeBtn3').on('click', function () {
+            $('#item3-table tbody input[type=checkbox]:checked').each(function (idx, ele) {
+                var row = $(ele).closest('tr');
+                var itemStatInput = row.find('input[id^="item3_stat_"]');
+                var item3_stat = itemStatInput.val();
+
+                //if (item3_stat != '1') {
+                //    itemStatInput.val('5');
+                //    row.hide();
+                //} else {
+                //    row.remove();
+                //}
+
+                row.remove();
+            });
+
+            checkbox3Checking();
+        });
+
+        //SUBMIT
+        $('#btnConfirmSubmit').on('click', function () {
+            $('.invalid-feedback').remove();
+            $('.is-invalid').removeClass('is-invalid');
+
+            var cont = true;
+            var message = "";
+
+            var ddlprodtypeID = $("#ddlprodtype").val();
+            var ddlprodtype = $("#ddlprodtype option:selected").text();
+
+            var compounder = $('#compounderRadio').is(':checked');
+            var tpm = $('#tpmRadio').is(':checked');
+            var comp_group = "";
+
+            if (compounder) {
+                comp_group = "COMPOUNDER"
+            } else {
+                if (tpm) {
+                    comp_group = "TPM"
+                }
+            }
+
+            var celine = $('#ceRadio').is(':checked');
+            var capline = $('#capRadio').is(':checked');
+            var prod_line = "";
+
+            if (celine) {
+                prod_line = "CE"
+            } else {
+                if (capline) {
+                    prod_line = "CAP"
+                }
+            }
+
+            if (ddlprodtypeID == undefined || ddlprodtypeID == null || ddlprodtypeID == 0 || ddlprodtypeID == "" || ddlprodtypeID == "Select an option..") {
+                cont = false;
+                message += 'Please select Product Type. <br>';
+            }
+
+            if (comp_group == undefined || comp_group == null || comp_group == "") {
+                cont = false;
+                message += 'Please select Company Group. <br>';
+            }
+
+            if (comp_group == "TPM") {
+                if (prod_line == undefined || prod_line == null || prod_line == "") {
+                    cont = false;
+                    message += 'Please select Production Line. <br>';
+                }
+            } else {
+                prod_line = "";
+            }
+
+            $('.required-field').each(function (e) {
+                var input_val = $(this).val().trim();
+                if (input_val == null || input_val == undefined || input_val === "") {
+                    cont = false;
+                    $(this).addClass('is-invalid');
+                    inputError(this);
+                }
+            });
+
+            var hasItem = false;
+            var hasError = false;
+            var hasDuplicate = false;
+            var hasfieldrequired = false;
+            var specvalidation = false;
+            var pclvalidation = false;
+            var existedItem = [];
+
+            var hasItem2 = false;
+            var hasError2 = false;
+            var hasDuplicate2 = false;
+            var hasfieldrequired2 = false;
+            var specvalidation2 = false;
+            var pclvalidation2 = false;
+            var existedItem2 = [];
+
+            var hasItem3 = false;
+            var hasError3 = false;
+            var hasDuplicate3 = false;
+            var hasfieldrequired3 = false;
+            var existedItem3 = [];
+
+            var list1 = [];
+            var list2 = [];
+            var list3 = [];
+
+            var seqrow = 0;
+            var sequence = 0;
+
+            //table 1
+            $("#item-table tbody tr").each(function () {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat = $('#item_stat_' + did).val();
+                    var item_dbid = $('#item_dbid_' + did).val();
+
+                    var item_property_norm_ = $('#item_property_norm_' + did).val();
+                    var item_propitemID_norm_ = $('#item_propitem_norm_' + did).val();
+                    var item_propitem_norm_ = $("#item_propitem_norm_" + did + " option:selected").text();
+                    var item_prio_norm_ = $('#item_prio_norm_' + did).val();
+                    var item_finalprio_norm_ = $('#item_finalprio_norm_' + did).val();
+                    var item_lspec_norm_ = $('#item_lspec_norm_' + did).val();
+                    var item_uspec_norm_ = $('#item_uspec_norm_' + did).val();
+                    var item_lpcl_norm_ = $('#item_lpcl_norm_' + did).val();
+                    var item_upcl_norm_ = $('#item_upcl_norm_' + did).val();
+                    var item_centre_norm_ = $('#item_centre_norm_' + did).val();
+                    if (item_centre_norm_ == '') {
+                        item_centre_norm_ = 0;
+                    }
+                    var item_grade_norm_ = $('#item_grade_norm_' + did).val();
+                    var item_rounding_norm_ = $('#item_rounding_norm_' + did).val();
+
+                    var namepath = item_property_norm_ + '*' + item_propitemID_norm_ + '*' + item_grade_norm_;
+
+                    if (item_stat != '5') {
+                        if (namepath !== "") {
+                            seqrow++;
+                            sequence = seqrow
+                            hasItem = true;
+                            if (existedItem.includes(namepath)) {
+                                hasDuplicate = true;
+                                return false;
+                            } else {
+                                if (item_property_norm_ == '' || item_property_norm_ == 0 || item_propitemID_norm_ == '' || item_propitemID_norm_ == 0 || item_prio_norm_ == '' || item_finalprio_norm_ == ''
+                                    || item_lspec_norm_ == '' || item_uspec_norm_ == '' || item_grade_norm_ == '' || item_rounding_norm_ == '') {
+                                    hasfieldrequired = true;
+                                    return false;
+                                } else {
+                                    if (parseFloat(item_lspec_norm_) > parseFloat(item_uspec_norm_)) {
+                                        specvalidation = true;
+                                    } else {
+                                        if ((item_lpcl_norm_ == "" && item_upcl_norm_!= "") || (item_lpcl_norm_ != "" && item_upcl_norm_ == "")) {
+                                            pclvalidation = true;
+                                        } else {
+                                            existedItem.push(namepath);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            hasError = true;
+                        }
+                    } else {
+                        sequence = 0
+                    }
+
+                    list1.push({
+                        'MM_GRADING_D1_ID': item_dbid,
+                        'RECORD_TYP': 1,//item_stat,
+
+                        'SEQUENCE': sequence,
+                        'PROPERTY': item_property_norm_,
+                        'MM_PROPERTIES_H_ID': item_propitemID_norm_,
+                        'PROP_ITEM': item_propitem_norm_,
+                        'PRIORITY': item_prio_norm_,
+                        'FINAL_PRIORITY': item_finalprio_norm_,
+                        'L_SPEC': item_lspec_norm_,
+                        'U_SPEC': item_uspec_norm_,
+                        'L_PCL': item_lpcl_norm_,
+                        'U_PCL': item_upcl_norm_,
+                        'CENTRE_LINE': item_centre_norm_,
+                        'GRADE': item_grade_norm_,
+                        'ROUNDING': item_rounding_norm_
+                    });
+                }
+            });
+
+            if (cont && hasError) {
+                cont = false;
+                message = "Please make sure required field in Property Item (Normal tab) is not empty.";
+            }
+            if (cont && hasDuplicate) {
+                cont = false;
+                message = "Duplicate Main Property with similar Property Item";
+            }
+            if (cont && hasfieldrequired) {
+                cont = false;
+                message = "Please make sure required fields in Properties Listing in Normal tab are not empty.";
+            }
+            if (cont && specvalidation) {
+                cont = false;
+                message = "Please make sure all Lower spec value is less than Upper Spec value in Properties Listing (Normal tab).";
+            }
+            if (cont && pclvalidation) {
+                cont = false;
+                message = "Please make sure all PCL value is set correctly in Normal tab.";
+            }
+
+            seqrow = 0;
+            sequence = 0;
+            //table 2
+            $("#item2-table tbody tr").each(function () {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat2 = $('#item2_stat_' + did).val();
+                    var item_dbid2 = $('#item2_dbid_' + did).val();
+
+                    var item_section_appr_ = $('#item_section_appr_' + did).val();
+                    var item_field_appr_ = $('#item_field_appr_' + did).val();
+                    var item_prio_appr_ = $('#item_prio_appr_' + did).val();
+                    var item_finalprio_appr_ = $('#item_finalprio_appr_' + did).val();
+                    var item_lspec_appr_ = $('#item_lspec_appr_' + did).val();
+                    var item_uspec_appr_ = $('#item_uspec_appr_' + did).val();
+                    var item_lpcl_appr_ = $('#item_lpcl_appr_' + did).val();
+                    var item_upcl_appr_ = $('#item_upcl_appr_' + did).val();
+                    var item_cal_appr_ = $('#item_cal_appr_' + did).val();
+                    var item_grade_appr_ = $('#item_grade_appr_' + did).val();
+                    var item_rounding_appr_ = $('#item_rounding_appr_' + did).val();
+
+                    var namepath2 = item_section_appr_ + '*' + item_field_appr_ + '*' + item_grade_appr_;
+
+                    if (item_stat2 != '5') {
+                        if (namepath2 !== "") {
+                            seqrow++;
+                            sequence = seqrow
+                            hasItem2 = true;
+                            if (existedItem2.includes(namepath2)) {
+                                hasDuplicate2 = true;
+                                return false;
+                            } else {
+                                if (item_section_appr_ == '' || item_section_appr_ == 0 || item_field_appr_ == '' || item_field_appr_ == 0 || item_prio_appr_ == '' || item_finalprio_appr_ == ''
+                                    || item_lspec_appr_ == '' || item_uspec_appr_ == '' || item_cal_appr_ == '' || item_grade_appr_ == '' || item_rounding_appr_ == '') {
+                                    hasfieldrequired2 = true;
+                                    return false;
+                                } else {
+                                    if (parseFloat(item_lspec_appr_) > parseFloat(item_uspec_appr_)) {
+                                        specvalidation2 = true;
+                                    } else {
+                                        if ((item_lpcl_appr_ != "" && item_upcl_appr_ == "") && (item_lpcl_appr_ == "" && item_upcl_appr_ != "")) {
+                                            pclvalidation2 = true;
+                                        } else {
+                                            existedItem2.push(namepath2);
+                                        }
+                                    }
+                                }
+                            }
+                        } else {
+                            hasError2 = true;
+                        }
+                    } else {
+                        sequence = 0
+                    }
+
+                    list2.push({
+                        'MM_GRADING_D2_ID': item_dbid2,
+                        'RECORD_TYP': 1,//item_stat2,
+
+                        'SEQUENCE': sequence,
+                        'SECTION': item_section_appr_,
+                        'FIELD_NAME': item_field_appr_,
+                        'PRIORITY': item_prio_appr_,
+                        'FINAL_PRIORITY': item_finalprio_appr_,
+                        'L_SPEC': item_lspec_appr_,
+                        'U_SPEC': item_uspec_appr_,
+                        'L_PCL': item_lpcl_appr_,
+                        'U_PCL': item_upcl_appr_,
+                        'CALCULATION': item_cal_appr_,
+                        'GRADE': item_grade_appr_,
+                        'ROUNDING': item_rounding_appr_
+                    });
+                }
+            });
+
+            if (cont && hasError2) {
+                cont = false;
+                message = "Please make sure required field in Properties Listing (Appearance tab) is not empty.";
+            }
+            if (cont && hasDuplicate2) {
+                cont = false;
+                message = "Duplicate Section Name with similar Field Name, Priority, Grade, Lower Spec and Upper Spec in Appearance tab.";
+            }
+            if (cont && hasfieldrequired2) {
+                cont = false;
+                message = "Please make sure required fields in Properties Listing in Appearance tab are not empty.";
+            }
+            if (cont && specvalidation2) {
+                cont = false;
+                message = "Please make sure all Lower spec value is less than Upper Spec value in Properties Listing (Appearance tab).";
+            }
+            if (cont && pclvalidation2) {
+                cont = false;
+                message = "Please make sure all PCL value is set correctly in Appearance tab.";
+            }
+
+            //table 3
+            $("#item3-table tbody tr").each(function () {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat3 = $('#item3_stat_' + did).val();
+                    var item_dbid3 = $('#item3_dbid_' + did).val();
+
+                    var item_propitem_pass_ = $('#item_propitem_pass_' + did).val();
+                    var item_passgrade_pass_ = $('#item_passgrade_pass_' + did).val();
+                    var item_properties_pass_ = $('#item_properties_pass_' + did).val();
+
+                    var namepath3 = item_propitem_pass_ + '*' + item_passgrade_pass_;
+
+                    if (item_stat3 != '5') {
+                        if (namepath3 !== "") {
+                            hasItem3 = true;
+                            if (existedItem3.includes(namepath3)) {
+                                hasDuplicate3 = true;
+                                return false;
+                            } else {
+                                if (item_propitem_pass_ == '' || item_passgrade_pass_ == '' ) {
+                                    hasfieldrequired3 = true;
+                                    return false;
+                                } else {
+                                    existedItem3.push(namepath3);
+                                }
+                            }
+                        } else {
+                            hasError3 = true;
+                        }
+                    }
+
+                    list3.push({
+                        'MM_GRADING_D3_ID': 0, //item_dbid3,
+                        'RECORD_TYP': 1, //item_stat3,
+
+                        'PROPERTIES': item_properties_pass_,
+                        'PROP_ITEM': item_propitem_pass_,
+                        'PASS_GRADE': item_passgrade_pass_
+                    });
+                }
+            });
+
+            if (cont && hasError3) {
+                cont = false;
+                message = "Please make sure required field in Details (Passing Grade tab) is not empty.";
+            }
+            if (cont && hasDuplicate3) {
+                cont = false;
+                message = "Duplicate Property Item with similar Passing Grade in Passing Grade tab.";
+            }
+
+            if (cont && hasfieldrequired3) {
+                cont = false;
+                message = "Please make sure required fields in Details in Passing Grade tab are not empty.";
+            }
+
+            if (!hasItem && !hasItem2 && !hasItem3) {
+                cont = false;
+                message = "Please fill in at least one of the tab.";
+            }
+
+            //if ((list1 === null || list1.length === 0) && (list2 === null || list2.length === 0) && (list3 === null || list3.length === 0)) {
+            //    cont = false;
+            //    message = "Please fill in at least one of the tab.";
+            //}
+
+            //header
+            if (cont) {
+
+                var model = {
+                    MM_GRADING_H_ID: idh,
+                    RECORD_TYP: '1',
+
+                    MM_PRODTYPE_H_ID: ddlprodtypeID,
+                    PROD_TYPE: ddlprodtype,
+                    COMP_GROUP: comp_group,
+                    PROD_LINE: prod_line,
+
+                    GradingNormalLstModel: list1,
+                    GradingAppearanceLstModel: list2,
+                    GradingPassingLstModel: list3,
+                };
+
+                console.log(model)
+
+                $.ajax({
+                    url: "/MM_GRADING/InsertUpdateGrading",
+                    type: 'POST',
+                    data: {
+                        model: model
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data save successfully");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+
+        });
+
+        //DRAFT
+        $('#btnDraft').on('click', function () {
+            var cont = true;
+            var message = "";
+
+            var ddlprodtypeID = $("#ddlprodtype").val();
+            var ddlprodtype = $("#ddlprodtype option:selected").text();
+
+            var compounder = $('#compounderRadio').is(':checked');
+            var tpm = $('#tpmRadio').is(':checked');
+            var comp_group = "";
+
+            if (compounder) {
+                comp_group = "COMPOUNDER"
+            } else {
+                if (tpm) {
+                    comp_group = "TPM"
+                }
+            }
+
+            var celine = $('#ceRadio').is(':checked');
+            var capline = $('#capRadio').is(':checked');
+            var prod_line = "";
+
+            if (celine) {
+                prod_line = "CE"
+            } else {
+                if (capline) {
+                    prod_line = "CAP"
+                }
+            }
+
+            if (ddlprodtypeID == undefined || ddlprodtypeID == null || ddlprodtypeID == 0 || ddlprodtypeID == "" || ddlprodtypeID == "Select an option..") {
+                cont = false;
+                message += 'Please select Product Type. <br>';
+            }
+
+            if (comp_group == undefined || comp_group == null || comp_group == "") {
+                cont = false;
+                message += 'Please select Company Group. <br>';
+            }
+
+            if (comp_group == "TPM") {
+                if (prod_line == undefined || prod_line == null || prod_line == "") {
+                    cont = false;
+                    message += 'Please select Production Line. <br>';
+                }
+            } else {
+                prod_line = "";
+            }
+
+            //var hasItem = false;
+            //var hasError = false;
+            var hasDuplicate = false;
+            var hasfieldrequired = false;
+            var existedItem = [];
+
+            //var hasItem2 = false;
+            //var hasError2 = false;
+            var hasDuplicate2 = false;
+            var hasfieldrequired2 = false;
+            var existedItem2 = [];
+
+            //var hasItem3 = false;
+            //var hasError3 = false;
+            var hasDuplicate3 = false;
+            var hasfieldrequired3 = false;
+            var existedItem3 = [];
+
+            var list1 = [];
+            var list2 = [];
+            var list3 = [];
+
+            var seqrow = 0;
+            var sequence = 0;
+
+            //TABLE 1
+            $("#item-table tbody tr").each(function () {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat = $('#item_stat_' + did).val();
+                    var item_dbid = $('#item_dbid_' + did).val();
+
+                    var item_property_norm_ = $('#item_property_norm_' + did).val();
+                    var item_propitemID_norm_ = $('#item_propitem_norm_' + did).val();
+                    var item_propitem_norm_ = $("#item_propitem_norm_" + did + " option:selected").text();
+                    var item_prio_norm_ = $('#item_prio_norm_' + did).val();
+                    var item_finalprio_norm_ = $('#item_finalprio_norm_' + did).val();
+                    var item_lspec_norm_ = $('#item_lspec_norm_' + did).val();
+                    var item_uspec_norm_ = $('#item_uspec_norm_' + did).val();
+                    var item_lpcl_norm_ = $('#item_lpcl_norm_' + did).val();
+                    var item_upcl_norm_ = $('#item_upcl_norm_' + did).val();
+                    var item_centre_norm_ = $('#item_centre_norm_' + did).val();
+                    if (item_centre_norm_ == '') {
+                        item_centre_norm_ = 0;
+                    }
+                    var item_grade_norm_ = $('#item_grade_norm_' + did).val();
+                    var item_rounding_norm_ = $('#item_rounding_norm_' + did).val();
+
+                    var namepath = item_property_norm_ + '*' + item_propitemID_norm_;
+
+                    if (item_stat != '5') {
+                        item_stat = "8";
+                        if (namepath !== "") {
+                            seqrow++;
+                            sequence = seqrow
+                            //hasItem = true;
+                            if (existedItem.includes(namepath)) {
+                                hasDuplicate = true;
+                                return false;
+                            } else {
+                                if (item_property_norm_ == '' || item_property_norm_ == 0 || item_propitemID_norm_ == '' || item_propitemID_norm_ == 0 || item_prio_norm_ == '' || item_finalprio_norm_ == ''
+                                    || item_lspec_norm_ == '' || item_uspec_norm_ == '' || item_grade_norm_ == '' || item_rounding_norm_ == '') {
+                                    hasfieldrequired = true;
+                                    return false;
+                                } else {
+                                    existedItem.push(namepath);
+                                }
+                            }
+                        }
+                        //else {
+                        //    hasError = true;
+                        //}
+                    } else {
+                        sequence = 0
+                    }
+
+                    list1.push({
+                        'MM_GRADING_D1_ID': item_dbid,
+                        'RECORD_TYP': 8, //item_stat,
+
+                        'SEQUENCE': sequence,
+                        'PROPERTY': item_property_norm_,
+                        'MM_PROPERTIES_H_ID': item_propitemID_norm_,
+                        'PROP_ITEM': item_propitem_norm_,
+                        'PRIORITY': item_prio_norm_,
+                        'FINAL_PRIORITY': item_finalprio_norm_,
+                        'L_SPEC': item_lspec_norm_,
+                        'U_SPEC': item_uspec_norm_,
+                        'L_PCL': item_lpcl_norm_,
+                        'U_PCL': item_upcl_norm_,
+                        'CENTRE_LINE': item_centre_norm_,
+                        'GRADE': item_grade_norm_,
+                        'ROUNDING': item_rounding_norm_
+                    });
+                }
+            });
+
+            //if (cont && hasError) {
+            //    cont = false;
+            //    message = "Please make sure required field in Property Item (Normal tab) is not empty.";
+            //}
+
+            if (cont && hasDuplicate) {
+                cont = false;
+                message = "Duplicate Main Property with similar Property Item.";
+            }
+
+            if (cont && hasfieldrequired) {
+                cont = false;
+                message = "Please make sure required fields in Properties Listing in Normal tab are not empty.";
+            }
+
+            seqrow = 0;
+            sequence = 0;
+
+            //TABLE 2
+            $("#item2-table tbody tr").each(function () {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat2 = $('#item2_stat_' + did).val();
+                    var item_dbid2 = $('#item2_dbid_' + did).val();
+
+                    var item_section_appr_ = $('#item_section_appr_' + did).val();
+                    var item_field_appr_ = $('#item_field_appr_' + did).val();
+                    var item_prio_appr_ = $('#item_prio_appr_' + did).val();
+                    var item_finalprio_appr_ = $('#item_finalprio_appr_' + did).val();
+                    var item_lspec_appr_ = $('#item_lspec_appr_' + did).val();
+                    var item_uspec_appr_ = $('#item_uspec_appr_' + did).val();
+                    var item_lpcl_appr_ = $('#item_lpcl_appr_' + did).val();
+                    var item_upcl_appr_ = $('#item_upcl_appr_' + did).val();
+                    var item_cal_appr_ = $('#item_cal_appr_' + did).val();
+                    var item_grade_appr_ = $('#item_grade_appr_' + did).val();
+                    var item_rounding_appr_ = $('#item_rounding_appr_' + did).val();
+
+                    var namepath2 = item_section_appr_ + '*' + item_field_appr_ + '*' + item_prio_appr_ + '*' + item_grade_appr_ + '*' + item_lspec_appr_ + '*' + item_uspec_appr_;
+
+                    if (item_stat2 != '5') {
+                        item_stat2 = "8";
+                        if (namepath2 !== "") {
+                            seqrow++;
+                            sequence = seqrow
+                            //hasItem2 = true;
+                            if (existedItem2.includes(namepath2)) {
+                                hasDuplicate2 = true;
+                                return false;
+                            } else {
+                                if (item_section_appr_ == '' || item_section_appr_ == 0 || item_field_appr_ == '' || item_field_appr_ == 0 || item_prio_appr_ == '' || item_finalprio_appr_ == ''
+                                    || item_lspec_appr_ == '' || item_uspec_appr_ == '' || item_cal_appr_ == '' || item_grade_appr_ == '' || item_rounding_appr_ == '') {
+                                    hasfieldrequired2 = true;
+                                    return false;
+                                } else {
+                                    existedItem2.push(namepath2);
+                                }
+                            }
+                        }
+                        //else {
+                        //    hasError2 = true;
+                        //}
+                    } else {
+                        sequence = 0
+                    }
+
+                    list2.push({
+                        'MM_GRADING_D2_ID': item_dbid2,
+                        'RECORD_TYP': 8, //item_stat2,
+
+                        'SEQUENCE': sequence,
+                        'SECTION': item_section_appr_,
+                        'FIELD_NAME': item_field_appr_,
+                        'PRIORITY': item_prio_appr_,
+                        'FINAL_PRIORITY': item_finalprio_appr_,
+                        'L_SPEC': item_lspec_appr_,
+                        'U_SPEC': item_uspec_appr_,
+                        'L_PCL': item_lpcl_appr_,
+                        'U_PCL': item_upcl_appr_,
+                        'CALCULATION': item_cal_appr_,
+                        'GRADE': item_grade_appr_,
+                        'ROUNDING': item_rounding_appr_
+                    });
+                }
+            });
+
+            //if (cont && hasError2) {
+            //    cont = false;
+            //    message = "Please make sure required field in Properties Listing (Appearance tab) is not empty.";
+            //}
+
+            if (cont && hasDuplicate2) {
+                cont = false;
+                message = "Duplicate Section Name with similar Field Name, Priority, Grade, Lower Spec and Upper Spec in Appearance tab.";
+            }
+
+            if (cont && hasfieldrequired2) {
+                cont = false;
+                message = "Please make sure required fields in Properties Listing in Appearance tab are not empty.";
+            }
+
+            //table 3
+            $("#item3-table tbody tr").each(function () {
+                var did = $(this).data("did");
+                if (did != '' && did != null && did != undefined) {
+                    var item_stat3 = $('#item3_stat_' + did).val();
+                    var item_dbid3 = $('#item3_dbid_' + did).val();
+
+                    var item_propitem_pass_ = $('#item_propitem_pass_' + did).val();
+                    var item_passgrade_pass_ = $('#item_passgrade_pass_' + did).val();
+                    var item_properties_pass_ = $('#item_properties_pass_' + did).val();
+
+                    var namepath3 = item_propitem_pass_ + '*' + item_passgrade_pass_;
+
+                    if (item_stat3 != '5') {
+                        item_stat2 = "8";
+                        if (namepath3 !== "") {
+                            //hasItem3 = true;
+                            if (existedItem3.includes(namepath3)) {
+                                hasDuplicate3 = true;
+                                return false;
+                            } else {
+                                if (item_propitem_pass_ == '' || item_passgrade_pass_ == '') {
+                                    hasfieldrequired3 = true;
+                                    return false;
+                                } else {
+                                    existedItem3.push(namepath3);
+                                }
+                            }
+                        }
+                        //else {
+                        //    hasError3 = true;
+                        //}
+                    }
+
+                    list3.push({
+                        'MM_GRADING_D3_ID': 0, //item_dbid3,
+                        'RECORD_TYP': 8, //item_stat3,
+
+                        'PROPERTIES': item_properties_pass_,
+                        'PROP_ITEM': item_propitem_pass_,
+                        'PASS_GRADE': item_passgrade_pass_
+                    });
+                }
+            });
+
+            //if (cont && hasError3) {
+            //    cont = false;
+            //    message = "Please make sure required field in Details (Passing Grade tab) is not empty.";
+            //}
+
+            if (cont && hasDuplicate3) {
+                cont = false;
+                message = "Duplicate Property Item with similar Passing Grade in Passing Grade tab.";
+            }
+
+            if (cont && hasfieldrequired3) {
+                cont = false;
+                message = "Please make sure required fields in Details in Passing Grade tab are not empty.";
+            }
+
+            //MODEL
+            if (cont) {
+
+                var model = {
+                    MM_GRADING_H_ID: idh,
+                    RECORD_TYP: '8',
+
+                    MM_PRODTYPE_H_ID: ddlprodtypeID,
+                    PROD_TYPE: ddlprodtype,
+                    COMP_GROUP: comp_group,
+                    PROD_LINE: prod_line,
+
+                    GradingNormalLstModel: list1,
+                    GradingAppearanceLstModel: list2,
+                    GradingPassingLstModel: list3,
+                };
+
+                console.log(model)
+
+                $.ajax({
+                    url: "/MM_GRADING/DraftGrading",
+                    type: 'POST',
+                    data: {
+                        model: model
+                    },
+                    beforeSend: function () {
+                        loadings();
+                    },
+                    success: function (response) {
+                        loadings(false);
+                        if (response.success) {
+                            displayToast("s", "Data save as draft successfully");
+
+                            setTimeout(function () {
+                                window.location.href = listingURL;
+                            }, 2000);
+
+                        } else {
+                            displayToast("error", response.message)
+                        }
+                    },
+                    error: function () {
+                        displayToast("error", response.responseText)
+                    }
+                });
+
+            } else {
+                if (message != "") {
+                    displayToast("error", message)
+                }
+            }
+        });
+
+        $('#btnConfirmBack').on('click', function () {
+            window.location.href = listingURL;
+        });
+    })
+
+    function handleRadioChange() {
+        var compounder = $('#compounderRadio').is(':checked');
+        var tpm = $('#tpmRadio').is(':checked');
+        var compgroup = "";
+
+        if (compounder) {
+            compgroup = "COMPOUNDER";
+            $('.radioline').hide();
+        } else {
+            if (tpm) {
+                compgroup = "TPM";
+                $('.radioline').show();
+            }
+        }
+        $("#compGroupHidden").val(compgroup);
+
+        fillProdType(compgroup);
+    }
+
+    function gradingDuplicate(idh) {
+        if (idh != null && idh != '' && idh != '0') {
+            $.ajax({
+                url: "/MM_GRADING/getDuplicateGrading",
+                type: 'POST',
+                data: {
+                    id: idh
+                },
+                beforeSend: function () {
+                    loadings();
+                },
+                success: function (response) {
+                    loadings(false);
+                    if (response.success) {
+                        var model = response.modelh;
+                        var d1 = response.d1;
+                        var d2 = response.d2;
+                        var d3 = response.d3;
+
+                        //$("#ddlprodtype").val(model.MM_PRODTYPE_H_ID);
+
+
+                        //if (model.COMP_GROUP == "TPM") {
+                        //    $('#compounderRadio').prop('checked', false);
+                        //    $('#tpmRadio').prop('checked', true);
+                        //} else {
+                        //    $('#compounderRadio').prop('checked', true);
+                        //    $('#tpmRadio').prop('checked', false);
+                        //}
+
+                        $('#item-table tbody').empty();
+                        $('#item2-table tbody').empty();
+                        $('#item3-table tbody').empty();
+
+                        //d1
+                        var rowIdx = 1;
+                        for (var i = 0; i < d1.length; i++) {
+
+                            rowIdx++;
+                            $('#item-count').val(rowIdx);
+
+                            $('#item-table tbody').append(`
+                                <tr id="R_${rowIdx}" data-did="${rowIdx}">
+                                    <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" onClick="handleCheckboxClick(this)"></td>
+                                    <td class="sort-handle">
+                                        <div style="display: inline-flex">
+                                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                                        </div>
+                                    </td>
+                                    <td class="text-left"><select id="item_property_norm_${rowIdx}" class="form-control ddl_property" style="min-width:160px;" onchange="loadpropitem(${rowIdx})"><option value="${d1[i].PROPERTY}" selected></option></select></td>
+                                    <td class="text-left"><select id="item_propitem_norm_${rowIdx}" class="form-control ddl_propitem" style="min-width:160px;"><option value="${d1[i].MM_PROPERTIES_H_ID}" selected></option></select></td>
+                                    <td><input type="text" class="form-control" id="item_prio_norm_${rowIdx}" value="${d1[i].PRIORITY}" onkeypress = "return isNumberKey(event)" ></td>
+                                    <td><input type="text" class="form-control" id="item_finalprio_norm_${rowIdx}" value="${d1[i].FINAL_PRIORITY}" onkeypress = "return isNumberKey(event)" ></td>
+                                    <td><input type="text" class="form-control numericInput lspec-input" id="item_lspec_norm_${rowIdx}" value="${d1[i].L_SPEC.toFixed(3)}" onkeypress = "return isNumberKey(event)" ></td>
+                                    <td><input type="text" class="form-control numericInput uspec-input" id="item_uspec_norm_${rowIdx}" value="${d1[i].U_SPEC.toFixed(3)}" onkeypress = "return isNumberKey(event)" ></td>
+                                    <td><input type="text" class="form-control numericInput lpcl-input" id="item_lpcl_norm_${rowIdx}" value="${d1[i].L_PCL.toFixed(3)}" onkeypress = "return isNumberKey(event)" ></td>
+                                    <td><input type="text" class="form-control numericInput upcl-input" id="item_upcl_norm_${rowIdx}" value="${d1[i].U_PCL.toFixed(3)}" onkeypress = "return isNumberKey(event)" ></td>
+                                    <td><input type="text" class="form-control numericInput" id="item_centre_norm_${rowIdx}" value="${d1[i].CENTRE_LINE.toFixed(3)}" onkeypress = "return isNumberKey(event)" ></td>
+                                    <td><input type="text" class="form-control" id="item_grade_norm_${rowIdx}" value="${d1[i].GRADE}"></td>
+                                    <td><input type="text" class="form-control" id="item_rounding_norm_${rowIdx}" value="${d1[i].ROUNDING}" onkeypress = "return isNumberKey(event)" ></td>
+                                    <td class="d-none">
+                                        <input type="text" id="item_stat_${rowIdx}" value="1">
+                                        <input type="text" id="item_dbid_${rowIdx}" value="0">
+
+                                    </td>
+                                </tr>
+                                `);
+
+                        }
+
+                        fillProperty();
+                        checkboxChecking();
+
+                        //d2
+                        rowIdx = 1;
+                        for (var i = 0; i < d2.length; i++) {
+
+                            rowIdx++;
+                            $('#item2-count').val(rowIdx);
+
+                            $('#item2-table tbody').append(`
+                             <tr id="R2_${rowIdx}" data-did="${rowIdx}">
+                                <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk2_${rowIdx}" onClick="handleCheckbox2Click(this)"></td>
+                                <td class="sort-handle">
+                                    <div style="display: inline-flex">
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                        <i class="fa-solid fa-ellipsis-vertical"></i>
+                                    </div>
+                                </td>
+                                <td class="text-left"><select id="item_section_appr_${rowIdx}" class="form-control ddl_section" style="min-width:160px;" onchange="loadfield(${rowIdx})"><option  value="${d2[i].SECTION}" selected></option></select></td>
+                                <td class="text-left"><select id="item_field_appr_${rowIdx}" class="form-control ddl_field" style="min-width:160px;"><option value="${d2[i].FIELD_NAME}" selected></option></select></td>
+                                <td><input type="text" class="form-control" id="item_prio_appr_${rowIdx}" value="${d2[i].PRIORITY}" onkeypress = "return isNumberKey(event)" ></td>
+                                <td><input type="text" class="form-control" id="item_finalprio_appr_${rowIdx}" value="${d2[i].FINAL_PRIORITY}" onkeypress = "return isNumberKey(event)" ></td>
+                                <td><input type="text" class="form-control numericInput lspec-input" id="item_lspec_appr_${rowIdx}" value="${d2[i].L_SPEC.toFixed(3)}" onkeypress = "return isNumberKey(event)" ></td>
+                                <td><input type="text" class="form-control numericInput uspec-input" id="item_uspec_appr_${rowIdx}" value="${d2[i].U_SPEC.toFixed(3)}" onkeypress = "return isNumberKey(event)" ></td>
+                                <td><input type="text" class="form-control numericInput lpcl-input" id="item_lpcl_appr_${rowIdx}" value="${d2[i].L_PCL.toFixed(3)}" onkeypress = "return isNumberKey(event)" ></td>
+                                <td><input type="text" class="form-control numericInput upcl-input" id="item_upcl_appr_${rowIdx}" value="${d2[i].U_PCL.toFixed(3)}" onkeypress = "return isNumberKey(event)" ></td>
+                                <td><input type="text" class="form-control numericInput" id="item_cal_appr_${rowIdx}" value="${d2[i].CALCULATION.toFixed(3)}" onkeypress = "return isNumberKey(event)" ></td>
+                                <td><input type="text" class="form-control" id="item_grade_appr_${rowIdx}" value="${d2[i].GRADE}" ></td>
+                                <td><input type="text" class="form-control" id="item_rounding_appr_${rowIdx}" value="${d2[i].ROUNDING}" onkeypress = "return isNumberKey(event)" ></td>
+                                <td class="d-none">
+                                    <input type="text" id="item2_stat_${rowIdx}" value="1">
+                                    <input type="text" id="item2_dbid_${rowIdx}" value="0">
+
+                                </td>
+                            </tr>
+                            `);
+                        }
+
+                        fillSection();
+                        checkbox2Checking();
+
+                        //d3
+                        rowIdx = 1;
+
+                        $('#ddlpropertypass').val(d3[0].PROPERTIES);
+                        loadPropItemPass()
+
+                        for (var i = 0; i < d3.length; i++) {
+
+                            rowIdx++;
+                            $('#item3-count').val(rowIdx);
+
+                            $('#item3-table tbody').append(`
+                                <tr id="R3_${rowIdx}" data-did="${rowIdx}">
+                                    <td class="text-center"><input class="dt-checkboxes form-check-input" type="checkbox" value="" id="chk3_${rowIdx}" onClick="handleCheckbox3Click(this)"></td>
+                                    <td><input type="text" class="form-control "value="${d3[i].PROP_ITEM}"  id="item_propitem_pass_${rowIdx}" placeholder="" disabled></td>
+                                     <td><input type="text" class="form-control "value="${d3[i].PASS_GRADE}" id="item_passgrade_pass_${rowIdx}" placeholder=""></td>
+                                    <td class="d-none">
+                                        <input type="text" id="item3_stat_${rowIdx}" value="1">
+                                        <input type="text" id="item3_dbid_${rowIdx}" value="0">
+                                        <input type="text" id="item_properties_pass_${rowIdx}" value="${d3[i].PROPERTIES}">
+                                    </td>
+                                </tr>
+                                `);
+                        }
+
+                        checkbox3Checking();
+
+
+                    } else {
+                        displayToast("error", response.message)
+                    }
+                },
+                error: function () {
+                    displayToast("error", response.responseText)
+                }
+            });
+        } else {
+            displayToast("error", "Please select grading to duplicate")
+        }
+
+    }
+
+    function fillProdType(comp_group) {
+
+        $.getJSON('@Url.Action("fillProdType", "MM_GRADING")?comp=' + comp_group, function (data) {
+            if (data != null && !jQuery.isEmptyObject(data)) {
+                var ddl_field = $("#ddlprodtype");
+
+                if (ddl_field != undefined) {
+                    var currentSelected = ddl_field.val();
+                    ddl_field.empty();
+                    $.each(data, function (index, datas) {
+                        ddl_field.append($('<option/>', {
+                            value: datas.Value,
+                            text: datas.Text
+                        }));
+                    });
+                    ddl_field.val(currentSelected);
+                }
+            }
+        });
+    }
+
+    function loadpropitem(count) {
+        var propertyy = $("#item_property_norm_" + count).val();
+        $("#temp_properties").val(propertyy);
+
+        var ddl_propitem = $("#item-table tr#R_" + count + " .ddl_propitem");
+        fillPropItem(count, ddl_propitem);
+    }
+
+    function loadfield(count) {
+        var sectionn = $("#item_section_appr_" + count).val();
+        $("#temp_section").val(sectionn);
+        fillFieldName(count);
+    }
+
+    //ddl_property
+    function fillProperty() {
+        $.getJSON('@Url.Action("fillProperty", "MM_GRADING")', function (data) {
+            if (data != null && !jQuery.isEmptyObject(data)) {
+                $(".ddl_property").each(function () {
+                    var ddl_property = $(this);
+                    var currentSelected = ddl_property.val();
+                    ddl_property.empty();
+                    $.each(data, function (index, datas) {
+                        ddl_property.append($('<option/>', {
+                            value: datas.Value,
+                            text: datas.Text
+                        }));
+                    });
+                    ddl_property.val(currentSelected);
+                    // Trigger change to load propitem dropdown on page load
+                    ddl_property.change();
+                });
+            }
+        });
+    }
+
+
+    //ddl_propitem
+    function fillPropItem(count, ddl_propitem) {
+        if (ddl_propitem != null) {
+            var temp_properties = $("#temp_properties").val();
+
+            $.getJSON('@Url.Action("fillPropItem", "MM_GRADING")?property=' + temp_properties, function (data) {
+                if (data != null && !jQuery.isEmptyObject(data)) {
+                    var currentSelected = ddl_propitem.val();
+                    ddl_propitem.empty();
+                    $.each(data, function (index, datas) {
+                        ddl_propitem.append($('<option/>', {
+                            value: datas.Value,
+                            text: datas.Text
+                        }));
+                    });
+                    ddl_propitem.val(currentSelected);
+                }
+            });
+        }
+    }
+
+    //ddl_section
+    function fillSection() {
+        $.getJSON('@Url.Action("fillSection", "MM_GRADING")', function (data) {
+        if (data != null && !jQuery.isEmptyObject(data)) {
+            $(".ddl_section").each(function () {
+                var ddl_section = $(this);
+                var currentSelected = ddl_section.val();
+                ddl_section.empty();
+                $.each(data, function (index, datas) {
+                    ddl_section.append($('<option/>', {
+                        value: datas.Value,
+                        text: datas.Text
+                    }));
+                });
+                ddl_section.val(currentSelected);
+                // Trigger change to load field dropdown on page load
+                ddl_section.change();
+            });
+        }
+    });
+    }
+
+
+    //ddl_field
+    function fillFieldName(count) {
+    var temp_section = $("#temp_section").val();
+
+        $.getJSON('@Url.Action("fillFieldName", "MM_GRADING")?section=' + temp_section, function (data) {
+        if (data != null && !jQuery.isEmptyObject(data)) {
+            var ddl_field = $("#item2-table tr#R2_" + count + " .ddl_field");
+
+            if (ddl_field != undefined) {
+                var currentSelected = ddl_field.val();
+                ddl_field.empty();
+                $.each(data, function (index, datas) {
+                    ddl_field.append($('<option/>', {
+                        value: datas.Value,
+                        text: datas.Text
+                    }));
+                });
+                ddl_field.val(currentSelected);
+            }
+        }
+    });
+    }
+
+    function loadPropItemPass() {
+        $("#item3-table tbody").empty();
+        var ddlpropertypass = $("#ddlpropertypass").val();
+
+        $.getJSON('@Url.Action("fillPropItem", "MM_GRADING")?property=' + ddlpropertypass, function (data) {
+            if (data != null && !jQuery.isEmptyObject(data))
+            {
+                $("#ddlpropitempass").empty();
+
+                // Add new options based on the received data
+                $.each(data, function (index, item) {
+                    $("#ddlpropitempass").append($('<option>', {
+                        value: item.Value,
+                        text: item.Text
+                    }));
+                });
+            };
+        });
+    }
+
+        function popupGradingDuplicate() {
+            var popup;
+            var url = '@Url.Action("MM_GRADING_DUPLICATE_POPOUT", "MM_GRADING")';
+
+            popup = window.open(url, "Popup", "directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=no,width=800,height=800");
+            popup.focus();
+
+        }
+
+        $(document).on('change', '.lpcl-input', function () {
+            var $row = $(this).closest('tr'); // safer and cleaner than parent().parent()
+            var lspec = parseFloat($row.find('.lspec-input').val());
+            var uspec = parseFloat($row.find('.uspec-input').val());
+            var upcl = parseFloat($row.find('.upcl-input').val());
+            var lpcl = parseFloat($(this).val()); // current input value
+
+            // 1️⃣ Check if specs are defined
+            if (isNaN(lspec) || isNaN(uspec) || (lspec === 0 && uspec === 0)) {
+                alert("Spec must be defined first!");
+                $(this).val('0.000'); // clear lpcl input
+                return;
+            }
+            // 2️⃣ Check if lpcl is within the spec range
+            if (lpcl < lspec || lpcl > uspec) {
+                alert("PCL is out of spec range (" + lspec + " - " + uspec + ")!");
+                $(this).val('0.000'); // clear lpcl input
+                return;
+            }
+            // 3️⃣ Check if upcl is defined and lpcl > upcl
+            if (!isNaN(upcl) && upcl !== 0 && lpcl > upcl) {
+                alert("Lower PCL cannot be greater than Upper PCL!");
+                $(this).val('0.000'); // clear lpcl input
+                return;
+            }
+        });
+
+        $(document).on('change', '.upcl-input', function () {
+            var $row = $(this).closest('tr'); // safer and cleaner than parent().parent()
+            var lspec = parseFloat($row.find('.lspec-input').val());
+            var uspec = parseFloat($row.find('.uspec-input').val());
+            var upcl = parseFloat($(this).val());
+            var lpcl = parseFloat($row.find('.lpcl-input').val()); // current input value
+
+            // 1️⃣ Check if specs are defined
+            if (isNaN(lspec) || isNaN(uspec) || (lspec === 0 && uspec === 0)) {
+                alert("Spec must be defined first!");
+                $(this).val('0.000'); // clear lpcl input
+                return;
+            }
+            // 2️⃣ Check if lpcl is within the spec range
+            if (upcl < lspec || upcl > uspec) {
+                alert("PCL is out of spec range (" + lspec + " - " + uspec + ")!");
+                $(this).val('0.000'); // clear lpcl input
+                return;
+            }
+            // 3️⃣ Check if upcl is defined and lpcl > upcl
+            if (!isNaN(upcl) && upcl !== 0 && lpcl > upcl) {
+                alert("Lower PCL cannot be greater than Upper PCL!");
+                $(this).val('0.000'); // clear lpcl input
+                return;
+            }
+        });
+
+    </script>
+}
