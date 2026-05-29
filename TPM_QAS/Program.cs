@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Newtonsoft.Json.Serialization;
 using System;
 using TPM_QAS.DAL;
 using TPM_QAS.Helpers;
@@ -18,7 +19,10 @@ namespace TPM_QAS
 
             // Add MVC services
             builder.Services.AddControllersWithViews()
-                .AddNewtonsoftJson();
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ContractResolver = new DefaultContractResolver();
+                });
 
             // Add session support
             builder.Services.AddDistributedMemoryCache();
