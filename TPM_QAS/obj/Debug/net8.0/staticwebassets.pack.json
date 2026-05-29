@@ -641,6 +641,10 @@
       "PackagePath": "staticwebassets/Content/DataTables/swf/flashExport.swf"
     },
     {
+      "Id": "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/wwwroot/Content/ListingPageStyle.css",
+      "PackagePath": "staticwebassets/Content/ListingPageStyle.css"
+    },
+    {
       "Id": "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/wwwroot/Content/RangeSlider.css",
       "PackagePath": "staticwebassets/Content/RangeSlider.css"
     },

@@ -1,0 +1,9 @@
+/* ListingPageStyle.css - Styles for listing/table pages displayed in iframes */
+body {
+    padding: 0;
+    margin: 0;
+}
+
+.body-content {
+    padding: 5px;
+}
