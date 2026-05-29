@@ -1,11 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.DAL;
 
 namespace TPM_QAS.Helpers
@@ -13,26 +13,15 @@ namespace TPM_QAS.Helpers
     public class CommonMethod
     {
         #region Convert datatable into dropdown listing
-        /// <summary>
-        /// Azham 07/11/2022
-        /// CommonGetSelectItem convert generic dropdown data list to Select List Item
-        /// This function require session method to load data
-        /// Load data must be do at login time and store at session using name Setting_DropDown
-        /// General Configuration
-        /// Setting_DropDown = Session Name (List of Data Table with the columns name TXT and VAL)
-        /// TypeName = Type you want to select the data
-        /// </summary>
-        public static async Task<List<SelectListItem>> CommonGetSelectItem(string TypeName, string DropDown_Setting = "Setting_DropDown", string USER_ID = "")
+        public static async Task<List<SelectListItem>> CommonGetSelectItem(ISession session, string TypeName, string DropDown_Setting = "Setting_DropDown", string USER_ID = "")
         {
             List<SelectListItem> list = new List<SelectListItem>();
             try
             {
-                HttpContext context = HttpContext.Current;
-                DataTable dt = context.Session[DropDown_Setting] as DataTable;
+                DataTable dt = session.GetObject<DataTable>(DropDown_Setting);
                 SelectListItem slc = null;
                 if (dt != null && dt.Rows.Count > 0)
                 {
-
                     foreach (DataRow item in dt.Rows)
                     {
                         if (item["TYPE"].ToString().ToUpper() == TypeName.ToUpper())
@@ -46,7 +35,6 @@ namespace TPM_QAS.Helpers
                         }
                     }
                 }
-
             }
             catch (Exception ex)
             {
@@ -59,11 +47,6 @@ namespace TPM_QAS.Helpers
         #endregion
 
         #region Convert datatable into normal listing
-        /// <summary>
-        /// Azham 01/2/2022
-        /// List<T> ConvertToList<T> Convert Datatable to the model
-        /// Warning!! Please do not use this function if data more than 100rows or Column More than 10
-        /// </summary>
         public static List<T> ConvertToList<T>(DataTable dt)
         {
             List<string> columnNames = dt.Columns.Cast<DataColumn>().Select(x => x.ColumnName.ToLower()).ToList();
@@ -98,14 +81,9 @@ namespace TPM_QAS.Helpers
 
             return Convert.ChangeType(value, t);
         }
-
         #endregion
 
-        #region Collect searching parameter into SQL Query 
-        /// <summary>
-        /// Azham 01/2/2022
-        /// Collect searching parameter and convert into SQL Query 
-        /// </summary>
+        #region Collect searching parameter into SQL Query
         public static string ConvertToSearchSQL(object obj, string DeletedColumnName)
         {
             string SQL = "";
@@ -116,7 +94,6 @@ namespace TPM_QAS.Helpers
 
             foreach (var prop2 in typ.GetProperties())
             {
-
                 if (prop2.Name.Contains("SEARCH") == true)
                 {
                     probName = prop2.Name;
@@ -149,36 +126,25 @@ namespace TPM_QAS.Helpers
                         }
                     }
                 }
-
             }
             return SQL;
         }
         #endregion
 
-        #region object type checking 
-        /// <summary>
-        /// Azham 07/11/2022
-        /// cDate checking the string is date or not correct date format and will be return true or false
-        /// </summary>
+        #region object type checking
         public static bool isDate(string value)
         {
             try
             {
                 DateTime dt;
-
-
                 return DateTime.TryParse(value, out dt);
             }
             catch (Exception ex)
             {
                 return false;
-                throw;
             }
         }
-        /// <summary>
-        /// Azham 07/11/2022
-        /// isNumeric checking the string is number or not number and will be return true or false
-        /// </summary>
+
         public static bool isNumeric(string value)
         {
             try
@@ -189,12 +155,9 @@ namespace TPM_QAS.Helpers
             catch (Exception ex)
             {
                 return false;
-                throw;
             }
         }
 
-
-        //Non-standard
         public static string ConvertSearchValue(string[] Scol, string str)
         {
             var val = "";

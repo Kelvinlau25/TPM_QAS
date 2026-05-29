@@ -1,14 +1,14 @@
-﻿using Quartz;
+using Quartz;
 using Quartz.Impl;
 using System;
-using System.Configuration;
-
+using TPM_QAS.DAL;
 
 namespace TPM_QAS.Models
 {
     public class ExecuteTaskServiceCallScheduler
     {
-        private static readonly string ScheduleCronExpression = ConfigurationManager.AppSettings["ExecuteTaskScheduleCronExpression"];
+        private static readonly string ScheduleCronExpression = Database.GetAppSettingStatic("ExecuteTaskScheduleCronExpression") ?? "0 0/1 * 1/1 * ? *";
+
         public static async System.Threading.Tasks.Task StartAsync()
         {
             try
@@ -29,7 +29,6 @@ namespace TPM_QAS.Models
             }
             catch (Exception ex)
             {
-
             }
         }
     }

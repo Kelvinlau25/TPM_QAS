@@ -1,13 +1,14 @@
-﻿using DBModel;
+using DBModel;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
+using Microsoft.Extensions.Configuration;
 using System.Data;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.DAL;
 using TPM_QAS.Filters;
 using TPM_QAS.Helpers;
@@ -23,9 +24,8 @@ using System.Linq;
 using System.Web.Services.Description;
 using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml.Office2010.Excel;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using DocumentFormat.OpenXml.Bibliography;
-using TPM_QAS.Helpers;
 using iTextSharp.xmp.impl.xpath;
 
 namespace TPM_QAS.Controllers
@@ -212,7 +212,7 @@ namespace TPM_QAS.Controllers
             bool success = true;
             string message = "";
             string type = "";
-            string isTest = ConfigurationManager.AppSettings["isTest"];
+            string isTest = TPM_QAS.DAL.Database.GetAppSettingStatic("isTest"];
 
             if (ModelState.IsValid)
             {
@@ -429,13 +429,13 @@ namespace TPM_QAS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UploadOCRFile(HttpPostedFileBase DataUploadFile, string ocrindicator, string coalang = "english")
+        public async Task<ActionResult> UploadOCRFile(IFormFile DataUploadFile, string ocrindicator, string coalang = "english")
         {
             string message = "";
 
             try
             {
-                if (DataUploadFile == null || DataUploadFile.ContentLength == 0)
+                if (DataUploadFile == null || DataUploadFile.Length == 0)
                 {
                     return Json(new { success = false, message = "No file uploaded." });
                 }
@@ -566,7 +566,7 @@ namespace TPM_QAS.Controllers
                     {
                         client.Timeout = TimeSpan.FromMinutes(6);  // Set timeout to 6 minutes
 
-                        StreamContent fileContent = new StreamContent(DataUploadFile.InputStream);
+                        StreamContent fileContent = new StreamContent(DataUploadFile.OpenReadStream());
                         fileContent.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/pdf");
 
                         formData.Add(fileContent, "image", filename);
@@ -650,11 +650,11 @@ namespace TPM_QAS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> getOCRFileData(HttpPostedFileBase DataUploadFile, string modelObj, string ocrindicator, string coalang = "english")
+        public async Task<ActionResult> getOCRFileData(IFormFile DataUploadFile, string modelObj, string ocrindicator, string coalang = "english")
         {
             try
             {
-                if (DataUploadFile == null || DataUploadFile.ContentLength == 0)
+                if (DataUploadFile == null || DataUploadFile.Length == 0)
                 {
                     return Json(new { success = false, message = "No file uploaded." });
                 }
@@ -686,7 +686,7 @@ namespace TPM_QAS.Controllers
                 byte[] uploadedBytes;
                 using (var ms = new MemoryStream())
                 {
-                    await DataUploadFile.InputStream.CopyToAsync(ms);
+                    await DataUploadFile.OpenReadStream().CopyToAsync(ms);
                     uploadedBytes = ms.ToArray();
                 }
 
@@ -2692,17 +2692,17 @@ namespace TPM_QAS.Controllers
         {
             try
             {
-                string isTest = ConfigurationManager.AppSettings["isTest"];
+                string isTest = TPM_QAS.DAL.Database.GetAppSettingStatic("isTest"];
 
                 return new AppConfig
                 {
-                    ProxyAddress = ConfigurationManager.AppSettings["ProxyAddress"] ?? throw new Exception("ProxyAddress is missing"),
-                    ProxyEmail = ConfigurationManager.AppSettings["ProxyEmail"] ?? throw new Exception("ProxyEmail is missing"),
-                    ProxyPassword = ConfigurationManager.AppSettings["ProxyPassword"] ?? throw new Exception("ProxyPassword is missing"),
+                    ProxyAddress = TPM_QAS.DAL.Database.GetAppSettingStatic("ProxyAddress"] ?? throw new Exception("ProxyAddress is missing"),
+                    ProxyEmail = TPM_QAS.DAL.Database.GetAppSettingStatic("ProxyEmail"] ?? throw new Exception("ProxyEmail is missing"),
+                    ProxyPassword = TPM_QAS.DAL.Database.GetAppSettingStatic("ProxyPassword"] ?? throw new Exception("ProxyPassword is missing"),
                     OCREndpoint = string.Equals(isTest, "TRUE", StringComparison.OrdinalIgnoreCase)
-                        ? ConfigurationManager.AppSettings["OCR_API_Test"] ?? throw new Exception("OCR_API_Test is missing")
-                        : ConfigurationManager.AppSettings["OCR_API_Live"] ?? throw new Exception("OCR_API_Live is missing"),
-                    TMSUserAPIKey = ConfigurationManager.AppSettings["TMSUserAPIKey"] ?? throw new Exception("TMSUserAPIKey is missing"),
+                        ? TPM_QAS.DAL.Database.GetAppSettingStatic("OCR_API_Test"] ?? throw new Exception("OCR_API_Test is missing")
+                        : TPM_QAS.DAL.Database.GetAppSettingStatic("OCR_API_Live"] ?? throw new Exception("OCR_API_Live is missing"),
+                    TMSUserAPIKey = TPM_QAS.DAL.Database.GetAppSettingStatic("TMSUserAPIKey"] ?? throw new Exception("TMSUserAPIKey is missing"),
                 };
             }
             catch (Exception ex)
@@ -2846,15 +2846,15 @@ namespace TPM_QAS.Controllers
             _pMssql.Add(new SqlParameter("@SortType", "DESC"));
 
             string dbname = "";
-            string isTest = ConfigurationManager.AppSettings["isTest"];
+            string isTest = TPM_QAS.DAL.Database.GetAppSettingStatic("isTest"];
 
             if (string.Equals(isTest, "TRUE", StringComparison.OrdinalIgnoreCase))
             {
-                dbname = ConfigurationManager.AppSettings["DEV"];
+                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("DEV"];
             }
             else
             {
-                dbname = ConfigurationManager.AppSettings["LIVE"];
+                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("LIVE"];
             }
 
             AuditTrailModels = await AuditTrailHelper.AuditTrailStoreProcedureSqlAsync("PSP_GET_AUDIT_TRAIL", CommandType.StoredProcedure, _pMssql, dbname);

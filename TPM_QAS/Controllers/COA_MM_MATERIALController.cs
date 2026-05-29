@@ -1,18 +1,19 @@
-﻿using DBModel;
+using DBModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.Filters;
 using TPM_QAS.Helpers;
 using TPM_QAS.DAL;
 using TPM_QAS.Models;
 using Newtonsoft.Json;
-using System.Configuration;
-using System.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Data.SqlClient;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using DocumentFormat.OpenXml.Bibliography;
 
@@ -547,15 +548,15 @@ namespace TPM_QAS.Controllers
             _pMssql.Add(new SqlParameter("@SortType", "DESC"));
 
             string dbname = "";
-            string isTest = ConfigurationManager.AppSettings["isTest"];
+            string isTest = TPM_QAS.DAL.Database.GetAppSettingStatic("isTest"];
 
             if (string.Equals(isTest, "TRUE", StringComparison.OrdinalIgnoreCase))
             {
-                dbname = ConfigurationManager.AppSettings["DEV"];
+                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("DEV"];
             }
             else
             {
-                dbname = ConfigurationManager.AppSettings["LIVE"];
+                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("LIVE"];
             }
 
             AuditTrailModels = await AuditTrailHelper.AuditTrailStoreProcedureSqlAsync("PSP_GET_AUDIT_TRAIL", CommandType.StoredProcedure, _pMssql, dbname);

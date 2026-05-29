@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace TPM_QAS.Models
 {
@@ -18,7 +19,7 @@ namespace TPM_QAS.Models
         public string FILE_NAME { get; set; }
         public string FINAL_FILE_NAME { get; set; }
         public string VIEW_FILE { get; set; }
-        public HttpPostedFileBase DataUploadFile { get; set; }
+        public IFormFile DataUploadFile { get; set; }
         public string SUPPLIER_LANG { get; set; }
 
         public int MM_SUPPLIER_H_ID { get; set; }

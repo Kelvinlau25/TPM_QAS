@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using System;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace TPM_QAS.Filters
 {
@@ -11,15 +10,16 @@ namespace TPM_QAS.Filters
     {
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
-            HttpContext context = HttpContext.Current;
+            var context = filterContext.HttpContext;
 
             string redirectTo = "~/Home/Index";
 
-            if (context.Session["AclUser"] == null)
+            if (context.Session.GetString("AclUser") == null)
             {
-                if (!string.IsNullOrEmpty(context.Request.RawUrl))
+                var rawUrl = context.Request.Path + context.Request.QueryString;
+                if (!string.IsNullOrEmpty(rawUrl))
                 {
-                    redirectTo = $"{redirectTo}?ReturnUrl={HttpUtility.UrlEncode(context.Request.RawUrl)}";
+                    redirectTo = $"{redirectTo}?ReturnUrl={Uri.EscapeDataString(rawUrl)}";
                 }
 
                 filterContext.Result = new RedirectResult(redirectTo);

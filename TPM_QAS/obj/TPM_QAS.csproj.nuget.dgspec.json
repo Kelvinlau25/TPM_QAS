@@ -1,0 +1,103 @@
+{
+  "format": 1,
+  "restore": {
+    "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/TPM_QAS.csproj": {}
+  },
+  "projects": {
+    "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/TPM_QAS.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/TPM_QAS.csproj",
+        "projectName": "TPM_QAS",
+        "projectPath": "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/TPM_QAS.csproj",
+        "packagesPath": "/home/runner/.nuget/packages/",
+        "outputPath": "/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/home/runner/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net8.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net8.0": {
+            "targetAlias": "net8.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "dependencies": {
+            "Azure.Storage.Blobs": {
+              "target": "Package",
+              "version": "[12.20.0, )"
+            },
+            "ClosedXML": {
+              "target": "Package",
+              "version": "[0.102.3, )"
+            },
+            "Dapper": {
+              "target": "Package",
+              "version": "[2.1.35, )"
+            },
+            "Microsoft.Data.SqlClient": {
+              "target": "Package",
+              "version": "[5.2.2, )"
+            },
+            "Newtonsoft.Json": {
+              "target": "Package",
+              "version": "[13.0.3, )"
+            },
+            "Oracle.ManagedDataAccess.Core": {
+              "target": "Package",
+              "version": "[23.5.1, )"
+            },
+            "Quartz": {
+              "target": "Package",
+              "version": "[3.11.0, )"
+            },
+            "System.Data.OleDb": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.AspNetCore.App": {
+              "privateAssets": "none"
+            },
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/usr/share/dotnet/sdk/8.0.421/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

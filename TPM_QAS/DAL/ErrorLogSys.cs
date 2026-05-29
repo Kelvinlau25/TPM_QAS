@@ -1,15 +1,10 @@
-﻿using System;
+using System;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
 
 namespace TPM_QAS.DAL
 {
-    /// <summary>
-    /// Application Error Message Collector 
-    /// Connection to 
-    /// </summary>
-
     public class ErrorLogSys : Database
     {
         public async Task<bool> ErrorLog_Add_V2(string FunctionName, Exception exData, string CreatedBy, string OptnalRef = "")
@@ -26,19 +21,17 @@ namespace TPM_QAS.DAL
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandTimeout = 0;
 
-                        cmd.Parameters.Add(new SqlParameter("@pFunctionName", FunctionName)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pErrorMSG", OptnalRef + exData.Message.ToString())).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pSource", exData.Source.ToString())).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pStackTrace", exData.StackTrace.ToString())).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pTargetSite", exData.TargetSite.ToString())).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pCreateBy", CreatedBy)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pFunctionName", FunctionName)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pErrorMSG", OptnalRef + exData.Message.ToString())).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pSource", exData.Source?.ToString() ?? "")).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pStackTrace", exData.StackTrace?.ToString() ?? "")).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pTargetSite", exData.TargetSite?.ToString() ?? "")).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pCreateBy", CreatedBy)).Direction = ParameterDirection.Input;
                         cmd.ExecuteReader();
 
-
                         return true;
-
                     }
-                }                
+                }
             }
             catch (Exception ex)
             {

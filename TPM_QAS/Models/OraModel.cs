@@ -1,33 +1,38 @@
-﻿using TPM_QAS.Models;
+using TPM_QAS.Models;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Web;
 using System.Threading.Tasks;
 using TPM_QAS.DAL;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using TPM_QAS.Helpers;
 using Oracle.ManagedDataAccess.Client;
+using Microsoft.AspNetCore.Http;
 
 namespace OraModel
 {
-
 }
 
-//public class Ora : OracleModel.Oracle
 public class Ora : Database
 {
     public Ora()
     {
-
     }
 
-
-    public async Task<List<DataSet>> YI(ReportYiVM m, string addtable)  //DATEFORMAT = 02/09/2021
+    private ACL_UserObj GetCurrentUser(IHttpContextAccessor httpContextAccessor)
     {
-        ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
-        string USERID = userobj.EMP_NAME.ToString();
+        return httpContextAccessor?.HttpContext?.Session?.GetObject<ACL_UserObj>("AclUser");
+    }
+
+    public async Task<List<DataSet>> YI(ReportYiVM m, string addtable, IHttpContextAccessor httpContextAccessor = null)
+    {
+        string USERID = "";
+        try
+        {
+            var userobj = GetCurrentUser(httpContextAccessor);
+            USERID = userobj?.EMP_NAME?.ToString() ?? "";
+        }
+        catch { }
 
         List<DataSet> ds = new List<DataSet>();
         DataTable dt = new DataTable();
@@ -47,19 +52,16 @@ public class Ora : Database
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
 
-
                         using (OracleDataReader reader = cmd.ExecuteReader())
                         {
                             dt.Load(reader);
                         }
-
                     }
                 }
 
                 DataSet dsItem = new DataSet();
                 dsItem.Tables.Add(dt);
                 ds.Add(dsItem);
-
             }
         }
         catch (Exception ex)
@@ -70,36 +72,18 @@ public class Ora : Database
             dt = null;
         }
 
-       
         return ds;
-
-        //m.datefrom = "02/09/2021";
-        //m.dateto = "03/09/2021";
-        //m.prodtype = "920-555--25";
-        //m.prodlinefrom = "06";
-        //m.prodlineto = "07";
-        //List<DataSet> ds = new List<DataSet>();
-        //OpenConn("ORA_REPORT");
-
-        //if (m.xaxis == "LotNo")
-        //{
-        //    //Rem by KL Ong on 20221229: the same amount of data is duplicate
-        //    //ds.Add(ExecuteReaderDS("select r.segment1 as ProdType, r.YELLOWNESS_INDEX as YI from PVIEW_ABS_PROPERTIES_INSP_RPT r where r.pack_date between to_date('" + m.datefrom + "', 'dd/mm/yyyy') and to_date('" + m.dateto + "', 'dd/mm/yyyy') and r.segment1 = '" + m.prodtype + "' and r.PROCESS_LINE between '" + m.prodlinefrom + "' AND '" + m.prodlineto + "'"));
-        //    //ds.Add(ExecuteReaderDS("select r.segment1 as Product_Type, r.LOT_NUMBER as Lot_Number , r.pack_date as Packed_Date, r.YELLOWNESS_INDEX as YI, r.QUANTITY, r.Grade from PVIEW_ABS_PROPERTIES_INSP_RPT r where r.pack_date between to_date('" + m.datefrom + "', 'dd/mm/yyyy') and to_date('" + m.dateto + "', 'dd/mm/yyyy') and r.segment1 = '" + m.prodtype + "' and r.PROCESS_LINE between '" + m.prodlinefrom + "' AND '" + m.prodlineto + "'"));
-        //    ds.Add(ExecuteReaderDS("select r.segment1 as Product_Type, r.LOT_NUMBER as Lot_Number , r.pack_date as Packed_Date " +  addtable + ", r.QUANTITY, r.Grade from PVIEW_ABS_PROPERTIES_INSP_RPT r where r.pack_date between to_date('" + m.datefrom + "', 'yyyy-mm-dd') and to_date('" + m.dateto + "', 'yyyy-mm-dd') and r.segment1 = '" + m.prodtype + "' and r.PROCESS_LINE between '" + m.prodlinefrom + "' AND '" + m.prodlineto + "'"));
-
-        //    //SELECT column_name FROM USER_TAB_COLUMNS WHERE table_name = 'PVIEW_ABS_PROPERTIES_INSP_RPT'
-        //}
-
-        //CloseConnection();
-
-        //return ds;
     }
 
-    public async Task<DataTable> OraColumnsName()
+    public async Task<DataTable> OraColumnsName(IHttpContextAccessor httpContextAccessor = null)
     {
-        ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
-        string USERID = userobj.EMP_NAME.ToString();
+        string USERID = "";
+        try
+        {
+            var userobj = GetCurrentUser(httpContextAccessor);
+            USERID = userobj?.EMP_NAME?.ToString() ?? "";
+        }
+        catch { }
 
         try
         {
@@ -118,7 +102,6 @@ public class Ora : Database
                     {
                         dt.Load(reader);
                     }
-
                 }
             }
 
@@ -130,7 +113,6 @@ public class Ora : Database
             {
                 return null;
             }
-
         }
         catch (Exception ex)
         {
@@ -139,13 +121,17 @@ public class Ora : Database
             err = null;
             return null;
         }
-
     }
 
-    public async Task<DataTable> MonthlyNG(ReportNGVM m)
+    public async Task<DataTable> MonthlyNG(ReportNGVM m, IHttpContextAccessor httpContextAccessor = null)
     {
-        ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
-        string USERID = userobj.EMP_NAME.ToString();
+        string USERID = "";
+        try
+        {
+            var userobj = GetCurrentUser(httpContextAccessor);
+            USERID = userobj?.EMP_NAME?.ToString() ?? "";
+        }
+        catch { }
 
         try
         {
@@ -162,12 +148,10 @@ public class Ora : Database
                     cmd.CommandTimeout = 0;
                     cmd.Parameters.Clear();
 
-
                     using (OracleDataReader reader = cmd.ExecuteReader())
                     {
                         dt.Load(reader);
                     }
-
                 }
             }
 
@@ -187,13 +171,17 @@ public class Ora : Database
             err = null;
             return null;
         }
-
     }
 
-    public async Task<DataTable> MonthlyNGCap7(ReportNGVM m)
+    public async Task<DataTable> MonthlyNGCap7(ReportNGVM m, IHttpContextAccessor httpContextAccessor = null)
     {
-        ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
-        string USERID = userobj.EMP_NAME.ToString();
+        string USERID = "";
+        try
+        {
+            var userobj = GetCurrentUser(httpContextAccessor);
+            USERID = userobj?.EMP_NAME?.ToString() ?? "";
+        }
+        catch { }
 
         try
         {
@@ -210,12 +198,10 @@ public class Ora : Database
                     cmd.CommandTimeout = 0;
                     cmd.Parameters.Clear();
 
-
                     using (OracleDataReader reader = cmd.ExecuteReader())
                     {
                         dt.Load(reader);
                     }
-
                 }
             }
 
@@ -227,7 +213,6 @@ public class Ora : Database
             {
                 return null;
             }
-
         }
         catch (Exception ex)
         {
@@ -236,8 +221,5 @@ public class Ora : Database
             err = null;
             return null;
         }
-
     }
-
-
 }

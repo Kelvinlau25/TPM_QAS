@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.Helpers;
 using TPM_QAS.Models;
 
@@ -15,9 +16,9 @@ namespace TPM_QAS.DAL
     {
         public async Task<MM_BIS_DESG_CODE_VIEWMODEL> GetBisDesgCodeHeaderData(string pID)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
             string aclUser = userobj.USER_ID.ToString();
-            string loc = System.Web.HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = System.Web.HttpContext.Request.UserHostAddress.ToString();
 
             MM_BIS_DESG_CODE_VIEWMODEL model = new MM_BIS_DESG_CODE_VIEWMODEL();
             try
@@ -65,9 +66,9 @@ namespace TPM_QAS.DAL
 
         public async Task<List<MM_BIS_DESG_CODE>> GetBisDesgCodeDetailData(string pID)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
             string aclUser = userobj.USER_ID.ToString();
-            string loc = System.Web.HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = System.Web.HttpContext.Request.UserHostAddress.ToString();
 
             List<MM_BIS_DESG_CODE> mlist = new List<MM_BIS_DESG_CODE>();
             try
@@ -121,10 +122,10 @@ namespace TPM_QAS.DAL
         {
             string result = "0";
 
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
             string createdby = USERID;
-            string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContext.Request.UserHostAddress.ToString();
             string pc = Environment.MachineName;
 
             try
@@ -169,9 +170,9 @@ namespace TPM_QAS.DAL
         {
             string result = "0";
 
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
             string aclUser = userobj.USER_ID.ToString();
-            string loc = System.Web.HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = System.Web.HttpContext.Request.UserHostAddress.ToString();
 
             try
             {

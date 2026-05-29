@@ -1,9 +1,9 @@
-﻿using Oracle.ManagedDataAccess.Client;
+using Oracle.ManagedDataAccess.Client;
 using System;
 using System.Collections.Concurrent;
-using System.Configuration;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
 using TPM_QAS.Helpers.DataModel;
 
 namespace TPM_QAS.DAL
@@ -25,6 +25,25 @@ namespace TPM_QAS.DAL
         protected string ConnectionName;
 
         private static readonly ConcurrentDictionary<string, string> dic = new ConcurrentDictionary<string, string>();
+
+        // Static configuration holder - set during startup
+        private static IConfiguration _configuration;
+
+        public static void SetConfiguration(IConfiguration configuration)
+        {
+            _configuration = configuration;
+        }
+
+        protected static string GetAppSetting(string key)
+        {
+            return _configuration?["AppSettings:" + key] ?? string.Empty;
+        }
+
+        // Public static accessor for use outside DAL classes
+        public static string GetAppSettingStatic(string key)
+        {
+            return GetAppSetting(key);
+        }
 
         public async Task<string> GetConnectionStringAsync(bool isACL = false, string dbName = null)
         {
@@ -54,19 +73,19 @@ namespace TPM_QAS.DAL
             {
                 if (isACL)
                 {
-                    return ConfigurationManager.AppSettings["ACL"];
+                    return GetAppSetting("ACL");
                 }
                 else
                 {
-                    string isTest = ConfigurationManager.AppSettings["isTest"];
+                    string isTest = GetAppSetting("isTest");
 
                     if (string.Equals(isTest, "TRUE", StringComparison.OrdinalIgnoreCase))
                     {
-                        return ConfigurationManager.AppSettings["DEV"];
+                        return GetAppSetting("DEV");
                     }
                     else
                     {
-                        return ConfigurationManager.AppSettings["LIVE"];
+                        return GetAppSetting("LIVE");
                     }
                 }
             }
@@ -155,19 +174,19 @@ namespace TPM_QAS.DAL
             {
                 if (isACL)
                 {
-                    return ConfigurationManager.AppSettings["ACL"];
+                    return GetAppSetting("ACL");
                 }
                 else
                 {
-                    string isTest = ConfigurationManager.AppSettings["isTest"];
+                    string isTest = GetAppSetting("isTest");
 
                     if (string.Equals(isTest, "TRUE", StringComparison.OrdinalIgnoreCase))
                     {
-                        return ConfigurationManager.AppSettings["DEV_ORA_COA"];
+                        return GetAppSetting("DEV_ORA_COA");
                     }
                     else
                     {
-                        return ConfigurationManager.AppSettings["LIVE_ORA_COA"];
+                        return GetAppSetting("LIVE_ORA_COA");
                     }
                 }
             }
@@ -183,11 +202,11 @@ namespace TPM_QAS.DAL
             {
                 if (isACL)
                 {
-                    return ConfigurationManager.AppSettings["ACL"];
+                    return GetAppSetting("ACL");
                 }
                 else
                 {
-                    return ConfigurationManager.AppSettings["LIVE_ERP_COA"];
+                    return GetAppSetting("LIVE_ERP_COA");
                 }
             }
             catch (Exception ex)

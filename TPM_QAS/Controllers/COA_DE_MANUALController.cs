@@ -1,4 +1,4 @@
-﻿using DBModel;
+using DBModel;
 using DocumentFormat.OpenXml.Spreadsheet;
 using iTextSharp.text.pdf;
 using Newtonsoft.Json.Linq;
@@ -11,14 +11,15 @@ using System.Linq;
 using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.DAL;
 using TPM_QAS.Filters;
 using TPM_QAS.Helpers;
 using TPM_QAS.Models;
-using System.Configuration;
-using System.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Data.SqlClient;
 using System.Windows.Controls;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Quartz.Xml.JobSchedulingData20;
@@ -255,7 +256,7 @@ namespace TPM_QAS.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> UploadManualFile(HttpPostedFileBase DataUploadFile, string supplierID, string material, string lotno, string coaindicator)
+        public async Task<ActionResult> UploadManualFile(IFormFile DataUploadFile, string supplierID, string material, string lotno, string coaindicator)
         {
             string EMP_NO = (Session["AclUser"] as ACL_UserObj).EMP_NO.ToString();
 
@@ -263,7 +264,7 @@ namespace TPM_QAS.Controllers
             List<MMSpecLstModel> listItemsAdd = new List<MMSpecLstModel>();
             try
             {
-                if (DataUploadFile == null || DataUploadFile.ContentLength == 0)
+                if (DataUploadFile == null || DataUploadFile.Length == 0)
                 {
                     return Json(new { success = false, message = "No file uploaded." });
                 }
@@ -588,15 +589,15 @@ namespace TPM_QAS.Controllers
             _pMssql.Add(new SqlParameter("@SortType", "DESC"));
 
             string dbname = "";
-            string isTest = ConfigurationManager.AppSettings["isTest"];
+            string isTest = TPM_QAS.DAL.Database.GetAppSettingStatic("isTest"];
 
             if (string.Equals(isTest, "TRUE", StringComparison.OrdinalIgnoreCase))
             {
-                dbname = ConfigurationManager.AppSettings["DEV"];
+                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("DEV"];
             }
             else
             {
-                dbname = ConfigurationManager.AppSettings["LIVE"];
+                dbname = TPM_QAS.DAL.Database.GetAppSettingStatic("LIVE"];
             }
 
             AuditTrailModels = await AuditTrailHelper.AuditTrailStoreProcedureSqlAsync("PSP_GET_AUDIT_TRAIL", CommandType.StoredProcedure, _pMssql, dbname);

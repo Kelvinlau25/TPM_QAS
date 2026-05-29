@@ -1,10 +1,11 @@
-﻿using DBModel;
+using DBModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.Filters;
 using TPM_QAS.Helpers;
 using TPM_QAS.DAL;
@@ -15,7 +16,7 @@ using System.Runtime.InteropServices;
 using System.Web.Services.Description;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using qas.Models;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using Dapper;
 using System.Text;
 
@@ -212,7 +213,7 @@ namespace TPM_QAS.Controllers
             string result = "";
             string NG = "";
             //ActionType = "Draft";	
-            string loc = System.Web.HttpContext.Current.Request.UserHostAddress;
+            string loc = System.Web.HttpContext.Request.UserHostAddress;
             var aclUser = Session["AclUser"];
 
             m.CREATED_BY = (aclUser as ACL_UserObj).USER_ID;
@@ -3379,7 +3380,7 @@ namespace TPM_QAS.Controllers
             string result = "";
             string NG = "";
             //ActionType = "Draft";	
-            string loc = System.Web.HttpContext.Current.Request.UserHostAddress;
+            string loc = System.Web.HttpContext.Request.UserHostAddress;
             var aclUser = Session["AclUser"];
 
             try
@@ -3397,7 +3398,7 @@ namespace TPM_QAS.Controllers
         {
             for (int i = 0; i < m.MoldingList.Count; i++)
             {
-                string loc = System.Web.HttpContext.Current.Request.UserHostAddress;
+                string loc = System.Web.HttpContext.Request.UserHostAddress;
                 var aclUser = Session["AclUser"];
 
                 m.CREATED_BY = (aclUser as ACL_UserObj).USER_ID;
@@ -3677,7 +3678,7 @@ namespace TPM_QAS.Controllers
             var grade = "";
             var tempDL = "";
             string result = "";
-            string loc = System.Web.HttpContext.Current.Request.UserHostAddress;
+            string loc = System.Web.HttpContext.Request.UserHostAddress;
             var aclUser = Session["AclUser"];
             m.CREATED_BY = (aclUser as ACL_UserObj).USER_ID;
             m.CREATED_LOC = loc;
@@ -3759,7 +3760,7 @@ namespace TPM_QAS.Controllers
             try
             {
                 DailyIDSTransVM data = await dbdal.dataByProdtype(model.PRODTYPE, model.LOTNO);
-                string loc = System.Web.HttpContext.Current.Request.UserHostAddress;
+                string loc = System.Web.HttpContext.Request.UserHostAddress;
                 var aclUser = Session["AclUser"];
                 data.UPDATEDBY = (aclUser as ACL_UserObj).USER_ID;
                 data.TESTEDBY = (aclUser as ACL_UserObj).USER_ID;
@@ -3829,7 +3830,7 @@ namespace TPM_QAS.Controllers
             {
 
                 DailyIDSTransVM data = await dbdal.dataByProdtype(prodtype, lotno);
-                //string loc = System.Web.HttpContext.Current.Request.UserHostAddress;
+                //string loc = System.Web.HttpContext.Request.UserHostAddress;
                 var aclUser = Session["AclUser"];
                 data.UPDATEDBY = (aclUser as ACL_UserObj).USER_ID;
                 data.TESTEDBY = (aclUser as ACL_UserObj).USER_ID;
@@ -5906,7 +5907,7 @@ namespace TPM_QAS.Controllers
         [HttpPost]
         public async Task<ActionResult> DE_IDS_TRANS_DETAIL(DailyIDSTransVM m, List<List<fieldnamemodel>> field, List<List<List<tagnomodel>>> tag, List<descmodel> description, string rectype, string saveas)
         {
-            string loc = System.Web.HttpContext.Current.Request.UserHostAddress;
+            string loc = System.Web.HttpContext.Request.UserHostAddress;
             var aclUser = Session["AclUser"];
 
             m.CREATED_BY = (aclUser as ACL_UserObj).USER_ID;
@@ -6029,7 +6030,7 @@ namespace TPM_QAS.Controllers
 
         //public async Task<JsonResult> SaveComplete(DailyIDSTransVM model)
         //{
-        //    string loc = System.Web.HttpContext.Current.Request.UserHostAddress;
+        //    string loc = System.Web.HttpContext.Request.UserHostAddress;
         //    var aclUser = Session["AclUser"];
 
         //    model.CREATED_BY = (aclUser as ACL_UserObj).USER_ID;
@@ -6452,7 +6453,7 @@ namespace TPM_QAS.Controllers
                         grade += item.tagno + " : " + item.grade + " \n ";
                     }
 
-                    string loc = System.Web.HttpContext.Current.Request.UserHostAddress;
+                    string loc = System.Web.HttpContext.Request.UserHostAddress;
                     var aclUser = Session["AclUser"];
 
                     var created_by = (aclUser as ACL_UserObj).USER_ID;
@@ -6656,7 +6657,7 @@ namespace TPM_QAS.Controllers
 
                 var GradeInd = item.gradeInd;
 
-                string loc = System.Web.HttpContext.Current.Request.UserHostAddress;
+                string loc = System.Web.HttpContext.Request.UserHostAddress;
                 var aclUser = Session["AclUser"];
 
                 var updatedby = (aclUser as ACL_UserObj).USER_ID;
@@ -6864,7 +6865,7 @@ namespace TPM_QAS.Controllers
 
         public async Task<JsonResult> IDS_SL_MAINT(DailyIDSTransVM m)
         {
-            string loc = System.Web.HttpContext.Current.Request.UserHostAddress;
+            string loc = System.Web.HttpContext.Request.UserHostAddress;
             var aclUser = Session["AclUser"];
 
             m.CREATED_BY = (aclUser as ACL_UserObj).USER_ID;
@@ -7064,7 +7065,7 @@ namespace TPM_QAS.Controllers
                 }
 
 
-                string loc = System.Web.HttpContext.Current.Request.UserHostAddress;
+                string loc = System.Web.HttpContext.Request.UserHostAddress;
                 var aclUser = Session["AclUser"];
 
                 var created_by = (aclUser as ACL_UserObj).USER_ID;

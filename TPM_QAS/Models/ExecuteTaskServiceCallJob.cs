@@ -1,19 +1,17 @@
-﻿using Quartz;
+using Quartz;
 using System;
-using System.Configuration;
 using System.Data;
 using System.Threading.Tasks;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Collections.Generic;
+using TPM_QAS.DAL;
 
 namespace TPM_QAS.Models
 {
     public class ExecuteTaskServiceCallJob : IJob
     {
-        DatabaseModel.Database db = new DatabaseModel.Database();
+        public static readonly string SchedulingStatus = Database.GetAppSettingStatic("ExecuteTaskServiceCallSchedulingStatus") ?? "OFF";
 
-     
-        public static readonly string SchedulingStatus = ConfigurationManager.AppSettings["ExecuteTaskServiceCallSchedulingStatus"];
         public Task Execute(IJobExecutionContext context)
         {
             var task = Task.Run(() =>
@@ -22,9 +20,7 @@ namespace TPM_QAS.Models
                 {
                     try
                     {
-                        //Do whatever stuff you want
                         string f = "";
-                       
                     }
                     catch (Exception ex)
                     {
@@ -33,6 +29,5 @@ namespace TPM_QAS.Models
             });
             return task;
         }
-
     }
 }

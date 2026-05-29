@@ -1,4 +1,4 @@
-﻿using ClosedXML.Excel;
+using ClosedXML.Excel;
 using DBModel;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using Newtonsoft.Json;
@@ -8,8 +8,9 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.DAL;
 using TPM_QAS.Filters;
 using TPM_QAS.Helpers;

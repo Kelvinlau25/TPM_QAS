@@ -1,0 +1,9 @@
+/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/obj/Debug/net8.0/TPM_QAS.csproj.AssemblyReference.cache
+/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/obj/Debug/net8.0/TPM_QAS.GeneratedMSBuildEditorConfig.editorconfig
+/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/obj/Debug/net8.0/TPM_QAS.AssemblyInfoInputs.cache
+/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/obj/Debug/net8.0/TPM_QAS.AssemblyInfo.cs
+/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/obj/Debug/net8.0/TPM_QAS.csproj.CoreCompileInputs.cache
+/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/obj/Debug/net8.0/TPM_QAS.MvcApplicationPartsAssemblyInfo.cache
+/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/obj/Debug/net8.0/TPM_QAS.RazorAssemblyInfo.cache
+/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/obj/Debug/net8.0/TPM_QAS.RazorAssemblyInfo.cs
+/tmp/workspace/Kelvinlau25/TPM_QAS/TPM_QAS/obj/Debug/net8.0/TPM_QAS.sourcelink.json

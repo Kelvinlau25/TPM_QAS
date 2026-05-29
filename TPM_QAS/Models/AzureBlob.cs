@@ -1,8 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Web;
+using Microsoft.AspNetCore.Http;
 
 namespace TPM_QAS.Models
 {
@@ -12,8 +11,6 @@ namespace TPM_QAS.Models
         {
             public static string connString = "DefaultEndpointsProtocol=https;AccountName=tpmrg01diag;AccountKey=ZqYQItCsFwR7exrT9BbAl36I6wnauCSeADIcdBbuG8Oa4CTYbsJPsAFB43Bz6I+txIc3RGIBJX1Fsr9hSmrEKA==;EndpointSuffix=core.windows.net";
             public static string key = "ZqYQItCsFwR7exrT9BbAl36I6wnauCSeADIcdBbuG8Oa4CTYbsJPsAFB43Bz6I+txIc3RGIBJX1Fsr9hSmrEKA==";
-            //public static string CredentialID = "szekhai.foo.b6@mail.toray";
-            //public static string CredentialPass = "HcXz8246";
             public static string StorageAccountName = "tpmrg01diag";
             public static string blobServiceEndpoint = "https://tpmrg01diag.blob.core.windows.net/";
         }
@@ -28,33 +25,36 @@ namespace TPM_QAS.Models
             public string END_POINT { get; set; }
             public string CONTAINER { get; set; }
             public string DIRECTORY { get; set; }
-            public List<HttpPostedFileBase> PostedFile { get; set; }
+            public List<IFormFile> PostedFile { get; set; }
             public AzureBlobModel()
             {
-                PostedFile = new List<HttpPostedFileBase>();
+                PostedFile = new List<IFormFile>();
             }
         }
 
-        public class CustomHttpPostedFileBase : HttpPostedFileBase
+        public class CustomFormFile : IFormFile
         {
             private readonly Stream _stream;
             private readonly string _fileName;
             private readonly string _contentType;
 
-            public CustomHttpPostedFileBase(Stream stream, string fileName, string contentType)
+            public CustomFormFile(Stream stream, string fileName, string contentType)
             {
                 _stream = stream;
                 _fileName = fileName;
                 _contentType = contentType;
             }
 
-            public override int ContentLength => (int)_stream.Length;
+            public string ContentType => _contentType;
+            public string ContentDisposition => $"form-data; name=\"file\"; filename=\"{_fileName}\"";
+            public IHeaderDictionary Headers => new HeaderDictionary();
+            public long Length => _stream.Length;
+            public string Name => "file";
+            public string FileName => _fileName;
 
-            public override string ContentType => _contentType;
-
-            public override string FileName => _fileName;
-
-            public override Stream InputStream => _stream;
+            public void CopyTo(Stream target) => _stream.CopyTo(target);
+            public async System.Threading.Tasks.Task CopyToAsync(Stream target, System.Threading.CancellationToken cancellationToken = default) => await _stream.CopyToAsync(target, cancellationToken);
+            public Stream OpenReadStream() => _stream;
         }
     }
 }

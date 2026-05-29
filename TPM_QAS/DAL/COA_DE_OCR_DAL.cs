@@ -1,11 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
+using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using TPM_QAS.Helpers;
 using TPM_QAS.Models;
 using DocumentFormat.OpenXml.Office2010.Excel;
@@ -16,7 +17,7 @@ namespace TPM_QAS.DAL
     {
         public async Task<DataTable> getDEOCR_Data(string ID, string type, int pdid = 0, string lotno = "")
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -33,10 +34,10 @@ namespace TPM_QAS.DAL
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
 
-                        cmd.Parameters.Add(new SqlParameter("@pID", ID)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pType", type)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@psupplierID", pdid)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@plotno", lotno)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pID", ID)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pType", type)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@psupplierID", pdid)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@plotno", lotno)).Direction = ParameterDirection.Input;
 
                         reader = await cmd.ExecuteReaderAsync();
                         dt.Load(reader);
@@ -66,7 +67,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> getKeyInfo(string type, string cat = "", string cat2 = "", string cat3 = "")
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -83,10 +84,10 @@ namespace TPM_QAS.DAL
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
 
-                        cmd.Parameters.Add(new SqlParameter("@pType", type)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pCat", cat)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pCat2", cat2)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pCat3", cat3)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pType", type)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pCat", cat)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pCat2", cat2)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pCat3", cat3)).Direction = ParameterDirection.Input;
                         reader = await cmd.ExecuteReaderAsync();
                         dt.Load(reader);
                         reader.Close();
@@ -115,7 +116,7 @@ namespace TPM_QAS.DAL
 
         public async Task<List<SupplierTab>> getsupplierlist(string ID, string type)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             List<SupplierTab> chop = new List<SupplierTab>();
@@ -133,8 +134,8 @@ namespace TPM_QAS.DAL
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
-                        cmd.Parameters.Add(new SqlParameter("@pID", ID)).Direction = System.Data.ParameterDirection.Input;
-                        cmd.Parameters.Add(new SqlParameter("@pType", type)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pID", ID)).Direction = ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@pType", type)).Direction = ParameterDirection.Input;
 
                         using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                         {
@@ -166,7 +167,7 @@ namespace TPM_QAS.DAL
         //HANA 19122025 Add SP to get the specification values for analysis result
         public async Task<String> getMatSpecList(string supplier)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             string matspeclist = "";
@@ -184,7 +185,7 @@ namespace TPM_QAS.DAL
                         cmd.CommandType = CommandType.StoredProcedure;
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
-                        cmd.Parameters.Add(new SqlParameter("@psuppID", supplier)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@psuppID", supplier)).Direction = ParameterDirection.Input;
 
                         using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
                         {
@@ -211,10 +212,10 @@ namespace TPM_QAS.DAL
         {
             string result = "0";
 
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
             string createdby = USERID;
-            string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContext.Request.UserHostAddress.ToString();
             string pc = Environment.MachineName;
 
             try
@@ -264,10 +265,10 @@ namespace TPM_QAS.DAL
         {
             string result = "0";
 
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
             string createdby = USERID;
-            string loc = HttpContext.Current.Request.UserHostAddress.ToString();
+            string loc = HttpContext.Request.UserHostAddress.ToString();
             string pc = Environment.MachineName;
 
             try
@@ -320,7 +321,7 @@ namespace TPM_QAS.DAL
 
         public async Task<DataTable> CheckUserAppRole(string empno)
         {
-            ACL_UserObj userobj = (ACL_UserObj)HttpContext.Current.Session["AclUser"];
+            ACL_UserObj userobj = HttpContext.Session.GetObject<ACL_UserObj>("AclUser");
             string USERID = userobj.EMP_NAME.ToString();
 
             try
@@ -337,7 +338,7 @@ namespace TPM_QAS.DAL
                         cmd.CommandTimeout = 0;
                         cmd.Parameters.Clear();
 
-                        cmd.Parameters.Add(new SqlParameter("@PempNo", empno)).Direction = System.Data.ParameterDirection.Input;
+                        cmd.Parameters.Add(new SqlParameter("@PempNo", empno)).Direction = ParameterDirection.Input;
                         reader = await cmd.ExecuteReaderAsync();
                         dt.Load(reader);
                         reader.Close();

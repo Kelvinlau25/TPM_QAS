@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Http;
 
 namespace ImportExcel.Class
 {
@@ -13,7 +11,7 @@ namespace ImportExcel.Class
         {
             if (value != null)
             {
-                string extension = ((System.Web.HttpPostedFileBase)value).FileName.Split('.')[1];
+                string extension = ((IFormFile)value).FileName.Split('.')[1];
                 if (Allow.Contains(extension))
                     return ValidationResult.Success;
                 else
