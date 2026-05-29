@@ -178,15 +178,15 @@
                     "<'row'<'col-sm-12'tr>>" +
                     "<'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'<'d-flex justify-content-end mt-2'p<'go-to align-self-center mx-2'>>>>",
                 initComplete: function () {
-                    //$("div.toolbar").html(
-                    //    '<div class="input-group input-group-sm">' +
-                    //    '<input type="text" id="txtSearch" class="form-control remove-right-border" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
-                    //    '<div class="input-group-text listing-search-icon">' +
-                    //    '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>' +
-                    //    '</div>' +
-                    //    '<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#ASModal" id="btnAS" style="min-width: 30px; background-color: #057FE5;"><i class="fa-solid fa-sliders" style="transform: rotate(90deg);"></i></button>' +
-                    //    '</div>'
-                    //);
+                    $("div.toolbar").html(
+                        '<div class="input-group input-group-sm">' +
+                        '<input type="text" id="txtSearch" class="form-control remove-right-border" placeholder="Search" aria-label="Search" aria-describedby="btnAdvanceSearch">' +
+                        '<div class="input-group-text listing-search-icon">' +
+                        '    <a href="" class="text-reset" id="btnSearch"><i class="fa-solid fa-magnifying-glass"></i></a>' +
+                        '</div>' +
+                        '<button class="btn btn-sm btn-primary" type="button" data-bs-toggle="modal" data-bs-target="#ASModal" id="btnAS" style="min-width: 30px; background-color: #057FE5;"><i class="fa-solid fa-sliders" style="transform: rotate(90deg);"></i></button>' +
+                        '</div>'
+                    );
                 },
                 drawCallback: function (settings) {
                     var api = this.api();
@@ -394,4 +394,3 @@
 
             </script>*@
         }
-
