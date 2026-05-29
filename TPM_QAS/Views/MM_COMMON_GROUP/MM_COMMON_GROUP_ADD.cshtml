@@ -144,7 +144,7 @@
         $(document).ready(function () {
             checkboxChecking();
 
-            var listingURL = '/MM_COMMON_GROUP/MM_COMMON_GROUP_LST';
+            var listingURL = appBasePath + 'MM_COMMON_GROUP/MM_COMMON_GROUP_LST';
             var idh = '@Model.MM_COMMONGROUP_H_ID' != 0 ? '@Model.MM_COMMONGROUP_H_ID' : 0;
 
             $("#color").hide();
@@ -320,7 +320,7 @@
                     console.log(model)
 
                     $.ajax({
-                        url: "/MM_COMMON_GROUP/InsertUpdateCommonGroup",
+                        url: appBasePath + "MM_COMMON_GROUP/InsertUpdateCommonGroup",
                         type: 'POST',
                         data: {
                             model: model
@@ -436,7 +436,7 @@
                     console.log(model)
 
                     $.ajax({
-                        url: "/MM_COMMON_GROUP/DraftCommonGroup",
+                        url: appBasePath + "MM_COMMON_GROUP/DraftCommonGroup",
                         type: 'POST',
                         data: {
                             model: model

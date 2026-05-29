@@ -371,7 +371,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/MM_PROPERTIES/MM_PROPERTIES_LST';
+            var listingURL = appBasePath + 'MM_PROPERTIES/MM_PROPERTIES_LST';
 
             //Audit action control
             var audit_url = '@Url.Action("MM_PROPERTIES_AUDIT", "MM_PROPERTIES")';
@@ -431,7 +431,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/MM_PROPERTIES/deleteProperties",
+                        url: appBasePath + "MM_PROPERTIES/deleteProperties",
                         type: 'POST',
                         data: {
                             lstid: checkedValues

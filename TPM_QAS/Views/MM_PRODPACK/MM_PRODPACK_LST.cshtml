@@ -353,7 +353,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/MM_PRODPACK/MM_PRODPACK_LST';
+            var listingURL = appBasePath + 'MM_PRODPACK/MM_PRODPACK_LST';
 
             //Audit action control
             var audit_url = '@Url.Action("MM_PRODPACK_AUDIT", "MM_PRODPACK")';
@@ -413,7 +413,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/MM_PRODPACK/deleteProdPack",
+                        url: appBasePath + "MM_PRODPACK/deleteProdPack",
                         type: 'POST',
                         data: {
                             lstid: checkedValues

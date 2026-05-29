@@ -174,7 +174,7 @@
         $(document).ready(function () {
             checkboxChecking();
 
-            var listingURL = '/COA_MM_SUPPLIER/COA_MM_SUPPLIER_LST';
+            var listingURL = appBasePath + 'COA_MM_SUPPLIER/COA_MM_SUPPLIER_LST';
             var idh = '@Model.MM_SUPPLIER_H_ID';
 
             ////ADD
@@ -306,7 +306,7 @@
                     console.log(model)
 
                     $.ajax({
-                        url: "/COA_MM_SUPPLIER/InsertUpdateSupplier",
+                        url: appBasePath + "COA_MM_SUPPLIER/InsertUpdateSupplier",
                         type: 'POST',
                         data: {
                             model: model
@@ -347,7 +347,7 @@
                 lstid.push(idh)
 
                 $.ajax({
-                    url: "/COA_MM_SUPPLIER/deleteSupplier",
+                    url: appBasePath + "COA_MM_SUPPLIER/deleteSupplier",
                     type: 'POST',
                     data: {
                         lstid: lstid

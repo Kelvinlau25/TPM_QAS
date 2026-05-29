@@ -276,7 +276,7 @@
     $(document).ready(function () {
 
         checkboxChecking();
-        var listingURL = '/MM_CHECK_ROUTINE/MM_CHECK_ROUTINE_LST';
+        var listingURL = appBasePath + 'MM_CHECK_ROUTINE/MM_CHECK_ROUTINE_LST';
 
         higlightCheckedBoxes();
         updateSeqModal()
@@ -444,7 +444,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_CHECK_ROUTINE/InsertUpdateCheckRoutine",
+                    url: appBasePath + "MM_CHECK_ROUTINE/InsertUpdateCheckRoutine",
                     type: 'POST',
                     data: {
                         model: model
@@ -614,7 +614,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_CHECK_ROUTINE/DraftCheckingRoutine",
+                    url: appBasePath + "MM_CHECK_ROUTINE/DraftCheckingRoutine",
                     type: 'POST',
                     data: {
                         model: model

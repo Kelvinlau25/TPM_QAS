@@ -377,7 +377,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/MM_BIS_DESG_CODE/MM_BIS_DESG_CODE_LST';
+            var listingURL = appBasePath + 'MM_BIS_DESG_CODE/MM_BIS_DESG_CODE_LST';
             //Audit action control
             var audit_url = '@Url.Action("MM_BIS_DESG_CODE_AUDIT", "MM_BIS_DESG_CODE")';
 
@@ -437,7 +437,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/MM_BIS_DESG_CODE/MM_BIS_DESG_CODE_D_DEL",
+                        url: appBasePath + "MM_BIS_DESG_CODE/MM_BIS_DESG_CODE_D_DEL",
                         type: 'POST',
                         data: {
                             pID: checkedValues

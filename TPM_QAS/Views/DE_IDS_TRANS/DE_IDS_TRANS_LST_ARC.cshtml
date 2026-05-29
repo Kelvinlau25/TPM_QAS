@@ -206,7 +206,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '/DE_IDS_TRANS/FetchListing',
+                    url: appBasePath + 'DE_IDS_TRANS/FetchListing',
                     type: 'POST',
                     beforeSend: function () {
                         loadings();
@@ -524,7 +524,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/DE_IDS_TRANS/DE_IDS_TRANS_LST_ARC';
+            var listingURL = appBasePath + 'DE_IDS_TRANS/DE_IDS_TRANS_LST_ARC';
 
             //Audit action control
             var audit_url = '@Url.Action("DE_IDS_TRANS_AUDIT", "DE_IDS_TRANS")';
@@ -566,7 +566,7 @@
                 var cont = true;
                 var message = "";
 
-                var listingURL = '/DE_IDS_TRANS/DE_IDS_TRANS_LST_ARC';
+                var listingURL = appBasePath + 'DE_IDS_TRANS/DE_IDS_TRANS_LST_ARC';
 
                 var checkedValues = [];
                 var checkboxes = table.column(0).nodes().to$().find('.dt-checkboxes');
@@ -586,7 +586,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/DE_IDS_TRANS/deleteIDSTrans",
+                        url: appBasePath + "DE_IDS_TRANS/deleteIDSTrans",
                         type: 'POST',
                         data: {
                             lstid: checkedValues

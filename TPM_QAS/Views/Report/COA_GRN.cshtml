@@ -176,12 +176,12 @@
         loadings();
 
         $.ajax({
-            url: '/Report/CheckGRNExcel',
+            url: appBasePath + 'Report/CheckGRNExcel',
             type: 'GET',
             data: { type: type },
             success: function (res) {
                 if (res.success) {
-                    window.location.href = '/Report/GRNExcel?type=' + type;
+                    window.location.href = appBasePath + 'Report/GRNExcel?type=' + type;
                 } else {
                     displayToast("error", res.message);
                 }

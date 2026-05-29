@@ -149,7 +149,7 @@
                     targets: 3,
                     render: function (data, type, row, meta) {
                         if (type === 'display') {
-                            data = `<a href="/FILE_ATTACHMENT/FILE_ATTACHMENT_LST2/${data}" class="name tr-icon-size"><i class="fa-solid fa-eye my-button"></i></a>`;
+                            data = `<a href="${appBasePath}FILE_ATTACHMENT/FILE_ATTACHMENT_LST2/${data}" class="name tr-icon-size"><i class="fa-solid fa-eye my-button"></i></a>`;
                         }
                         return data;
                     },

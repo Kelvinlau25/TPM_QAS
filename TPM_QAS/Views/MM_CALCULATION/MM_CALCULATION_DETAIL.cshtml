@@ -245,7 +245,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/MM_CALCULATION/MM_CALCULATION_LST';
+            var listingURL = appBasePath + 'MM_CALCULATION/MM_CALCULATION_LST';
             var idh = '@Model.MM_CALC_ID';
 
             var from = '@ViewBag.FROM';
@@ -339,7 +339,7 @@
                     };
 
                     $.ajax({
-                        url: "/MM_CALCULATION/UpdateInsertCalculation",
+                        url: appBasePath + "MM_CALCULATION/UpdateInsertCalculation",
                         type: 'POST',
                         data: {
                             model: model
@@ -380,7 +380,7 @@
                 lstid.push(idh)
 
                 $.ajax({
-                    url: "/MM_CALCULATION/deleteCalculation",
+                    url: appBasePath + "MM_CALCULATION/deleteCalculation",
                     type: 'POST',
                     data: {
                         lstid: lstid

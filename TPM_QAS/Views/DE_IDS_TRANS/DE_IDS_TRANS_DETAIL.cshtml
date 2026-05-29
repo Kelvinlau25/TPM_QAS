@@ -2006,7 +2006,7 @@
         var recordData =  @Html.Raw(JsonConvert.SerializeObject(Model));
 
         $(document).ready(function () {
-            var listingURL = '/DE_IDS_TRANS/DE_IDS_TRANS_LST';
+            var listingURL = appBasePath + 'DE_IDS_TRANS/DE_IDS_TRANS_LST';
 
             var propgradespec = @Html.Raw(Json.Serialize(Model.PropGradeSpecList));
             console.log(propgradespec)
@@ -5355,13 +5355,13 @@
         });
 
         $('#btnConfirmDel').on('click', function () {
-            var listingURL = '/DE_IDS_TRANS/DE_IDS_TRANS_LST';
+            var listingURL = appBasePath + 'DE_IDS_TRANS/DE_IDS_TRANS_LST';
             var idh = '@ViewBag.IDH'
             var lstid = [];
             lstid.push(idh)
 
             $.ajax({
-                url: "/DE_IDS_TRANS/deleteIDSTrans",
+                url: appBasePath + "DE_IDS_TRANS/deleteIDSTrans",
                 type: 'POST',
                 data: {
                     lstid: lstid

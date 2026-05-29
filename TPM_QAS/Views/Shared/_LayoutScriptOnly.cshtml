@@ -20,6 +20,7 @@
 </head>
 
 <body class="theme-cyan" style="height:100vh;padding: 10px;">
+    <script>var appBasePath = '@Url.Content("~/")';</script>
     @RenderBody()
 
     <!--Popup message delete-->
@@ -92,7 +93,7 @@
         $(document).ready(function () {
 
             //JH230712
-            $("#sidebarcontent").load('@Url.Content("/Home/SideBar")', function () {
+            $("#sidebarcontent").load('@Url.Content("~/Home/SideBar")', function () {
                 setActiveSidebar();
             });
 

@@ -396,7 +396,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/COA_DE_OCR/COA_DE_OCR_LST';
+            var listingURL = appBasePath + 'COA_DE_OCR/COA_DE_OCR_LST';
 
             //Audit action control
             var audit_url = '@Url.Action("COA_DE_OCR_AUDIT", "COA_DE_OCR")';
@@ -456,7 +456,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/COA_DE_OCR/deleteCOAOCR",
+                        url: appBasePath + "COA_DE_OCR/deleteCOAOCR",
                         type: 'POST',
                         data: {
                             lstid: checkedValues

@@ -153,7 +153,7 @@
         $(document).ready(function () {
 
             var idh = '@Model.MM_LOTNO_H_ID' != 0 ? '@Model.MM_LOTNO_H_ID' : 0;
-            var listingURL = '/MM_LOT_SEPARATION/MM_LOT_SEPARATION_LST';
+            var listingURL = appBasePath + 'MM_LOT_SEPARATION/MM_LOT_SEPARATION_LST';
 
             $("#intervalslider").on("input", function () {
                 var value = $(this).val();
@@ -324,7 +324,7 @@
                     console.log(model)
 
                     $.ajax({
-                        url: "/MM_LOT_SEPARATION/InsertUpdateLotSeparation",
+                        url: appBasePath + "MM_LOT_SEPARATION/InsertUpdateLotSeparation",
                         type: 'POST',
                         data: {
                             model: model
@@ -488,7 +488,7 @@
                     console.log(model)
 
                     $.ajax({
-                        url: "/MM_LOT_SEPARATION/DraftLotSeparation",
+                        url: appBasePath + "MM_LOT_SEPARATION/DraftLotSeparation",
                         type: 'POST',
                         data: {
                             model: model

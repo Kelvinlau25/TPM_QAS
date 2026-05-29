@@ -318,7 +318,7 @@
                     //console.log(model)
 
                     $.ajax({
-                        url: "/COA_GA_RAWMAT_TREND/getTrendChartData",
+                        url: appBasePath + "COA_GA_RAWMAT_TREND/getTrendChartData",
                         type: 'POST',
                         data: { model: model },
                         beforeSend: function () {
@@ -418,7 +418,7 @@
 
                     //console.log(model)
                     $.ajax({
-                        url: '/COA_GA_RAWMAT_TREND/CheckTrendExcel',
+                        url: appBasePath + 'COA_GA_RAWMAT_TREND/CheckTrendExcel',
                         type: 'POST',
                         data: { model: model },
                         beforeSend: function () {
@@ -428,7 +428,7 @@
                             loadings(false);
                             if (response.success) {
                                 const query = $.param(model); 
-                                window.location.href = '/COA_GA_RAWMAT_TREND/TrendExcel?' + query;
+                                window.location.href = appBasePath + 'COA_GA_RAWMAT_TREND/TrendExcel?' + query;
                             } else {
                                 displayToast("error", response.message);
                             }
@@ -450,7 +450,7 @@
             });
 
             $('#btnReset').on('click', function () {
-                var listingURL = '/COA_GA_RAWMAT_TREND/COA_GA_RAWMAT_TREND_DET';
+                var listingURL = appBasePath + 'COA_GA_RAWMAT_TREND/COA_GA_RAWMAT_TREND_DET';
                 window.location.href = listingURL;
             });
 

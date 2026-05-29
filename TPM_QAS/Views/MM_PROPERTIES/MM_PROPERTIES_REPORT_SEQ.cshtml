@@ -168,7 +168,7 @@
 
         var listFieldValue = []
         $(document).ready(function () {
-            var listingURL = '/MM_PROPERTIES/MM_PROPERTIES_LST';
+            var listingURL = appBasePath + 'MM_PROPERTIES/MM_PROPERTIES_LST';
 
             $("#item-table tbody").sortable({
                 handle: ".sort-handle",
@@ -300,7 +300,7 @@
                     console.log(model)
 
                     $.ajax({
-                        url: "/MM_PROPERTIES/UpdateReportSeq",
+                        url: appBasePath + "MM_PROPERTIES/UpdateReportSeq",
                         type: 'POST',
                         data: model,
                         beforeSend: function () {

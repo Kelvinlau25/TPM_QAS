@@ -137,7 +137,7 @@
 <script>
 
     $(document).ready(function () {
-        var listingURL = '/MM_PRODPACK/MM_PRODPACK_LST';
+        var listingURL = appBasePath + 'MM_PRODPACK/MM_PRODPACK_LST';
         var idh = '@Model.MM_PRODPACK_ID';
 
         
@@ -188,7 +188,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_PRODPACK/InsertUpdateProdPack",
+                    url: appBasePath + "MM_PRODPACK/InsertUpdateProdPack",
                     type: 'POST',
                     data: {
                         model: model
@@ -229,7 +229,7 @@
             lstid.push(idh)
 
             $.ajax({
-                url: "/MM_PRODPACK/deleteProdPack",
+                url: appBasePath + "MM_PRODPACK/deleteProdPack",
                 type: 'POST',
                 data: {
                     lstid: lstid

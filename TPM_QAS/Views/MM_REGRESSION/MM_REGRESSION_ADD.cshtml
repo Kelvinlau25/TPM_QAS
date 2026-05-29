@@ -342,7 +342,7 @@
         $(document).ready(function () {
             checkboxChecking();
             checkbox2Checking();
-            var listingURL = '/MM_REGRESSION/MM_REGRESSION_LST';
+            var listingURL = appBasePath + 'MM_REGRESSION/MM_REGRESSION_LST';
 
             var idh = '@Model.MM_REGRESSION_H_ID' != 0 ? '@Model.MM_REGRESSION_H_ID' : 0;
 
@@ -830,7 +830,7 @@
                     console.log(model)
 
                     $.ajax({
-                        url: "/MM_REGRESSION/InsertUpdateRegression",
+                        url: appBasePath + "MM_REGRESSION/InsertUpdateRegression",
                         type: 'POST',
                         data: {
                             model: model
@@ -1148,7 +1148,7 @@
                     console.log(model)
 
                     $.ajax({
-                        url: "/MM_REGRESSION/DraftRegression",
+                        url: appBasePath + "MM_REGRESSION/DraftRegression",
                         type: 'POST',
                         data: {
                             model: model

@@ -199,7 +199,7 @@
         $(document).ready(function () {
             checkboxChecking();
 
-            var listingURL = '/MM_COMMON_GROUP/MM_COMMON_GROUP_LST';
+            var listingURL = appBasePath + 'MM_COMMON_GROUP/MM_COMMON_GROUP_LST';
             var idh = '@Model.MM_COMMONGROUP_H_ID';
 
             var cat = $("#txtcategory").val().toUpperCase();
@@ -373,7 +373,7 @@
                     console.log(model)
 
                     $.ajax({
-                        url: "/MM_COMMON_GROUP/InsertUpdateCommonGroup",
+                        url: appBasePath + "MM_COMMON_GROUP/InsertUpdateCommonGroup",
                         type: 'POST',
                         data: {
                             model: model
@@ -414,7 +414,7 @@
                 lstid.push(idh)
 
                 $.ajax({
-                    url: "/MM_COMMON_GROUP/deleteCommonGroup",
+                    url: appBasePath + "MM_COMMON_GROUP/deleteCommonGroup",
                     type: 'POST',
                     data: {
                         lstid: lstid

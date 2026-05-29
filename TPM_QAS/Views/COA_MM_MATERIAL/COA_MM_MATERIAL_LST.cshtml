@@ -367,7 +367,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/COA_MM_MATERIAL/COA_MM_MATERIAL_LST';
+            var listingURL = appBasePath + 'COA_MM_MATERIAL/COA_MM_MATERIAL_LST';
 
             //Audit action control
             var audit_url = '@Url.Action("COA_MM_MATERIAL_AUDIT", "COA_MM_MATERIAL")';
@@ -427,7 +427,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/COA_MM_MATERIAL/deleteCOAMATERIAL",
+                        url: appBasePath + "COA_MM_MATERIAL/deleteCOAMATERIAL",
                         type: 'POST',
                         data: {
                             lstid: checkedValues

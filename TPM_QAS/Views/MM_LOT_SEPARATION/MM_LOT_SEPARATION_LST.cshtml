@@ -366,7 +366,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/MM_LOT_SEPARATION/MM_LOT_SEPARATION_LST';
+            var listingURL = appBasePath + 'MM_LOT_SEPARATION/MM_LOT_SEPARATION_LST';
 
             //Audit action control
             var audit_url = '@Url.Action("MM_LOT_SEPARATION_AUDIT", "MM_LOT_SEPARATION")';
@@ -426,7 +426,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/MM_LOT_SEPARATION/deleteLotSeparation",
+                        url: appBasePath + "MM_LOT_SEPARATION/deleteLotSeparation",
                         type: 'POST',
                         data: {
                             lstid: checkedValues

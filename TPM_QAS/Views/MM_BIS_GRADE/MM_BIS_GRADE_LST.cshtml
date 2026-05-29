@@ -367,7 +367,7 @@
 
         $(document).ready(function () {
 
-            var listingURL = '/MM_BIS_GRADE/MM_BIS_GRADE_LST';
+            var listingURL = appBasePath + 'MM_BIS_GRADE/MM_BIS_GRADE_LST';
             //Audit action control
             var audit_url = '@Url.Action("MM_BIS_GRADE_AUDIT", "MM_BIS_GRADE")';
 
@@ -426,7 +426,7 @@
                 if (cont) {
 
                     $.ajax({
-                        url: "/MM_BIS_GRADE/MM_BIS_GRADE_D_DEL",
+                        url: appBasePath + "MM_BIS_GRADE/MM_BIS_GRADE_D_DEL",
                         type: 'POST',
                         data: {
                             pID: checkedValues

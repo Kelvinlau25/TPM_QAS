@@ -70,7 +70,7 @@
         $(document).ready(function () {
 
             var idh = '@Model.MM_PRODPACK_ID' != 0 ? '@Model.MM_PRODPACK_ID' : 0;
-            var listingURL = '/MM_PRODPACK/MM_PRODPACK_LST';
+            var listingURL = appBasePath + 'MM_PRODPACK/MM_PRODPACK_LST';
 
             //SUBMIT
             $('#btnConfirmSubmit').on('click', function () {
@@ -119,7 +119,7 @@
                     console.log(model)
 
                     $.ajax({
-                        url: "/MM_PRODPACK/InsertUpdateProdPack",
+                        url: appBasePath + "MM_PRODPACK/InsertUpdateProdPack",
                         type: 'POST',
                         data: {
                             model: model
@@ -191,7 +191,7 @@
                     console.log(model)
 
                     $.ajax({
-                        url: "/MM_PRODPACK/DraftProdPack",
+                        url: appBasePath + "MM_PRODPACK/DraftProdPack",
                         type: 'POST',
                         data: {
                             model: model

@@ -126,7 +126,7 @@
     $(document).ready(function () {
         checkboxChecking();
 
-        var listingURL = '/MM_PROD_GROUP/MM_PROD_GROUP_LST';
+        var listingURL = appBasePath + 'MM_PROD_GROUP/MM_PROD_GROUP_LST';
 
         //REMOVE D
         $('#removeBtn').on('click', function () {
@@ -234,7 +234,7 @@
                 };
 
                 $.ajax({
-                    url: "/MM_PROD_GROUP/InsertUpdateProductGroup",
+                    url: appBasePath + "MM_PROD_GROUP/InsertUpdateProductGroup",
                     type: 'POST',
                     data: {
                         model: model
@@ -350,7 +350,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_PROD_GROUP/DraftProductGroup",
+                    url: appBasePath + "MM_PROD_GROUP/DraftProductGroup",
                     type: 'POST',
                     data: {
                         model: model

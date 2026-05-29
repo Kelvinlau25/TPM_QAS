@@ -147,7 +147,7 @@
 
         checkboxChecking();
 
-        var listingURL = '/MM_APP_ROLE/MM_APP_ROLE_LST';
+        var listingURL = appBasePath + 'MM_APP_ROLE/MM_APP_ROLE_LST';
 
         //REMOVE D
         $('#removeBtn').on('click', function () {
@@ -264,7 +264,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_APP_ROLE/InsertUpdateAppRole",
+                    url: appBasePath + "MM_APP_ROLE/InsertUpdateAppRole",
                     type: 'POST',
                     data: {
                         model: model
@@ -397,7 +397,7 @@
                 console.log(model)
 
                 $.ajax({
-                    url: "/MM_APP_ROLE/DraftAppRole",
+                    url: appBasePath + "MM_APP_ROLE/DraftAppRole",
                     type: 'POST',
                     data: {
                         model: model
